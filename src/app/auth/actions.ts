@@ -54,19 +54,21 @@ export async function signup(formData: FormData) {
         redirect('/login?mode=registro&error=password_corto')
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
-        },
     })
 
     if (error) {
         if (error.message.includes('already registered')) {
             redirect('/login?error=existe')
         }
-        redirect('/login?mode=registro&error=registro')
+        redirect(`/login?mode=registro&error=registro&debug=${encodeURIComponent(error.message)}`)
+    }
+
+    // If user needs email confirmation (shouldn't happen with confirm OFF)
+    if (data?.user?.identities?.length === 0) {
+        redirect('/login?error=existe')
     }
 
     redirect('/onboarding')

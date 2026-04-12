@@ -20,7 +20,8 @@ export default async function LoginPage({
     const params = await searchParams
     const isRegistro = params.mode === 'registro'
     const errorKey = params.error as string
-    const errorMsg = errorKey ? ERROR_MESSAGES[errorKey] || 'Error inesperado. Intenta de nuevo.' : null
+    const debugMsg = params.debug as string
+    const errorMsg = errorKey ? ERROR_MESSAGES[errorKey] || `Error: ${debugMsg || 'Intenta de nuevo.'}` : null
 
     return (
         <div
