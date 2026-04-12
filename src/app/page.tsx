@@ -212,23 +212,23 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             {
-                                scenario: '100 suscriptores',
-                                price: '$8/mes',
-                                monthly: '$720/mes',
-                                sub: '+ regalos encima',
+                                scenario: '20 suscriptores',
+                                price: '$5/mes',
+                                monthly: '$90/mes',
+                                sub: 'Tu primer ingreso real',
                             },
                             {
-                                scenario: '500 suscriptores',
-                                price: '$10/mes',
-                                monthly: '$4,500/mes',
-                                sub: 'Ingreso de tiempo completo',
+                                scenario: '100 suscriptores',
+                                price: '$5/mes',
+                                monthly: '$450/mes',
+                                sub: 'Ingreso extra constante',
                                 featured: true,
                             },
                             {
-                                scenario: '1,000 suscriptores',
-                                price: '$12/mes',
-                                monthly: '$10,560/mes',
-                                sub: 'Que cambia tu vida',
+                                scenario: '500 suscriptores',
+                                price: '$5/mes',
+                                monthly: '$2,250/mes',
+                                sub: 'Ingreso serio',
                             },
                         ].map((item) => (
                             <div
@@ -251,7 +251,7 @@ export default function LandingPage() {
                                     className="text-sm mb-2"
                                     style={{ color: 'rgba(255,255,255,0.5)' }}
                                 >
-                                    @ {item.price} promedio
+                                    @ {item.price} cada uno
                                 </p>
                                 <p
                                     className="font-serif font-bold text-4xl mb-2"
@@ -273,7 +273,7 @@ export default function LandingPage() {
                         className="text-center text-xs mt-8"
                         style={{ color: 'rgba(255,255,255,0.3)' }}
                     >
-                        Tú te quedas el 88% de cada regalo · Comisión de plataforma: 10% en suscripciones
+                        Tú recibes el 90% de cada suscripción · Comisión de plataforma: 10%
                     </p>
                 </div>
             </section>
