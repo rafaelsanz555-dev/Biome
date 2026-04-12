@@ -7,17 +7,17 @@ import { createClient } from '@/lib/supabase/server'
 export async function login(formData: FormData) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
-    const data = {
-        email: formData.get('email') as string,
+    const email = formData.get('email') as string
+
+    if (!email || !email.includes('@')) {
+        redirect('/login?error=invalid_email')
     }
 
     const { error } = await supabase.auth.signInWithOtp({
-        email: data.email,
+        email,
         options: {
             shouldCreateUser: true,
-            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/onboarding`,
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
         },
     })
 
@@ -25,7 +25,7 @@ export async function login(formData: FormData) {
         redirect('/login?error=true')
     }
 
-    redirect('/login?message=Check your email to continue sign in process')
+    redirect('/login?message=enviado')
 }
 
 export async function logout() {

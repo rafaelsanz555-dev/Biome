@@ -10,6 +10,7 @@ export default async function LoginPage({
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     const { error, message } = await searchParams
+    const emailSent = message === 'enviado'
 
     return (
         <div
@@ -31,7 +32,7 @@ export default async function LoginPage({
                         bio<span style={{ color: 'var(--gold)' }}>.me</span>
                     </Link>
                     <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
-                        Your story. Your income.
+                        Tu historia. Tu ingreso.
                     </p>
                 </div>
 
@@ -39,93 +40,118 @@ export default async function LoginPage({
                 <div
                     className="w-full rounded-2xl p-7 shadow-sm"
                     style={{
-                        backgroundColor: 'var(--cream)',
+                        backgroundColor: 'white',
                         border: '1px solid var(--cream-mid)',
+                        boxShadow: '0 4px 24px rgba(20,16,10,0.07)',
                     }}
                 >
-                    {/* Card heading */}
-                    <div className="mb-6 space-y-1.5">
-                        <h1
-                            className="font-serif text-xl font-bold"
-                            style={{ color: 'var(--ink)' }}
-                        >
-                            Inicia sesión en bio.me
-                        </h1>
-                        <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-light)' }}>
-                            Ingresa tu email — te enviamos un enlace mágico. Sin contraseña.
-                        </p>
-                    </div>
-
-                    <form action={login} className="space-y-4">
-                        <div className="space-y-1.5">
-                            <Label
-                                htmlFor="email"
-                                className="text-sm font-medium"
+                    {emailSent ? (
+                        /* ── Success state ── */
+                        <div className="text-center py-4">
+                            <div
+                                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+                                style={{ backgroundColor: 'var(--gold-bg)' }}
+                            >
+                                <span className="text-2xl">📬</span>
+                            </div>
+                            <h2
+                                className="font-serif text-xl font-bold mb-2"
                                 style={{ color: 'var(--ink)' }}
                             >
-                                Correo electrónico
-                            </Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="tu@correo.com"
-                                required
-                                className="h-11 text-sm placeholder:opacity-50 focus-visible:ring-1 focus-visible:ring-offset-0"
-                                style={{
-                                    backgroundColor: 'var(--cream-dark)',
-                                    borderColor: 'var(--cream-mid)',
-                                    color: 'var(--ink)',
-                                    // @ts-expect-error CSS custom property
-                                    '--tw-ring-color': 'var(--gold)',
-                                }}
-                            />
+                                Revisa tu correo
+                            </h2>
+                            <p
+                                className="text-sm leading-relaxed"
+                                style={{ color: 'var(--ink-light)' }}
+                            >
+                                Te enviamos un enlace mágico. Úsalo para entrar — no necesitas contraseña.
+                            </p>
+                            <p
+                                className="text-xs mt-4"
+                                style={{ color: 'var(--ink-light)', opacity: 0.5 }}
+                            >
+                                ¿No llegó? Revisa el spam o{' '}
+                                <Link href="/login" className="underline" style={{ color: 'var(--gold-dark)' }}>
+                                    intenta de nuevo
+                                </Link>
+                            </p>
                         </div>
-
-                        {error && (
-                            <div
-                                className="text-sm font-medium p-3 rounded-lg"
-                                style={{
-                                    color: '#7A1A1A',
-                                    backgroundColor: '#FDF0F0',
-                                    border: '1px solid #E8CCCC',
-                                }}
-                            >
-                                No se pudo autenticar el usuario. Por favor, inténtalo de nuevo.
+                    ) : (
+                        /* ── Form state ── */
+                        <>
+                            <div className="mb-6 space-y-1.5">
+                                <h1
+                                    className="font-serif text-xl font-bold"
+                                    style={{ color: 'var(--ink)' }}
+                                >
+                                    Inicia sesión en bio.me
+                                </h1>
+                                <p className="text-sm leading-relaxed" style={{ color: 'var(--ink-light)' }}>
+                                    Ingresa tu email — te enviamos un enlace mágico. Sin contraseña.
+                                </p>
                             </div>
-                        )}
 
-                        {message && (
-                            <div
-                                className="text-sm font-medium p-3 rounded-lg"
-                                style={{
-                                    color: '#2D5A27',
-                                    backgroundColor: '#F0F7EE',
-                                    border: '1px solid #C2DFB8',
-                                }}
+                            <form action={login} className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <Label
+                                        htmlFor="email"
+                                        className="text-sm font-medium"
+                                        style={{ color: 'var(--ink)' }}
+                                    >
+                                        Correo electrónico
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder="tu@correo.com"
+                                        required
+                                        autoFocus
+                                        className="h-11 text-sm placeholder:opacity-50 focus-visible:ring-1 focus-visible:ring-offset-0"
+                                        style={{
+                                            backgroundColor: 'var(--cream-dark)',
+                                            borderColor: 'var(--cream-mid)',
+                                            color: 'var(--ink)',
+                                            // @ts-expect-error CSS custom property
+                                            '--tw-ring-color': 'var(--gold)',
+                                        }}
+                                    />
+                                </div>
+
+                                {error && (
+                                    <div
+                                        className="text-sm p-3 rounded-xl"
+                                        style={{
+                                            color: '#7A1A1A',
+                                            backgroundColor: '#FDF0F0',
+                                            border: '1px solid #E8CCCC',
+                                        }}
+                                    >
+                                        No se pudo enviar el enlace. Verifica tu email e intenta de nuevo.
+                                    </div>
+                                )}
+
+                                <Button
+                                    type="submit"
+                                    className="w-full h-11 font-semibold text-sm tracking-wide transition-opacity hover:opacity-90"
+                                    style={{
+                                        backgroundColor: 'var(--ink)',
+                                        color: 'var(--cream)',
+                                        border: 'none',
+                                    }}
+                                >
+                                    Enviar enlace mágico →
+                                </Button>
+                            </form>
+
+                            <p
+                                className="text-center text-xs mt-5"
+                                style={{ color: 'var(--ink-light)', opacity: 0.6 }}
                             >
-                                {message}
-                            </div>
-                        )}
-
-                        <Button
-                            type="submit"
-                            className="w-full h-11 font-semibold text-sm tracking-wide transition-opacity hover:opacity-90"
-                            style={{
-                                backgroundColor: 'var(--ink)',
-                                color: 'var(--cream)',
-                            }}
-                        >
-                            Enviar enlace mágico →
-                        </Button>
-                    </form>
-
-                    <p
-                        className="text-center text-xs mt-5"
-                        style={{ color: 'var(--ink-light)', opacity: 0.6 }}
-                    >
-                        Gratis para leer · $5/mes para publicar
-                    </p>
+                                Gratis para leer · $5/mes para publicar
+                            </p>
+                        </>
+                    )}
                 </div>
 
             </div>

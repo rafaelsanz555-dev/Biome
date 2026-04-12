@@ -11,51 +11,55 @@ export async function completeOnboarding(prevState: { error: string }, formData:
         redirect('/login')
     }
 
-    const username = formData.get('username') as string
-    const role = formData.get('role') as string // 'creator' or 'reader'
+    const username = (formData.get('username') as string || '').trim().toLowerCase()
+    const role = formData.get('role') as string
 
-    // Server-side validation
-    if (!username || username.trim() === '' || !role) {
-        return { error: 'Username and Role are required.' }
+    if (!username || !role) {
+        return { error: 'El nombre de usuario y el rol son obligatorios.' }
     }
 
-    // Regex for valid username (alphanumeric and underscores)
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-        return { error: 'Username must be 3-20 characters long and can only contain letters, numbers, and underscores.' }
+        return { error: 'El usuario debe tener 3–20 caracteres y solo puede contener letras, números y guiones bajos.' }
     }
 
-    // Insert profile entry
+    // Check if profile already exists (returning user)
+    const { data: existing } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+
+    if (existing) {
+        // Already has a profile — redirect appropriately
+        if (existing.role === 'creator') {
+            redirect('/dashboard')
+        } else {
+            redirect('/discover')
+        }
+    }
+
     const { error: profileError } = await supabase.from('profiles').insert({
         id: user.id,
-        username: username.toLowerCase().trim(),
-        role: role,
+        username,
+        role,
     })
 
     if (profileError) {
-        // If uniqueness constraint fails = code '23505'
         if (profileError.code === '23505') {
-            return { error: 'Username is already taken.' }
+            return { error: 'Ese nombre de usuario ya está tomado. Elige otro.' }
         }
-        return { error: profileError.message }
+        return { error: 'Error al crear el perfil. Intenta de nuevo.' }
     }
 
-    // If role is creator, insert into creators table
     if (role === 'creator') {
-        const { error: creatorError } = await supabase.from('creators').insert({
+        await supabase.from('creators').insert({
             profile_id: user.id,
-            subscription_price: 3.00, // Default MVP
-            is_active: true
+            subscription_price: 5.00,
+            is_active: true,
         })
 
-        if (creatorError) {
-            console.error('Error creating creator profile:', creatorError)
-        }
+        redirect('/dashboard')
     }
 
-    // Redirect based on role
-    if (role === 'creator') {
-        redirect('/dashboard')
-    } else {
-        redirect('/discover')
-    }
+    redirect('/discover')
 }

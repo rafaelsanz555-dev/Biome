@@ -4,92 +4,202 @@ import { useActionState } from 'react'
 import { completeOnboarding } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-const initialState = {
-    error: '',
-}
+const initialState = { error: '' }
 
 export default function OnboardingPage() {
     const [state, formAction, pending] = useActionState(completeOnboarding, initialState)
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 selection:bg-blue-200 selection:text-blue-900">
-            {/* Dynamic Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/10 blur-[120px] rounded-full" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-400/10 blur-[120px] rounded-full" />
-            </div>
+        <div
+            className="min-h-screen flex flex-col items-center justify-center p-4"
+            style={{
+                backgroundColor: 'var(--cream)',
+                background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.12) 0%, var(--cream) 65%)',
+            }}
+        >
+            <div className="w-full max-w-sm flex flex-col items-center space-y-8">
 
-            <div className="w-full max-w-md relative z-10 flex flex-col items-center space-y-8">
-                <Card className="w-full bg-white/80 border-gray-200 backdrop-blur-xl shadow-xl">
-                    <CardHeader>
-                        <CardTitle className="text-2xl font-bold text-gray-900">Complete your profile</CardTitle>
-                        <CardDescription className="text-gray-500">
-                            Choose your username and how you want to use bio.me
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form action={formAction} className="space-y-6">
+                {/* Logo */}
+                <div className="text-center">
+                    <p className="font-serif text-3xl font-bold" style={{ color: 'var(--ink)' }}>
+                        bio<span style={{ color: 'var(--gold)' }}>.me</span>
+                    </p>
+                    <p className="text-xs mt-1 font-medium" style={{ color: 'var(--ink-light)' }}>
+                        Tu historia. Tu ingreso.
+                    </p>
+                </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="username" className="text-gray-700 font-medium">Username</Label>
-                                <div className="flex rounded-md shadow-sm">
-                                    <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm font-medium">
-                                        bio.me/@
-                                    </span>
-                                    <Input
-                                        id="username"
-                                        name="username"
-                                        type="text"
-                                        placeholder="yourname"
-                                        required
-                                        className="rounded-l-none bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus-visible:ring-blue-500 transition-all font-medium"
-                                    />
-                                </div>
-                            </div>
+                {/* Card */}
+                <div
+                    className="w-full rounded-2xl p-7"
+                    style={{
+                        backgroundColor: 'white',
+                        border: '1px solid var(--cream-mid)',
+                        boxShadow: '0 4px 24px rgba(20,16,10,0.07)',
+                    }}
+                >
+                    <div className="mb-6">
+                        <h1
+                            className="font-serif text-xl font-bold mb-1"
+                            style={{ color: 'var(--ink)' }}
+                        >
+                            Completa tu perfil
+                        </h1>
+                        <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                            Elige tu nombre de usuario y cómo quieres usar bio.me.
+                        </p>
+                    </div>
 
-                            <div className="space-y-3">
-                                <Label className="text-gray-700 font-medium">I want to...</Label>
+                    <form action={formAction} className="space-y-5">
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    {/* Creator Role */}
-                                    <label className="relative flex cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:border-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-500 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 transition-all">
-                                        <input type="radio" name="role" value="creator" className="sr-only" defaultChecked />
-                                        <span className="flex flex-col">
-                                            <span className="block text-sm font-bold text-gray-900">Create & Earn</span>
-                                            <span className="mt-1 flex items-center text-xs text-gray-500 font-medium">Publish stories and get paid.</span>
-                                        </span>
-                                    </label>
-
-                                    {/* Reader Role */}
-                                    <label className="relative flex cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:border-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-500 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 transition-all">
-                                        <input type="radio" name="role" value="reader" className="sr-only" />
-                                        <span className="flex flex-col">
-                                            <span className="block text-sm font-bold text-gray-900">Read & Support</span>
-                                            <span className="mt-1 flex items-center text-xs text-gray-500 font-medium">Follow creators you love.</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            {state?.error && (
-                                <div className="text-sm font-medium text-red-500 bg-red-500/10 p-3 rounded-md border border-red-500/20">
-                                    {state.error}
-                                </div>
-                            )}
-
-                            <Button
-                                type="submit"
-                                disabled={pending}
-                                className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors font-semibold shadow-sm"
+                        {/* Username */}
+                        <div className="space-y-1.5">
+                            <label
+                                htmlFor="username"
+                                className="text-sm font-semibold"
+                                style={{ color: 'var(--ink)' }}
                             >
-                                {pending ? 'Saving...' : 'Finish Setup'}
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
+                                Nombre de usuario
+                            </label>
+                            <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--cream-mid)' }}>
+                                <span
+                                    className="inline-flex items-center px-3 text-sm font-medium"
+                                    style={{
+                                        backgroundColor: 'var(--cream-dark)',
+                                        color: 'var(--ink-light)',
+                                        borderRight: '1px solid var(--cream-mid)',
+                                    }}
+                                >
+                                    bio.me/@
+                                </span>
+                                <Input
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    placeholder="tunombre"
+                                    required
+                                    minLength={3}
+                                    maxLength={20}
+                                    pattern="[a-zA-Z0-9_]+"
+                                    autoFocus
+                                    className="rounded-none border-0 h-11 text-sm font-medium focus-visible:ring-1 focus-visible:ring-offset-0 flex-1"
+                                    style={{
+                                        backgroundColor: 'var(--cream-dark)',
+                                        color: 'var(--ink)',
+                                        // @ts-expect-error CSS custom property
+                                        '--tw-ring-color': 'var(--gold)',
+                                    }}
+                                />
+                            </div>
+                            <p className="text-xs" style={{ color: 'var(--ink-light)', opacity: 0.7 }}>
+                                3–20 caracteres. Solo letras, números y guiones bajos.
+                            </p>
+                        </div>
+
+                        {/* Role */}
+                        <div className="space-y-2">
+                            <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
+                                Quiero...
+                            </p>
+                            <div className="grid grid-cols-2 gap-3">
+
+                                {/* Creator */}
+                                <label
+                                    className="relative flex cursor-pointer rounded-xl p-4 transition-all"
+                                    style={{ border: '2px solid var(--cream-mid)', backgroundColor: 'var(--cream-dark)' }}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="creator"
+                                        className="sr-only"
+                                        defaultChecked
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                e.target.closest('label')!.style.borderColor = 'var(--ink)'
+                                                e.target.closest('label')!.style.backgroundColor = 'var(--ink)'
+                                            }
+                                        }}
+                                    />
+                                    <span className="flex flex-col gap-0.5">
+                                        <span
+                                            className="text-sm font-bold"
+                                            style={{ color: 'var(--ink)' }}
+                                        >
+                                            ✦ Escribir
+                                        </span>
+                                        <span
+                                            className="text-xs"
+                                            style={{ color: 'var(--ink-light)' }}
+                                        >
+                                            Publicar y ganar dinero
+                                        </span>
+                                    </span>
+                                </label>
+
+                                {/* Reader */}
+                                <label
+                                    className="relative flex cursor-pointer rounded-xl p-4 transition-all"
+                                    style={{ border: '2px solid var(--cream-mid)', backgroundColor: 'var(--cream-dark)' }}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="reader"
+                                        className="sr-only"
+                                    />
+                                    <span className="flex flex-col gap-0.5">
+                                        <span
+                                            className="text-sm font-bold"
+                                            style={{ color: 'var(--ink)' }}
+                                        >
+                                            ◉ Leer
+                                        </span>
+                                        <span
+                                            className="text-xs"
+                                            style={{ color: 'var(--ink-light)' }}
+                                        >
+                                            Seguir escritores
+                                        </span>
+                                    </span>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        {/* Error */}
+                        {state?.error && (
+                            <div
+                                className="text-sm p-3 rounded-xl"
+                                style={{
+                                    color: '#7A1A1A',
+                                    backgroundColor: '#FDF0F0',
+                                    border: '1px solid #E8CCCC',
+                                }}
+                            >
+                                {state.error}
+                            </div>
+                        )}
+
+                        <Button
+                            type="submit"
+                            disabled={pending}
+                            className="w-full h-11 font-bold text-sm tracking-wide transition-opacity hover:opacity-90"
+                            style={{
+                                backgroundColor: 'var(--ink)',
+                                color: 'var(--cream)',
+                                border: 'none',
+                            }}
+                        >
+                            {pending ? 'Guardando...' : 'Empezar en bio.me →'}
+                        </Button>
+                    </form>
+                </div>
+
+                <p className="text-xs text-center" style={{ color: 'var(--ink-light)', opacity: 0.5 }}>
+                    Al continuar aceptas nuestros términos de uso.
+                </p>
             </div>
         </div>
     )

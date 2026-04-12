@@ -57,7 +57,7 @@ export default async function DashboardLayout({
                             border: '1px solid var(--gold-warm)',
                         }}
                     >
-                        Writer
+                        Escritor
                     </span>
                 </div>
 
@@ -71,7 +71,7 @@ export default async function DashboardLayout({
                         }}
                     >
                         <p className="text-xs font-medium mb-0.5" style={{ color: 'var(--ink-light)' }}>
-                            Signed in as
+                            Conectado como
                         </p>
                         <p className="text-sm font-bold truncate" style={{ color: 'var(--ink)' }}>
                             @{profile.username}
@@ -89,12 +89,10 @@ export default async function DashboardLayout({
                 >
                     <Link
                         href={`/${profile?.username}`}
-                        className="block text-sm font-medium px-3 py-2 rounded-md transition-colors"
+                        className="nav-link block text-sm font-medium px-3 py-2 rounded-md transition-colors"
                         style={{ color: 'var(--ink-light)' }}
-                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
-                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-light)')}
                     >
-                        ← View my profile
+                        ← Ver mi perfil
                     </Link>
                     <form action={logout}>
                         <Button
@@ -103,7 +101,7 @@ export default async function DashboardLayout({
                             className="w-full justify-start font-medium h-9 px-3 transition-colors hover:bg-transparent"
                             style={{ color: 'var(--ink-light)' }}
                         >
-                            Sign out
+                            Cerrar sesión
                         </Button>
                     </form>
                 </div>
