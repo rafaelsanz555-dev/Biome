@@ -17,13 +17,13 @@ export default async function DashboardLayout({
         redirect('/login')
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role, username, full_name')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
-    if (profile?.role !== 'creator') {
+    if (!profile || profile.role !== 'creator') {
         redirect('/discover')
     }
 
