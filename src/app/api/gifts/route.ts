@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import Stripe from 'stripe'
+import { getStripe } from '@/lib/stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover',
-})
-
-const PLATFORM_FEE_PCT = 0.12 // 12% to bio.me
+const PLATFORM_FEE_PCT = 0.12 // 12% a bio.me
 
 export async function POST(req: Request) {
     try {
@@ -14,16 +10,20 @@ export async function POST(req: Request) {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+            return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
         }
 
         const { recipientId, postId, amount, emoji } = await req.json()
 
         if (!recipientId || !amount || amount < 1 || amount > 50) {
-            return NextResponse.json({ error: 'Invalid gift parameters' }, { status: 400 })
+            return NextResponse.json({ error: 'Parámetros de regalo inválidos' }, { status: 400 })
         }
 
-        // Get recipient profile for display
+        // Check Stripe is configured
+        if (!process.env.STRIPE_SECRET_KEY) {
+            return NextResponse.json({ error: 'Pagos no configurados aún. Pronto estará disponible.' }, { status: 503 })
+        }
+
         const { data: recipient } = await supabase
             .from('profiles')
             .select('username, full_name')
@@ -31,11 +31,13 @@ export async function POST(req: Request) {
             .single()
 
         if (!recipient) {
-            return NextResponse.json({ error: 'Recipient not found' }, { status: 404 })
+            return NextResponse.json({ error: 'Destinatario no encontrado' }, { status: 404 })
         }
 
-        const platformFee = Math.round(amount * PLATFORM_FEE_PCT * 100) // in cents
+        const platformFee = Math.round(amount * PLATFORM_FEE_PCT * 100)
         const totalCents = Math.round(amount * 100)
+
+        const stripe = getStripe()
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -45,8 +47,8 @@ export async function POST(req: Request) {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: `${emoji} Gift to @${recipient.username}`,
-                            description: `You're sending a gift to ${recipient.full_name || recipient.username} on bio.me. They keep 88%.`,
+                            name: `${emoji} Regalo a @${recipient.username}`,
+                            description: `Enviando un regalo a ${recipient.full_name || recipient.username} en bio.me. Ellos reciben el 88%.`,
                         },
                         unit_amount: totalCents,
                     },
@@ -62,8 +64,8 @@ export async function POST(req: Request) {
                 platformFee: String(platformFee / 100),
                 emoji,
             },
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/gift/success?emoji=${emoji}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}`,
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/gift/success?emoji=${emoji}`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}`,
         })
 
         return NextResponse.json({ url: session.url })
