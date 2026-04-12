@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── bio.me Design System ────────────────────────────────────── */
+/* Identity: Literary Cream — warm, premium, like a quality book */
+
+:root {
+  --radius: 0.5rem;
+
+  /* Brand Colors */
+  --cream:       #FAF7F0;   /* main background — warm, not white */
+  --cream-dark:  #F2EBD9;   /* card / section backgrounds */
+  --cream-mid:   #EDE3CC;   /* borders, dividers */
+  --ink:         #14100A;   /* primary text — warm near-black */
+  --ink-mid:     #3D3020;   /* secondary headings */
+  --ink-light:   #7A6B52;   /* muted text */
+  --gold:        #C9A84C;   /* accent — value, wealth */
+  --gold-warm:   #D4B87A;   /* lighter gold for large text */
+  --gold-dark:   #A08030;   /* darker gold for hover */
+  --gold-bg:     #F7F0DC;   /* very light gold for highlights */
+  --dark-section: #14100A;  /* dramatic dark sections */
+  --dark-card:   #1E1810;   /* card backgrounds in dark sections */
+  --dark-border: #2E2418;   /* borders in dark sections */
+
+  /* shadcn tokens mapped to bio.me palette */
+  --background:              var(--cream);
+  --foreground:              var(--ink);
+  --card:                    #FFFFFF;
+  --card-foreground:         var(--ink);
+  --popover:                 #FFFFFF;
+  --popover-foreground:      var(--ink);
+  --primary:                 var(--ink);
+  --primary-foreground:      var(--cream);
+  --secondary:               var(--cream-dark);
+  --secondary-foreground:    var(--ink);
+  --muted:                   var(--cream-dark);
+  --muted-foreground:        var(--ink-light);
+  --accent:                  var(--gold-bg);
+  --accent-foreground:       var(--ink);
+  --destructive:             oklch(0.577 0.245 27.325);
+  --border:                  var(--cream-mid);
+  --input:                   var(--cream-mid);
+  --ring:                    var(--gold);
+
+  /* Chart colors */
+  --chart-1: #C9A84C;
+  --chart-2: #8B6234;
+  --chart-3: #4A7BAF;
+  --chart-4: #6B9B5C;
+  --chart-5: #C47A8A;
+
+  /* Sidebar */
+  --sidebar:                    var(--dark-section);
+  --sidebar-foreground:         var(--cream);
+  --sidebar-primary:            var(--gold);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent:             var(--dark-card);
+  --sidebar-accent-foreground:  var(--gold);
+  --sidebar-border:             var(--dark-border);
+  --sidebar-ring:               var(--gold);
+}
+
+@theme inline {
+  --color-background:               var(--background);
+  --color-foreground:               var(--foreground);
+  --font-sans:                      var(--font-inter);
+  --font-serif:                     var(--font-playfair);
+  --color-sidebar-ring:             var(--sidebar-ring);
+  --color-sidebar-border:           var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent:           var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary:          var(--sidebar-primary);
+  --color-sidebar-foreground:       var(--sidebar-foreground);
+  --color-sidebar:                  var(--sidebar);
+  --color-chart-5:                  var(--chart-5);
+  --color-chart-4:                  var(--chart-4);
+  --color-chart-3:                  var(--chart-3);
+  --color-chart-2:                  var(--chart-2);
+  --color-chart-1:                  var(--chart-1);
+  --color-ring:                     var(--ring);
+  --color-input:                    var(--input);
+  --color-border:                   var(--border);
+  --color-destructive:              var(--destructive);
+  --color-accent-foreground:        var(--accent-foreground);
+  --color-accent:                   var(--accent);
+  --color-muted-foreground:         var(--muted-foreground);
+  --color-muted:                    var(--muted);
+  --color-secondary-foreground:     var(--secondary-foreground);
+  --color-secondary:                var(--secondary);
+  --color-primary-foreground:       var(--primary-foreground);
+  --color-primary:                  var(--primary);
+  --color-popover-foreground:       var(--popover-foreground);
+  --color-popover:                  var(--popover);
+  --color-card-foreground:          var(--card-foreground);
+  --color-card:                     var(--card);
+  --radius-sm:  calc(var(--radius) - 2px);
+  --radius-md:  var(--radius);
+  --radius-lg:  calc(var(--radius) + 4px);
+  --radius-xl:  calc(var(--radius) + 8px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background-color: rgba(201, 168, 76, 0.2);
+    color: var(--ink);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ── Utility Classes ─────────────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+}
+.text-gold { color: var(--gold); }
+.bg-cream  { background-color: var(--cream); }
+.bg-ink    { background-color: var(--dark-section); }
+
+/* Navbar hover links */
+.nav-link {
+  color: var(--ink-light);
+}
+.nav-link:hover {
+  color: var(--ink);
+}

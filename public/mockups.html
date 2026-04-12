@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>bio.me — Product Screens · April 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:       #FAF7F0;
+    --cream-dark:  #F2EBD9;
+    --cream-mid:   #EDE3CC;
+    --ink:         #14100A;
+    --ink-light:   #7A6B52;
+    --gold:        #C9A84C;
+    --gold-warm:   #D4B87A;
+    --gold-dark:   #A08030;
+    --gold-bg:     #F7F0DC;
+    --dark-section:#14100A;
+    --dark-card:   #1E1810;
+    --dark-border: #2E2418;
+  }
+
+  html, body {
+    background: #0D0D0D;
+    color: #FAF7F0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* Warm radial vignette on body */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── PAGE HEADER ─────────────────────────────────────────── */
+  .page-header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 56px 24px 16px;
+  }
+
+  .header-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .header-logo .bio { color: #FAF7F0; }
+  .header-logo .me  { color: #C9A84C; }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .header-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #7A6B52;
+    letter-spacing: 0.04em;
+  }
+  .header-pill {
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: #C9A84C;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.06em;
+  }
+
+  .page-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #7A6B52;
+    font-style: italic;
+    margin-bottom: 48px;
+  }
+
+  /* ─── GRID ────────────────────────────────────────────────── */
+  .mockup-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+
+  /* ─── FRAME ───────────────────────────────────────────────── */
+  .frame {
+    background: #1A1410;
+    border-radius: 16px;
+    border: 1px solid #2E2418;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  }
+  .frame:hover {
+    border-color: rgba(201,168,76,0.55);
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.25), 0 20px 60px rgba(0,0,0,0.6);
+    transform: translateY(-3px);
+  }
+
+  .frame-label {
+    padding: 14px 18px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #7A6B52;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  /* ─── BROWSER CHROME ──────────────────────────────────────── */
+  .browser-chrome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #231D15;
+    border-bottom: 1px solid #2E2418;
+  }
+  .dots { display: flex; gap: 6px; }
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-red    { background: #FF5F57; }
+  .dot-yellow { background: #FEBC2E; }
+  .dot-green  { background: #28C840; }
+  .url-bar {
+    flex: 1;
+    background: #16120C;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: #5A4D38;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ─── SCREEN VIEWPORT ─────────────────────────────────────── */
+  /*
+    Scale = 0.38 for frames.
+    Each screen is 1280px wide × 900px tall at 1x.
+    Scaled: 1280×0.38 = 486.4 → fits column ~500px
+             900×0.38 = 342 → frame height
+  */
+  .screen-viewport {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    /* height = 900 * 0.38 = 342 */
+    height: 342px;
+  }
+
+  .screen-scaler {
+    width: 1280px;
+    transform: scale(0.38);
+    transform-origin: top left;
+    /* We'll set height per screen in the element */
+    overflow: hidden;
+  }
+
+  /* ─── MODAL ───────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    overflow-y: auto;
+    padding: 40px 24px;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1280px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: #FAF7F0;
+  }
+  .modal-close {
+    background: #1A1410;
+    border: 1px solid #2E2418;
+    color: #7A6B52;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .modal-close:hover { background: #2E2418; color: #FAF7F0; }
+
+  .modal-screen-wrap {
+    width: 100%;
+    max-width: 1280px;
+    background: #1A1410;
+    border-radius: 12px;
+    border: 1px solid #2E2418;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .modal-screen-inner {
+    width: 1280px;
+    /* height set by JS */
+    overflow: hidden;
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     SCREEN STYLES — shared utilities
+  ────────────────────────────────────────────────────────────── */
+
+  /* Shared font imports inside screens (they inherit from body) */
+  .s { font-family: 'Inter', sans-serif; }
+  .s h1, .s h2, .s h3, .s h4, .s .serif { font-family: 'Playfair Display', serif; }
+
+  /* ─── SCREEN 1: Landing Hero ───────────────────────────────── */
+  .s1 {
+    background: #FAF7F0;
+    min-height: 900px;
+    display: flex;
+    flex-direction: column;
+  }
+  .s1-nav {
+    display: flex;
+    align-items: center;
+    padding: 20px 64px;
+    border-bottom: 1px solid #EDE3CC;
+    gap: 32px;
+    background: #FAF7F0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .s1-nav-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .s1-nav-logo .bio { color: #14100A; }
+  .s1-nav-logo .me  { color: #C9A84C; }
+  .s1-nav-links { display: flex; gap: 28px; margin-left: 20px; flex: 1; }
+  .s1-nav-links a {
+    font-size: 14px;
+    color: #7A6B52;
+    text-decoration: none;
+    font-weight: 400;
+  }
+  .s1-nav-links a:hover { color: #14100A; }
+  .s1-nav-cta {
+    background: #14100A;
+    color: #FAF7F0;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .s1-signin {
+    font-size: 14px;
+    color: #7A6B52;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 4px;
+  }
+
+  .s1-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 64px 80px;
+    gap: 0;
+  }
+  .s1-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #F7F0DC;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: #C9A84C;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.10em;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+  }
+  .s1-pill::before { content: '•'; font-size: 14px; }
+  .s1-h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.08;
+    color: #14100A;
+    letter-spacing: -1.5px;
+    margin-bottom: 4px;
+  }
+  .s1-h1-italic {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 500;
+    font-style: italic;
+    color: #D4B87A;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    margin-bottom: 28px;
+  }
+  .s1-sub {
+    font-size: 17px;
+    color: #7A6B52;
+    line-height: 1.65;
+    max-width: 560px;
+    margin: 0 auto 40px;
+  }
+  .s1-btns { display: flex; gap: 14px; justify-content: center; }
+  .s1-btn-primary {
+    background: #14100A;
+    color: #FAF7F0;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .s1-btn-outline {
+    background: transparent;
+    color: #14100A;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px 32px;
+    border-radius: 8px;
+    border: 1.5px solid #C9A84C;
+    cursor: pointer;
+  }
+
+  .s1-social-proof {
+    margin-top: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #7A6B52;
+  }
+  .s1-avatars { display: flex; }
+  .s1-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid #FAF7F0;
+    margin-left: -8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #FAF7F0;
+    font-family: 'Inter', sans-serif;
+  }
+  .s1-avatars .s1-avatar:first-child { margin-left: 0; }
+
+  /* ─── SCREEN 2: Story Categories ──────────────────────────── */
+  .s2 {
+    background: #FAF7F0;
+    min-height: 900px;
+    padding: 80px 64px;
+    display: flex;
+    flex-direction: column;
+  }
+  .s2-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #C9A84C;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .s2-h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #14100A;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin-bottom: 48px;
+    max-width: 500px;
+  }
+  .s2-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .s2-card {
+    height: 200px;
+    border-radius: 14px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+  }
+  .s2-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 5px;
+    position: relative;
+    z-index: 2;
+  }
+  .s2-card-desc {
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(255,255,255,0.62);
+    line-height: 1.4;
+    position: relative;
+    z-index: 2;
+  }
+  .s2-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 60%);
+    z-index: 1;
+  }
+  .s2-c1 { background: linear-gradient(135deg, #1a2f5e 0%, #2d4a8a 50%, #1e3a7a 100%); }
+  .s2-c2 { background: linear-gradient(135deg, #3d0c0c 0%, #6b1515 50%, #4a1010 100%); }
+  .s2-c3 { background: linear-gradient(135deg, #2d1b4e 0%, #4a2d7a 50%, #3a2060 100%); }
+  .s2-c4 { background: linear-gradient(135deg, #1c2e0f 0%, #2e4a1a 50%, #243818 100%); }
+  .s2-c5 { background: linear-gradient(135deg, #3d2010 0%, #6b3820 50%, #4a2818 100%); }
+  .s2-c6 { background: linear-gradient(135deg, #0d2d2d 0%, #1a4a4a 50%, #143838 100%); }
+
+  /* ─── SCREEN 3: Earnings ──────────────────────────────────── */
+  .s3 {
+    background: #14100A;
+    min-height: 900px;
+    padding: 80px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .s3-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #C9A84C;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .s3-h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #FAF7F0;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    text-align: center;
+    margin-bottom: 56px;
+    max-width: 600px;
+  }
+  .s3-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 960px;
+  }
+  .s3-card {
+    background: #1E1810;
+    border: 1px solid #2E2418;
+    border-radius: 16px;
+    padding: 36px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .s3-card-featured {
+    background: rgba(201,168,76,0.08);
+    border-color: rgba(201,168,76,0.45);
+  }
+  .s3-card-subs {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #7A6B52;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .s3-card-featured .s3-card-subs { color: #C9A84C; }
+  .s3-card-avg {
+    font-size: 14px;
+    color: #7A6B52;
+  }
+  .s3-card-featured .s3-card-avg { color: rgba(201,168,76,0.7); }
+  .s3-card-earn {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: #FAF7F0;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin: 10px 0 6px;
+  }
+  .s3-card-featured .s3-card-earn { color: #D4B87A; font-size: 52px; }
+  .s3-card-badge {
+    font-size: 13px;
+    color: #7A6B52;
+    font-style: italic;
+  }
+  .s3-card-featured .s3-card-badge { color: #C9A84C; font-style: normal; font-weight: 500; }
+
+  .s3-divider {
+    width: 1px;
+    background: #2E2418;
+    height: 100%;
+    display: none;
+  }
+
+  .s3-footnote {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 13px;
+    color: #4A3D2A;
+    letter-spacing: 0.02em;
+  }
+  .s3-footnote span { margin: 0 8px; }
+
+  .s3-star {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: #C9A84C;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 8px 2px;
+  }
+
+  /* ─── SCREEN 4: Discover Writers ──────────────────────────── */
+  .s4 {
+    background: #FAF7F0;
+    min-height: 900px;
+    display: flex;
+    flex-direction: column;
+  }
+  .s4-nav {
+    display: flex;
+    align-items: center;
+    padding: 20px 64px;
+    border-bottom: 1px solid #EDE3CC;
+    gap: 32px;
+    background: #FAF7F0;
+  }
+  .s4-nav-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .s4-nav-logo .bio { color: #14100A; }
+  .s4-nav-logo .me  { color: #C9A84C; }
+  .s4-nav-links { display: flex; gap: 28px; margin-left: 20px; flex: 1; }
+  .s4-nav-links a { font-size: 14px; color: #7A6B52; text-decoration: none; }
+  .s4-nav-cta { background: #14100A; color: #FAF7F0; font-size: 13px; font-weight: 600; padding: 10px 22px; border-radius: 7px; border: none; cursor: pointer; }
+
+  .s4-main { padding: 56px 64px; flex: 1; }
+  .s4-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #C9A84C; text-transform: uppercase; margin-bottom: 12px; }
+  .s4-h1 { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 700; color: #14100A; letter-spacing: -1px; margin-bottom: 10px; }
+  .s4-sub { font-size: 16px; color: #7A6B52; margin-bottom: 32px; }
+  .s4-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 36px; }
+  .s4-pill {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid #EDE3CC;
+    color: #7A6B52;
+    background: transparent;
+  }
+  .s4-pill.active { background: #14100A; color: #FAF7F0; border-color: #14100A; }
+
+  .s4-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .s4-card {
+    background: #FAF7F0;
+    border-radius: 14px;
+    border: 1px solid #EDE3CC;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .s4-card:hover { box-shadow: 0 8px 32px rgba(20,16,10,0.12); }
+  .s4-cover {
+    height: 160px;
+    position: relative;
+  }
+  .s4-cover-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #C9A84C;
+    color: #14100A;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .s4-avatar-wrap {
+    position: absolute;
+    bottom: -20px;
+    left: 16px;
+  }
+  .s4-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 3px solid #FAF7F0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FAF7F0;
+  }
+  .s4-body { padding: 28px 16px 18px; }
+  .s4-writer-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: #14100A; margin-bottom: 2px; }
+  .s4-username { font-size: 12px; color: #7A6B52; margin-bottom: 8px; }
+  .s4-bio { font-size: 13px; color: #7A6B52; line-height: 1.55; margin-bottom: 12px; }
+  .s4-price {
+    display: inline-block;
+    background: #F7F0DC;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: #A08030;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 5px;
+  }
+
+  /* ─── SCREEN 5: Login ────────────────────────────────────── */
+  .s5 {
+    background: #FAF7F0;
+    min-height: 900px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .s5::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .s5-card {
+    background: #fff;
+    border: 1.5px solid #EDE3CC;
+    border-radius: 18px;
+    padding: 52px 48px;
+    width: 440px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 40px rgba(20,16,10,0.07);
+  }
+  .s5-logo {
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .s5-logo span {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+  }
+  .s5-logo .bio { color: #14100A; }
+  .s5-logo .me  { color: #C9A84C; }
+  .s5-tagline { text-align: center; font-size: 14px; color: #7A6B52; font-style: italic; margin-bottom: 36px; }
+  .s5-h2 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #14100A; margin-bottom: 8px; }
+  .s5-desc { font-size: 14px; color: #7A6B52; line-height: 1.5; margin-bottom: 28px; }
+  .s5-label { font-size: 13px; font-weight: 600; color: #14100A; margin-bottom: 7px; display: block; }
+  .s5-input {
+    width: 100%;
+    background: #F2EBD9;
+    border: 1.5px solid #EDE3CC;
+    border-radius: 8px;
+    padding: 13px 16px;
+    font-size: 15px;
+    color: #14100A;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 20px;
+    outline: none;
+  }
+  .s5-input::placeholder { color: #B8A88A; }
+  .s5-input:focus { border-color: #C9A84C; }
+  .s5-btn {
+    width: 100%;
+    background: #14100A;
+    color: #FAF7F0;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    margin-bottom: 18px;
+  }
+  .s5-fine {
+    text-align: center;
+    font-size: 12px;
+    color: rgba(122,107,82,0.65);
+  }
+
+  /* ─── SCREEN 6: Episode Paywall ──────────────────────────── */
+  .s6 {
+    background: #FAF7F0;
+    min-height: 900px;
+    display: flex;
+    flex-direction: column;
+  }
+  .s6-nav {
+    display: flex;
+    align-items: center;
+    padding: 20px 64px;
+    border-bottom: 1px solid #EDE3CC;
+    gap: 32px;
+    background: #FAF7F0;
+  }
+  .s6-nav-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .s6-nav-logo .bio { color: #14100A; }
+  .s6-nav-logo .me  { color: #C9A84C; }
+  .s6-nav-links { display: flex; gap: 28px; margin-left: 20px; flex: 1; }
+  .s6-nav-links a { font-size: 14px; color: #7A6B52; text-decoration: none; }
+  .s6-nav-cta { background: #14100A; color: #FAF7F0; font-size: 13px; font-weight: 600; padding: 10px 22px; border-radius: 7px; border: none; cursor: pointer; }
+
+  .s6-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 64px;
+    background: #F2EBD9;
+    border-bottom: 1px solid #EDE3CC;
+    font-size: 13px;
+    color: #7A6B52;
+  }
+  .s6-bread-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a2f5e, #2d4a8a);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+    font-family: 'Playfair Display', serif;
+  }
+  .s6-bread-sep { color: #EDE3CC; }
+  .s6-bread-link { color: #C9A84C; }
+
+  .s6-main { padding: 52px 64px; flex: 1; max-width: 760px; }
+  .s6-h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 46px;
+    font-weight: 700;
+    color: #14100A;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 18px;
+  }
+  .s6-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .s6-date { font-size: 14px; color: #7A6B52; }
+  .s6-premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #F7F0DC;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: #C9A84C;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .s6-preview {
+    border-left: 3px solid #C9A84C;
+    padding-left: 22px;
+    margin-bottom: 28px;
+  }
+  .s6-preview p {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-style: italic;
+    color: #14100A;
+    line-height: 1.7;
+  }
+  .s6-blurred {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .s6-blurred::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, #FAF7F0 90%);
+  }
+  .s6-blurred p {
+    font-size: 16px;
+    color: #7A6B52;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .s6-paywall {
+    background: #fff;
+    border: 1.5px solid #EDE3CC;
+    border-radius: 16px;
+    padding: 40px 36px;
+    max-width: 480px;
+    box-shadow: 0 4px 32px rgba(20,16,10,0.07);
+    text-align: center;
+  }
+  .s6-lock-circle {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #F7F0DC;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .s6-lock-circle svg { width: 28px; height: 28px; }
+  .s6-paywall h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #14100A;
+    margin-bottom: 10px;
+  }
+  .s6-paywall p { font-size: 15px; color: #7A6B52; line-height: 1.6; margin-bottom: 24px; }
+  .s6-sub-btn {
+    width: 100%;
+    background: #14100A;
+    color: #FAF7F0;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 16px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  .s6-signin-link { font-size: 13px; color: #7A6B52; }
+  .s6-signin-link a { color: #C9A84C; text-decoration: none; font-weight: 500; }
+
+</style>
+</head>
+<body>
+
+<!-- ─── PAGE HEADER ─────────────────────────────────────────────────── -->
+<header class="page-header">
+  <div class="header-logo">
+    <span class="bio">bio</span><span class="me">.me</span>
+  </div>
+  <div class="header-meta">
+    <span class="header-label">Product Screens · April 2026</span>
+    <span class="header-pill">6 screens</span>
+  </div>
+  <p class="page-tagline">The platform where storytellers become millionaires.</p>
+</header>
+
+<!-- ─── MOCKUP GRID ──────────────────────────────────────────────────── -->
+<div class="mockup-grid">
+
+  <!-- FRAME 1: Landing Hero -->
+  <div class="frame" onclick="openModal(0)" tabindex="0" onkeydown="if(event.key==='Enter')openModal(0)">
+    <div class="frame-label">01 — Landing Hero</div>
+    <div class="browser-chrome">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">bio.me</div>
+    </div>
+    <div class="screen-viewport">
+      <div class="screen-scaler" style="height:900px;">
+        <div id="screen-1" class="s1 s">
+          <nav class="s1-nav">
+            <div class="s1-nav-logo"><span class="bio">bio</span><span class="me">.me</span></div>
+            <div class="s1-nav-links">
+              <a href="#">Discover</a>
+              <a href="#">For Writers</a>
+            </div>
+            <button class="s1-signin">Sign in</button>
+            <button class="s1-nav-cta">Start Writing</button>
+          </nav>
+          <div class="s1-hero">
+            <div class="s1-pill">THE STORYTELLING PLATFORM</div>
+            <div class="s1-h1">Your life is worth reading.</div>
+            <div class="s1-h1-italic">And worth paying for.</div>
+            <p class="s1-sub">bio.me is the only platform built exclusively for storytellers to build an audience, monetize their life narrative, and achieve financial freedom through the power of human connection.</p>
+            <div class="s1-btns">
+              <button class="s1-btn-primary">Start Writing — $5/mo</button>
+              <button class="s1-btn-outline">Explore Stories</button>
+            </div>
+            <div class="s1-social-proof">
+              <div class="s1-avatars">
+                <div class="s1-avatar" style="background:linear-gradient(135deg,#1a2f5e,#2d4a8a);">M</div>
+                <div class="s1-avatar" style="background:linear-gradient(135deg,#2d1b4e,#4a2d7a);">J</div>
+                <div class="s1-avatar" style="background:linear-gradient(135deg,#1c2e0f,#2e4a1a);">A</div>
+                <div class="s1-avatar" style="background:linear-gradient(135deg,#3d2010,#6b3820);">L</div>
+              </div>
+              <span>Join 847 writers already earning</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAME 2: Story Categories -->
+  <div class="frame" onclick="openModal(1)" tabindex="0" onkeydown="if(event.key==='Enter')openModal(1)">
+    <div class="frame-label">02 — Story Categories</div>
+    <div class="browser-chrome">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">bio.me/discover</div>
+    </div>
+    <div class="screen-viewport">
+      <div class="screen-scaler" style="height:900px;">
+        <div id="screen-2" class="s2 s">
+          <div class="s2-eyebrow">STORIES THAT MATTER</div>
+          <div class="s2-h2">Every life has chapters worth sharing</div>
+          <div class="s2-grid">
+            <div class="s2-card s2-c1">
+              <div class="s2-card-name">Migration</div>
+              <div class="s2-card-desc">Crossing borders to find a new self</div>
+            </div>
+            <div class="s2-card s2-c2">
+              <div class="s2-card-name">Survival</div>
+              <div class="s2-card-desc">How the impossible was overcome</div>
+            </div>
+            <div class="s2-card s2-c3">
+              <div class="s2-card-name">Love &amp; Loss</div>
+              <div class="s2-card-desc">The stories that make us who we are</div>
+            </div>
+            <div class="s2-card s2-c4">
+              <div class="s2-card-name">Building</div>
+              <div class="s2-card-desc">From zero to something that matters</div>
+            </div>
+            <div class="s2-card s2-c5">
+              <div class="s2-card-name">Motherhood</div>
+              <div class="s2-card-desc">The most radical transformation of all</div>
+            </div>
+            <div class="s2-card s2-c6">
+              <div class="s2-card-name">Starting Over</div>
+              <div class="s2-card-desc">When everything falls apart and you rebuild</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAME 3: Earnings -->
+  <div class="frame" onclick="openModal(2)" tabindex="0" onkeydown="if(event.key==='Enter')openModal(2)">
+    <div class="frame-label">03 — Earnings</div>
+    <div class="browser-chrome">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">bio.me/for-writers</div>
+    </div>
+    <div class="screen-viewport">
+      <div class="screen-scaler" style="height:900px;">
+        <div id="screen-3" class="s3 s">
+          <div class="s3-eyebrow">THE MATH IS SIMPLE</div>
+          <div class="s3-h2">Real income from the people who love your story</div>
+          <div class="s3-cards">
+            <div class="s3-card">
+              <div class="s3-card-subs">100 Subscribers</div>
+              <div class="s3-card-avg">@ $8/month average</div>
+              <div class="s3-card-earn">$720<span style="font-size:22px;color:#4A3D2A;">/mo</span></div>
+              <div class="s3-card-badge">+ gifts on top</div>
+            </div>
+            <div class="s3-card s3-card-featured">
+              <div class="s3-card-subs">500 Subscribers</div>
+              <div class="s3-card-avg">@ $10/month average</div>
+              <div class="s3-card-earn">$4,500<span style="font-size:22px;color:rgba(201,168,76,0.5);">/mo</span></div>
+              <div class="s3-card-badge">Full-time income</div>
+            </div>
+            <div class="s3-card">
+              <div class="s3-card-subs">1,000 Subscribers</div>
+              <div class="s3-card-avg">@ $12/month average</div>
+              <div class="s3-card-earn">$10,560<span style="font-size:22px;color:#4A3D2A;">/mo</span></div>
+              <div class="s3-card-badge">Life-changing</div>
+            </div>
+          </div>
+          <div class="s3-footnote">
+            You keep 88% of every gift
+            <span class="s3-star"></span>
+            Platform fee 10% on subscriptions
+            <span class="s3-star"></span>
+            Writers keep their audience forever
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAME 4: Discover Writers -->
+  <div class="frame" onclick="openModal(3)" tabindex="0" onkeydown="if(event.key==='Enter')openModal(3)">
+    <div class="frame-label">04 — Discover Writers</div>
+    <div class="browser-chrome">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">bio.me/discover</div>
+    </div>
+    <div class="screen-viewport">
+      <div class="screen-scaler" style="height:900px;">
+        <div id="screen-4" class="s4 s">
+          <nav class="s4-nav">
+            <div class="s4-nav-logo"><span class="bio">bio</span><span class="me">.me</span></div>
+            <div class="s4-nav-links">
+              <a href="#">Discover</a>
+              <a href="#">For Writers</a>
+            </div>
+            <button style="background:none;border:none;font-size:14px;color:#7A6B52;cursor:pointer;margin-right:8px;">Sign in</button>
+            <button class="s4-nav-cta">Start Writing</button>
+          </nav>
+          <div class="s4-main">
+            <div class="s4-eyebrow">STORIES WORTH FOLLOWING</div>
+            <div class="s4-h1">Discover Writers</div>
+            <p class="s4-sub">Real people sharing authentic life stories.</p>
+            <div class="s4-filters">
+              <button class="s4-pill active">All</button>
+              <button class="s4-pill">Migration</button>
+              <button class="s4-pill">Survival</button>
+              <button class="s4-pill">Love &amp; Loss</button>
+              <button class="s4-pill">Business</button>
+              <button class="s4-pill">Motherhood</button>
+              <button class="s4-pill">Starting Over</button>
+            </div>
+            <div class="s4-grid">
+              <!-- Card 1 -->
+              <div class="s4-card">
+                <div class="s4-cover" style="background:linear-gradient(135deg,#1a2f5e 0%,#2d4a8a 100%);">
+                  <div class="s4-cover-badge">Ch.1 Free</div>
+                  <div class="s4-avatar-wrap">
+                    <div class="s4-avatar" style="background:linear-gradient(135deg,#1a2f5e,#2d4a8a);">M</div>
+                  </div>
+                </div>
+                <div class="s4-body">
+                  <div class="s4-writer-name">Maria Santos</div>
+                  <div class="s4-username">@mariasantos</div>
+                  <div class="s4-bio">Left Venezuela with $200 and a dream. This is how I rebuilt everything.</div>
+                  <div class="s4-price">$6 / month</div>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div class="s4-card">
+                <div class="s4-cover" style="background:linear-gradient(135deg,#1c2e0f 0%,#2e4a1a 100%);">
+                  <div class="s4-cover-badge">Ch.1 Free</div>
+                  <div class="s4-avatar-wrap">
+                    <div class="s4-avatar" style="background:linear-gradient(135deg,#1c2e0f,#2e4a1a);">J</div>
+                  </div>
+                </div>
+                <div class="s4-body">
+                  <div class="s4-writer-name">James Okafor</div>
+                  <div class="s4-username">@jamesokafor</div>
+                  <div class="s4-bio">Stage 3 cancer diagnosis at 34. I wrote through every chemo session.</div>
+                  <div class="s4-price">$8 / month</div>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div class="s4-card">
+                <div class="s4-cover" style="background:linear-gradient(135deg,#2d1b4e 0%,#4a2d7a 100%);">
+                  <div class="s4-cover-badge">Ch.1 Free</div>
+                  <div class="s4-avatar-wrap">
+                    <div class="s4-avatar" style="background:linear-gradient(135deg,#2d1b4e,#4a2d7a);">A</div>
+                  </div>
+                </div>
+                <div class="s4-body">
+                  <div class="s4-writer-name">Ana Reyes</div>
+                  <div class="s4-username">@anareyes</div>
+                  <div class="s4-bio">Single mom of 3, started a business at 42. No savings. No plan. Just will.</div>
+                  <div class="s4-price">$5 / month</div>
+                </div>
+              </div>
+              <!-- Card 4 -->
+              <div class="s4-card">
+                <div class="s4-cover" style="background:linear-gradient(135deg,#0d1e3d 0%,#1a3366 100%);">
+                  <div class="s4-cover-badge">Ch.1 Free</div>
+                  <div class="s4-avatar-wrap">
+                    <div class="s4-avatar" style="background:linear-gradient(135deg,#0d1e3d,#1a3366);">L</div>
+                  </div>
+                </div>
+                <div class="s4-body">
+                  <div class="s4-writer-name">Lena Kim</div>
+                  <div class="s4-username">@lenakim</div>
+                  <div class="s4-bio">Immigrated from Seoul at 19 with no English. Now I help other immigrants find their voice.</div>
+                  <div class="s4-price">$7 / month</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAME 5: Login -->
+  <div class="frame" onclick="openModal(4)" tabindex="0" onkeydown="if(event.key==='Enter')openModal(4)">
+    <div class="frame-label">05 — Login</div>
+    <div class="browser-chrome">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">bio.me/login</div>
+    </div>
+    <div class="screen-viewport">
+      <div class="screen-scaler" style="height:900px;">
+        <div id="screen-5" class="s5 s">
+          <div class="s5-card">
+            <div class="s5-logo"><span class="bio">bio</span><span class="me">.me</span></div>
+            <div class="s5-tagline">Your story. Your income.</div>
+            <div class="s5-h2">Sign in to bio.me</div>
+            <p class="s5-desc">Enter your email — we'll send a magic link. No password needed.</p>
+            <label class="s5-label">Email Address</label>
+            <input class="s5-input" type="email" placeholder="you@example.com" />
+            <button class="s5-btn">Send Magic Link →</button>
+            <div class="s5-fine">Free to read &nbsp;·&nbsp; $5/month to publish</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAME 6: Episode Paywall -->
+  <div class="frame" onclick="openModal(5)" tabindex="0" onkeydown="if(event.key==='Enter')openModal(5)">
+    <div class="frame-label">06 — Episode Paywall</div>
+    <div class="browser-chrome">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">bio.me/@mariasantos/chapter-2</div>
+    </div>
+    <div class="screen-viewport">
+      <div class="screen-scaler" style="height:900px;">
+        <div id="screen-6" class="s6 s">
+          <nav class="s6-nav">
+            <div class="s6-nav-logo"><span class="bio">bio</span><span class="me">.me</span></div>
+            <div class="s6-nav-links">
+              <a href="#">Discover</a>
+              <a href="#">For Writers</a>
+            </div>
+            <button style="background:none;border:none;font-size:14px;color:#7A6B52;cursor:pointer;margin-right:8px;">Sign in</button>
+            <button class="s6-nav-cta">Start Writing</button>
+          </nav>
+          <div class="s6-breadcrumb">
+            <div class="s6-bread-avatar">M</div>
+            <span class="s6-bread-link">Maria Santos</span>
+            <span class="s6-bread-sep">›</span>
+            <span>Migration Stories</span>
+          </div>
+          <div class="s6-main">
+            <div class="s6-h1">The day we left Caracas</div>
+            <div class="s6-meta">
+              <span class="s6-date">January 14, 2026</span>
+              <span class="s6-premium">✦ Premium</span>
+            </div>
+            <div class="s6-preview">
+              <p>"I remember the weight of the suitcase — not from clothes, but from everything we were leaving behind. Three generations of family, distilled into 23 kilograms."</p>
+            </div>
+            <div class="s6-blurred">
+              <p>What came next was something I had rehearsed a hundred times in my mind, but nothing prepares you for the moment the door closes and you know you are not coming back. My mother held my hand at the checkpoint, her grip tighter than I had ever felt it.</p>
+              <p>The airport was different that day. Quieter in the way a room goes quiet when everyone knows something is ending. I watched the city shrink through the window and felt something I still don't have a word for in any language.</p>
+            </div>
+            <div class="s6-paywall">
+              <div class="s6-lock-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <h3>Keep reading</h3>
+              <p>Unlock this story and support <strong>@mariasantos</strong> as she documents the journey from Caracas to a new life.</p>
+              <button class="s6-sub-btn">Subscribe · $6/mo</button>
+              <div class="s6-signin-link">Already have an account? <a href="#">Sign in</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.mockup-grid -->
+
+<!-- ─── MODAL ─────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-label="Screen preview">
+  <div class="modal-header">
+    <div class="modal-title" id="modal-title"></div>
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+  </div>
+  <div class="modal-screen-wrap">
+    <div class="browser-chrome" style="border-radius:0;">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar" id="modal-url"></div>
+    </div>
+    <div style="overflow:hidden; width:1280px; max-width:100%;">
+      <div id="modal-screen-inner"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var screens = [
+    { id: 'screen-1', title: '01 — Landing Hero',         url: 'bio.me'                      },
+    { id: 'screen-2', title: '02 — Story Categories',     url: 'bio.me/discover'              },
+    { id: 'screen-3', title: '03 — Earnings',             url: 'bio.me/for-writers'           },
+    { id: 'screen-4', title: '04 — Discover Writers',     url: 'bio.me/discover'              },
+    { id: 'screen-5', title: '05 — Login',                url: 'bio.me/login'                 },
+    { id: 'screen-6', title: '06 — Episode Paywall',      url: 'bio.me/@mariasantos/chapter-2'},
+  ];
+
+  var modal        = document.getElementById('modal');
+  var modalTitle   = document.getElementById('modal-title');
+  var modalUrl     = document.getElementById('modal-url');
+  var modalInner   = document.getElementById('modal-screen-inner');
+  var activeIndex  = null;
+
+  function openModal(index) {
+    var s = screens[index];
+    var source = document.getElementById(s.id);
+
+    modalTitle.textContent = s.title;
+    modalUrl.textContent   = s.url;
+
+    // Clone the screen content
+    var clone = source.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.style.width      = '1280px';
+    clone.style.minHeight  = '900px';
+    clone.style.overflow   = 'hidden';
+
+    modalInner.innerHTML = '';
+    modalInner.appendChild(clone);
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    activeIndex = index;
+
+    // Focus trap: focus close button
+    setTimeout(function() {
+      modal.querySelector('.modal-close').focus();
+    }, 50);
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    modalInner.innerHTML = '';
+    activeIndex = null;
+  }
+
+  // Click outside content to close
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal();
+  });
+
+  // Escape key to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+</script>
+</body>
+</html>

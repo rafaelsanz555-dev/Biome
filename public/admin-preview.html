@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>bio.me — Admin Dashboard</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0D0D0D; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color: #FAF7F0; min-height: 100vh; }
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #111; } ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar { width: 272px; min-width: 272px; background: #111111; border-right: 1px solid #222; padding: 20px; display: flex; flex-direction: column; height: 100vh; position: sticky; top: 0; }
+  .main { flex: 1; padding: 40px; overflow-y: auto; }
+  .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .logo-text { font-size: 20px; font-weight: 700; color: #FAF7F0; letter-spacing: -0.5px; }
+  .logo-text span { color: #C9A84C; }
+  .logo-badge { font-size: 8px; font-weight: 700; color: #C9A84C; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); padding: 3px 8px; border-radius: 20px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .admin-pill { background: #0D0D0D; border: 1px solid #222; border-radius: 12px; padding: 10px 14px; margin-bottom: 24px; }
+  .admin-pill .label { font-size: 9px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 3px; }
+  .admin-pill .name { font-size: 13px; font-weight: 700; color: #FAF7F0; }
+  .nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; color: #999; }
+  .nav-link:hover { background: #1a1a1a; color: #FAF7F0; }
+  .nav-link.active { background: rgba(201,168,76,0.12); color: #C9A84C; border-color: rgba(201,168,76,0.2); font-weight: 600; }
+  .nav-link .icon { font-size: 11px; color: #555; }
+  .nav-link.active .icon { color: #C9A84C; }
+  .sidebar-footer { padding-top: 20px; border-top: 1px solid #222; display: flex; flex-direction: column; gap: 2px; }
+  .footer-link { font-size: 13px; color: #666; padding: 9px 14px; border-radius: 12px; cursor: pointer; transition: all 0.15s; }
+  .footer-link:hover { background: #1a1a1a; color: #FAF7F0; }
+  .footer-link.danger:hover { color: #EF5350; }
+  h1 { font-size: 28px; font-weight: 700; color: #FAF7F0; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 32px; }
+  .revenue-box { background: linear-gradient(to right, rgba(201,168,76,0.12), rgba(201,168,76,0.04), #111); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; padding: 24px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+  .revenue-main .rlabel { font-size: 9px; font-weight: 600; color: rgba(201,168,76,0.7); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px; }
+  .revenue-main .rvalue { font-size: 38px; font-weight: 700; color: #C9A84C; letter-spacing: -1px; }
+  .revenue-main .rsub { font-size: 11px; color: #666; margin-top: 4px; }
+  .revenue-side { display: flex; gap: 32px; }
+  .revenue-side-item { text-align: right; }
+  .revenue-side-item .rslabel { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+  .revenue-side-item .rsvalue { font-size: 20px; font-weight: 700; color: #FAF7F0; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+  .stat-card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 18px; transition: border-color 0.15s; }
+  .stat-card:hover { border-color: rgba(201,168,76,0.25); }
+  .stat-card.accent { background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.04)); border-color: rgba(201,168,76,0.2); }
+  .stat-card .slabel { font-size: 9px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; }
+  .stat-card .svalue { font-size: 30px; font-weight: 700; color: #FAF7F0; letter-spacing: -0.5px; }
+  .stat-card.accent .svalue { color: #C9A84C; }
+  .stat-card .ssub { font-size: 11px; color: #555; margin-top: 6px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .dark-box { background: #111; border: 1px solid #222; border-radius: 16px; padding: 24px; }
+  .dark-box h3 { font-size: 11px; font-weight: 700; color: #FAF7F0; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 16px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; }
+  .breakdown-row:last-child { border-bottom: none; }
+  .breakdown-row .bk-label { color: #999; }
+  .breakdown-row .bk-value { font-weight: 700; color: #FAF7F0; }
+  .breakdown-row .bk-value.gold { color: #C9A84C; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { border-bottom: 1px solid #222; }
+  th { font-size: 9px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.15em; padding: 10px 16px; text-align: left; }
+  th.center, td.center { text-align: center; }
+  th.right, td.right { text-align: right; }
+  tbody tr { border-bottom: 1px solid #1a1a1a; transition: background 0.1s; }
+  tbody tr:hover { background: #1a1a1a; }
+  td { padding: 12px 16px; font-size: 13px; color: #FAF7F0; }
+  .user-cell { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #C9A84C; flex-shrink: 0; overflow: hidden; }
+  .user-name { font-size: 13px; font-weight: 600; color: #FAF7F0; }
+  .user-handle { font-size: 11px; color: #666; }
+  .badge { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 20px; border: 1px solid; }
+  .badge-gold { background: rgba(201,168,76,0.15); color: #C9A84C; border-color: rgba(201,168,76,0.2); }
+  .badge-green { background: rgba(76,175,80,0.15); color: #4CAF50; border-color: rgba(76,175,80,0.2); }
+  .badge-purple { background: rgba(206,147,216,0.15); color: #CE93D8; border-color: rgba(206,147,216,0.2); }
+  .badge-gray { background: rgba(100,100,100,0.15); color: #999; border-color: rgba(100,100,100,0.2); }
+  .badge-orange { background: rgba(255,183,77,0.15); color: #FFB74D; border-color: rgba(255,183,77,0.2); }
+  .badge-pink { background: rgba(244,143,177,0.15); color: #F48FB1; border-color: rgba(244,143,177,0.2); }
+  .badge-blue { background: rgba(100,181,246,0.15); color: #64B5F6; border-color: rgba(64,181,246,0.2); }
+  .badge-red { background: rgba(239,83,80,0.15); color: #EF5350; border-color: rgba(239,83,80,0.2); }
+  .gold-link { color: #C9A84C; font-size: 12px; font-weight: 500; cursor: pointer; }
+  .gold-link:hover { opacity: 0.8; }
+  .table-wrap { background: #111; border: 1px solid #222; border-radius: 16px; overflow: hidden; }
+  .table-header { padding: 16px 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+  .table-header h2 { font-size: 11px; font-weight: 700; color: #FAF7F0; text-transform: uppercase; letter-spacing: 0.15em; }
+  .table-header .count { font-size: 11px; color: #666; }
+  .episode-item { display: flex; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #1a1a1a; align-items: flex-start; transition: background 0.1s; cursor: default; }
+  .episode-item:hover { background: #1a1a1a; }
+  .episode-item:last-child { border-bottom: none; }
+  .ep-thumb { width: 64px; height: 64px; border-radius: 12px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .ep-content { flex: 1; }
+  .ep-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .ep-title { font-size: 13px; font-weight: 700; color: #FAF7F0; }
+  .ep-preview { font-size: 12px; color: #888; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; }
+  .ep-meta { display: flex; align-items: center; gap: 16px; font-size: 11px; color: #666; }
+  .progress-bar { width: 100%; background: #222; border-radius: 4px; height: 6px; margin-top: 6px; }
+  .progress-fill { height: 6px; border-radius: 4px; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; }
+  .bar-label { font-size: 8px; color: #555; }
+  .bar-val { font-size: 8px; color: #888; }
+  .growth-card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 24px; }
+  .growth-card .gl { font-size: 9px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .growth-card .gv { font-size: 30px; font-weight: 700; color: #FAF7F0; letter-spacing: -0.5px; }
+  .growth-card .gpct { font-size: 13px; font-weight: 700; }
+  .growth-card .gsub { font-size: 11px; color: #555; margin-top: 6px; }
+  .green { color: #4CAF50; } .red { color: #EF5350; } .gold { color: #C9A84C; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const GOLD = '#C9A84C';
+
+// ── DATA ──
+const users = [
+  { name: 'María González', username: 'mariagonzalez', role: 'creator', bio: 'Sobreviviente, mamá y escritora. Mis historias son mi libertad.', date: '12 Ene 2026' },
+  { name: 'Carlos Mendoza', username: 'carlosmendoza', role: 'reader', bio: 'Lector ávido de historias de vida reales.', date: '15 Ene 2026' },
+  { name: 'Ana Sofía Ruiz', username: 'anasofia_r', role: 'creator', bio: 'Ex-ejecutiva que dejó todo para viajar. 3 años en la carretera.', date: '18 Ene 2026' },
+  { name: 'Rafael Sanz', username: 'rafaelsanz', role: 'admin', bio: 'Fundador de bio.me. Construyendo el futuro del storytelling.', date: '1 Ene 2026' },
+  { name: 'Luis Fernández', username: 'luisfernandez', role: 'reader', bio: '', date: '22 Ene 2026' },
+  { name: 'Valentina Torres', username: 'valentinat', role: 'creator', bio: 'Periodista convertida en narradora. Historias del sur del mundo.', date: '25 Ene 2026' },
+  { name: 'Diego Morales', username: 'diegomorales', role: 'reader', bio: 'Adicto a las historias de emprendimiento.', date: '28 Ene 2026' },
+  { name: 'Isabella Castro', username: 'isabellacast', role: 'creator', bio: 'Médica de urgencias. Lo que nadie te cuenta del hospital.', date: '2 Feb 2026' },
+];
+
+const writers = [
+  { name: 'María González', username: 'mariagonzalez', price: 8, posts: 45, followers: 280, gross: 2240, platform: 224, active: true },
+  { name: 'Ana Sofía Ruiz', username: 'anasofia_r', price: 12, posts: 32, followers: 195, gross: 2340, platform: 234, active: true },
+  { name: 'Valentina Torres', username: 'valentinat', price: 6, posts: 28, followers: 142, gross: 852, platform: 85.2, active: true },
+  { name: 'Isabella Castro', username: 'isabellacast', price: 15, posts: 18, followers: 98, gross: 1470, platform: 147, active: true },
+  { name: 'Tomás Herrera', username: 'tomasherrera', price: 4, posts: 9, followers: 34, gross: 136, platform: 13.6, active: true },
+  { name: 'Camila Vega', username: 'camilavega', price: 3, posts: 5, followers: 12, gross: 36, platform: 3.6, active: false },
+];
+
+const episodes = [
+  { title: 'El día que perdí todo y encontré mi propósito', writer: 'mariagonzalez', series: 'Mi vida desde cero', status: 'published', type: 'subscription', preview: 'Nunca pensé que perder mi empresa sería el mejor regalo de mi vida. Ese lunes de marzo...', date: '10 Mar 2026' },
+  { title: 'Cirugía de emergencia: 3 AM y el paciente no respira', writer: 'isabellacast', series: 'Confesiones de Urgencias', status: 'published', type: 'ppv', ppv: 3.99, preview: 'El monitor cardíaco empezó a sonar y todos nos miramos. Sabíamos lo que significaba.', date: '8 Mar 2026' },
+  { title: 'Cruzando la frontera con $200 en el bolsillo', writer: 'anasofia_r', series: 'La Carretera', status: 'published', type: 'free', preview: 'El primer capítulo siempre es gratis. Mi historia comienza en un autobús nocturno...', date: '5 Mar 2026' },
+  { title: 'El silencio del quirófano', writer: 'isabellacast', series: 'Confesiones de Urgencias', status: 'draft', type: 'subscription', preview: 'Hay momentos en que el tiempo se detiene y solo escuchas tu propio corazón.', date: '12 Mar 2026' },
+  { title: 'Cómo una startup me dejó sin dormir 3 años', writer: 'valentinat', series: null, status: 'published', type: 'subscription', preview: 'Las startups son romanticas desde afuera. Desde adentro son pura supervivencia.', date: '3 Mar 2026' },
+  { title: 'Mi primera noche durmiendo en el auto', writer: 'anasofia_r', series: 'La Carretera', status: 'published', type: 'subscription', preview: 'Después de dejar mi trabajo de 12 años, me encontré mirando las estrellas desde el asiento trasero.', date: '1 Mar 2026' },
+];
+
+const transactions = [
+  { type: 'subscription', from: '@carlosmendoza', amount: 8, platform: 0.8, status: 'completed', date: '11 Mar 2026, 14:32' },
+  { type: 'ppv', from: '@luisfernandez', amount: 3.99, platform: 0.4, status: 'completed', date: '10 Mar 2026, 09:15' },
+  { type: 'subscription', from: '@diegomorales', amount: 12, platform: 1.2, status: 'completed', date: '10 Mar 2026, 08:44' },
+  { type: 'subscription', from: '@carlosmendoza', amount: 15, platform: 1.5, status: 'completed', date: '9 Mar 2026, 16:20' },
+  { type: 'tip', from: '@luisfernandez', amount: 5, platform: 0.5, status: 'completed', date: '9 Mar 2026, 11:05' },
+  { type: 'subscription', from: '@diegomorales', amount: 6, platform: 0.6, status: 'completed', date: '8 Mar 2026, 19:33' },
+];
+
+const gifts = [
+  { emoji: '👑', from: '@carlosmendoza', to: '@mariagonzalez', amount: 25, platform: 3, writer: 22, date: '11 Mar 2026, 15:10' },
+  { emoji: '💎', from: '@luisfernandez', to: '@isabellacast', amount: 10, platform: 1.2, writer: 8.8, date: '10 Mar 2026, 12:22' },
+  { emoji: '🚀', from: '@diegomorales', to: '@anasofia_r', amount: 50, platform: 6, writer: 44, date: '9 Mar 2026, 20:45' },
+  { emoji: '⭐', from: '@carlosmendoza', to: '@valentinat', amount: 5, platform: 0.6, writer: 4.4, date: '9 Mar 2026, 09:00' },
+  { emoji: '🔥', from: '@luisfernandez', to: '@mariagonzalez', amount: 2, platform: 0.24, writer: 1.76, date: '8 Mar 2026, 18:30' },
+  { emoji: '❤️', from: '@diegomorales', to: '@isabellacast', amount: 1, platform: 0.12, writer: 0.88, date: '8 Mar 2026, 14:15' },
+];
+
+const weeklyRevenue = [42, 18, 95, 63, 140, 88, 210, 175, 95, 320, 260, 480];
+const weeklyUsers  = [2, 0, 4, 3, 6, 2, 8, 5, 3, 10, 7, 12];
+const weekLabels   = ['12 Ene','19 Ene','26 Ene','2 Feb','9 Feb','16 Feb','23 Feb','1 Mar','8 Mar','15 Mar','22 Mar','29 Mar'];
+
+// ── HELPERS ──
+function roleBadge(role) {
+  if (role === 'creator') return <span className="badge badge-gold">Escritor</span>;
+  if (role === 'admin')   return <span className="badge badge-purple">Admin</span>;
+  return <span className="badge badge-green">Lector</span>;
+}
+function typeBadge(type) {
+  if (type === 'subscription') return <span className="badge badge-gold">Suscripción</span>;
+  if (type === 'ppv')          return <span className="badge badge-orange">PPV</span>;
+  if (type === 'tip')          return <span className="badge badge-blue">Propina</span>;
+  if (type === 'gift')         return <span className="badge badge-pink">Regalo</span>;
+  return <span className="badge badge-gray">{type}</span>;
+}
+function monetBadge(ep) {
+  if (ep.type === 'ppv')          return <span className="badge badge-orange">PPV ${ep.ppv}</span>;
+  if (ep.type === 'subscription') return <span className="badge badge-gold">Suscripción</span>;
+  return <span className="badge badge-green">Gratis</span>;
+}
+function Avatar({ name, size = 36 }) {
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  return <div className="avatar" style={{width:size,height:size,fontSize:size*0.33}}>{initials}</div>;
+}
+
+// ── PAGES ──
+function PanelGeneral() {
+  return (
+    <div>
+      <h1>Panel General</h1>
+      <p className="subtitle">Vista general de bio.me en tiempo real</p>
+
+      <div className="revenue-box">
+        <div className="revenue-main">
+          <div className="rlabel">Revenue Total de Plataforma</div>
+          <div className="rvalue">$3,420.50</div>
+          <div className="rsub">10-12% de $28,400.00 bruto generado por escritores</div>
+        </div>
+        <div className="revenue-side">
+          <div className="revenue-side-item">
+            <div className="rslabel">Últimos 7 días</div>
+            <div className="rsvalue">$480.20</div>
+          </div>
+          <div className="revenue-side-item">
+            <div className="rslabel">Writer fees ($5/mes)</div>
+            <div className="rsvalue">$350/mes</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid4">
+        <div className="stat-card"><div className="slabel">Usuarios Totales</div><div className="svalue">312</div><div className="ssub">Registrados en la plataforma</div></div>
+        <div className="stat-card accent"><div className="slabel">Escritores</div><div className="svalue">70</div><div className="ssub">$350/mes en fees</div></div>
+        <div className="stat-card"><div className="slabel">Lectores</div><div className="svalue">238</div><div className="ssub">Consumidores de contenido</div></div>
+        <div className="stat-card"><div className="slabel">Suscripciones</div><div className="svalue">145</div><div className="ssub">Conexiones lector-escritor</div></div>
+      </div>
+
+      <div className="grid4">
+        <div className="stat-card"><div className="slabel">Episodios Totales</div><div className="svalue">847</div><div className="ssub">720 publicados</div></div>
+        <div className="stat-card"><div className="slabel">Transacciones</div><div className="svalue">203</div><div className="ssub">$2,180.00 para bio.me</div></div>
+        <div className="stat-card accent"><div className="slabel">Regalos Enviados</div><div className="svalue">89</div><div className="ssub">$148.50 para bio.me (12%)</div></div>
+        <div className="stat-card"><div className="slabel">Revenue Bruto</div><div className="svalue">$28,400</div><div className="ssub">Generado por escritores</div></div>
+      </div>
+
+      <div className="two-col">
+        <div className="dark-box">
+          <h3>Desglose de Revenue</h3>
+          {[
+            ['Writer fees (70 × $5)', '$350/mes', false],
+            ['10% de suscripciones/PPV', '$2,180.00', false],
+            ['12% de regalos', '$148.50', false],
+            ['Total plataforma', '$3,420.50', true],
+          ].map(([l,v,g]) => (
+            <div className="breakdown-row" key={l}>
+              <span className="bk-label">{l}</span>
+              <span className={`bk-value${g?' gold':''}`}>{v}</span>
+            </div>
+          ))}
+        </div>
+        <div className="dark-box">
+          <h3>Proyección a Escala</h3>
+          {[
+            ['A 100 escritores', '$500 + fees/mes'],
+            ['A 500 escritores', '$2,500 + fees/mes'],
+            ['A 1,000 escritores', '$25,000/mes'],
+            ['A 10,000 escritores', '$250,000/mes'],
+          ].map(([l,v]) => (
+            <div className="breakdown-row" key={l}>
+              <span className="bk-label">{l}</span>
+              <span className="bk-value gold">{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Usuarios() {
+  return (
+    <div>
+      <h1>Usuarios</h1>
+      <p className="subtitle">Gestión de todos los usuarios registrados en bio.me</p>
+      <div className="grid4" style={{marginBottom:20}}>
+        <div className="stat-card"><div className="slabel">Total</div><div className="svalue">312</div></div>
+        <div className="stat-card accent"><div className="slabel">Escritores</div><div className="svalue">70</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(76,175,80,0.2)',background:'rgba(76,175,80,0.04)'}}><div className="slabel" style={{color:'rgba(76,175,80,0.7)'}}>Lectores</div><div className="svalue" style={{color:'#4CAF50'}}>238</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(206,147,216,0.2)',background:'rgba(206,147,216,0.04)'}}><div className="slabel" style={{color:'rgba(206,147,216,0.7)'}}>Admins</div><div className="svalue" style={{color:'#CE93D8'}}>1</div></div>
+      </div>
+      <div className="table-wrap">
+        <div className="table-header"><h2>Todos los Usuarios</h2><span className="count">Mostrando 8 de 312</span></div>
+        <table>
+          <thead><tr><th>Usuario</th><th>Rol</th><th>Bio</th><th>Registro</th><th>Perfil</th></tr></thead>
+          <tbody>
+            {users.map(u => (
+              <tr key={u.username}>
+                <td><div className="user-cell"><Avatar name={u.name} /><div><div className="user-name">{u.name}</div><div className="user-handle">@{u.username}</div></div></div></td>
+                <td>{roleBadge(u.role)}</td>
+                <td style={{color:'#888',fontSize:12,maxWidth:200}}>{u.bio || '—'}</td>
+                <td style={{color:'#666',fontSize:12}}>{u.date}</td>
+                <td><span className="gold-link">Ver perfil →</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function Escritores() {
+  return (
+    <div>
+      <h1>Escritores</h1>
+      <p className="subtitle">Performance y gestión de todos los creadores de bio.me</p>
+      <div className="grid4" style={{marginBottom:20}}>
+        <div className="stat-card accent"><div className="slabel">Total Escritores</div><div className="svalue">70</div><div className="ssub">Creadores activos</div></div>
+        <div className="stat-card"><div className="slabel">Writer Fees</div><div className="svalue">$350</div><div className="ssub">Mensual garantizado</div></div>
+        <div className="stat-card"><div className="slabel">Platform Revenue</div><div className="svalue">$3,272</div><div className="ssub">10-12% del revenue</div></div>
+        <div className="stat-card"><div className="slabel">Episodios Totales</div><div className="svalue">847</div><div className="ssub">Contenido publicado</div></div>
+      </div>
+      <div className="table-wrap">
+        <div className="table-header"><h2>Performance por Escritor</h2></div>
+        <table>
+          <thead><tr>
+            <th>Escritor</th>
+            <th className="center">Precio</th>
+            <th className="center">Posts</th>
+            <th className="center">Followers</th>
+            <th className="center">Revenue Bruto</th>
+            <th className="center">Para bio.me</th>
+            <th className="center">Estado</th>
+            <th className="center">Ver</th>
+          </tr></thead>
+          <tbody>
+            {writers.map(w => (
+              <tr key={w.username}>
+                <td><div className="user-cell"><Avatar name={w.name} /><div><div className="user-name">{w.name}</div><div className="user-handle">@{w.username}</div></div></div></td>
+                <td className="center"><span style={{fontWeight:700}}>${w.price}</span><span style={{fontSize:10,color:'#666'}}>/mes</span></td>
+                <td className="center">{w.posts}</td>
+                <td className="center">{w.followers}</td>
+                <td className="center" style={{fontWeight:700}}>${w.gross.toFixed(2)}</td>
+                <td className="center" style={{fontWeight:700,color:'#C9A84C'}}>${w.platform.toFixed(2)}</td>
+                <td className="center"><span className={`badge ${w.active ? 'badge-green' : 'badge-red'}`}>{w.active ? 'Activo' : 'Inactivo'}</span></td>
+                <td className="center"><span className="gold-link">Ver →</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function Contenido() {
+  return (
+    <div>
+      <h1>Contenido</h1>
+      <p className="subtitle">Gestión y moderación de todo el contenido publicado en bio.me</p>
+      <div className="grid4" style={{marginBottom:20}}>
+        <div className="stat-card"><div className="slabel">Total Episodios</div><div className="svalue">847</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(76,175,80,0.2)',background:'rgba(76,175,80,0.04)'}}><div className="slabel" style={{color:'rgba(76,175,80,0.7)'}}>Publicados</div><div className="svalue" style={{color:'#4CAF50'}}>720</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(255,183,77,0.2)',background:'rgba(255,183,77,0.04)'}}><div className="slabel" style={{color:'rgba(255,183,77,0.7)'}}>Borradores</div><div className="svalue" style={{color:'#FFB74D'}}>127</div></div>
+        <div className="stat-card"><div className="slabel">Series/Arcos</div><div className="svalue">34</div></div>
+      </div>
+      <div className="table-wrap">
+        <div className="table-header"><h2>Todos los Episodios</h2><span className="count">Mostrando 6 de 847</span></div>
+        {episodes.map((ep, i) => (
+          <div className="episode-item" key={i}>
+            <div className="ep-thumb">📝</div>
+            <div className="ep-content">
+              <div className="ep-title-row">
+                <span className="ep-title">{ep.title}</span>
+                <span className={`badge ${ep.status === 'published' ? 'badge-green' : 'badge-gray'}`}>{ep.status === 'published' ? 'Publicado' : 'Borrador'}</span>
+                {monetBadge(ep)}
+              </div>
+              <div className="ep-preview">{ep.preview}</div>
+              <div className="ep-meta">
+                <span>@{ep.writer}</span>
+                {ep.series && <span>Serie: {ep.series}</span>}
+                <span>{ep.date}</span>
+                <span className="gold-link" style={{marginLeft:'auto'}}>Ver episodio →</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Ingresos() {
+  return (
+    <div>
+      <h1>Ingresos</h1>
+      <p className="subtitle">Detalle completo de todas las transacciones y revenue de la plataforma</p>
+
+      <div className="revenue-box" style={{marginBottom:20}}>
+        <div className="revenue-main">
+          <div className="rlabel">Revenue Plataforma</div>
+          <div className="rvalue">$3,272.00</div>
+          <div className="rsub">Tu 10-12% del total</div>
+        </div>
+        <div className="revenue-side">
+          <div className="revenue-side-item"><div className="rslabel">Revenue Bruto</div><div className="rsvalue">$28,400</div></div>
+          <div className="revenue-side-item"><div className="rslabel">Transacciones</div><div className="rsvalue">292</div></div>
+          <div className="revenue-side-item"><div className="rslabel">Ticket Promedio</div><div className="rsvalue">$97.26</div></div>
+        </div>
+      </div>
+
+      <div className="grid4" style={{marginBottom:20}}>
+        <div className="stat-card" style={{borderColor:'rgba(201,168,76,0.2)'}}><div className="slabel" style={{color:'rgba(201,168,76,0.7)'}}>Suscripciones</div><div className="svalue" style={{color:'#C9A84C'}}>$21,400</div><div className="ssub">$2,140 para bio.me</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(255,183,77,0.2)'}}><div className="slabel" style={{color:'rgba(255,183,77,0.7)'}}>Pay-Per-View</div><div className="svalue" style={{color:'#FFB74D'}}>$4,800</div><div className="ssub">$480 para bio.me</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(244,143,177,0.2)'}}><div className="slabel" style={{color:'rgba(244,143,177,0.7)'}}>Regalos</div><div className="svalue" style={{color:'#F48FB1'}}>$1,237</div><div className="ssub">$148.44 para bio.me (12%)</div></div>
+        <div className="stat-card" style={{borderColor:'rgba(100,181,246,0.2)'}}><div className="slabel" style={{color:'rgba(100,181,246,0.7)'}}>Propinas</div><div className="svalue" style={{color:'#64B5F6'}}>$963</div><div className="ssub">$96.30 para bio.me</div></div>
+      </div>
+
+      <div className="table-wrap" style={{marginBottom:14}}>
+        <div className="table-header"><h2>Transacciones Recientes</h2></div>
+        <table>
+          <thead><tr><th>Tipo</th><th>De</th><th className="right">Monto</th><th className="right">Para bio.me</th><th className="center">Estado</th><th className="right">Fecha</th></tr></thead>
+          <tbody>
+            {transactions.map((t,i) => (
+              <tr key={i}>
+                <td>{typeBadge(t.type)}</td>
+                <td style={{color:'#999'}}>{t.from}</td>
+                <td className="right" style={{fontWeight:700}}>${t.amount.toFixed(2)}</td>
+                <td className="right" style={{fontWeight:700,color:'#C9A84C'}}>${t.platform.toFixed(2)}</td>
+                <td className="center"><span className="badge badge-green">OK</span></td>
+                <td className="right" style={{color:'#666',fontSize:11}}>{t.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="table-wrap">
+        <div className="table-header"><h2>Regalos Recientes</h2></div>
+        <table>
+          <thead><tr><th className="center">Emoji</th><th>De</th><th>Para</th><th className="right">Monto</th><th className="right">bio.me (12%)</th><th className="right">Escritor (88%)</th><th className="right">Fecha</th></tr></thead>
+          <tbody>
+            {gifts.map((g,i) => (
+              <tr key={i}>
+                <td className="center" style={{fontSize:20}}>{g.emoji}</td>
+                <td style={{color:'#999'}}>{g.from}</td>
+                <td style={{fontWeight:600}}>{g.to}</td>
+                <td className="right" style={{fontWeight:700}}>${g.amount.toFixed(2)}</td>
+                <td className="right" style={{fontWeight:700,color:'#C9A84C'}}>${g.platform.toFixed(2)}</td>
+                <td className="right" style={{color:'#4CAF50'}}>${g.writer.toFixed(2)}</td>
+                <td className="right" style={{color:'#666',fontSize:11}}>{g.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function Analytics() {
+  const maxRev = Math.max(...weeklyRevenue);
+  const maxUsr = Math.max(...weeklyUsers);
+  return (
+    <div>
+      <h1>Analytics</h1>
+      <p className="subtitle">Métricas de crecimiento y tendencias de bio.me</p>
+
+      <div className="grid4" style={{gridTemplateColumns:'1fr 1fr 1fr',marginBottom:20}}>
+        <div className="growth-card">
+          <div className="gl">Nuevos Usuarios (30d)</div>
+          <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+            <div className="gv">28</div>
+            <div className="gpct green">+40%</div>
+          </div>
+          <div className="gsub">vs 20 periodo anterior</div>
+        </div>
+        <div className="growth-card">
+          <div className="gl">Nuevos Episodios (30d)</div>
+          <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+            <div className="gv">84</div>
+            <div className="gpct green">+62%</div>
+          </div>
+          <div className="gsub">vs 52 periodo anterior</div>
+        </div>
+        <div className="growth-card" style={{borderColor:'rgba(201,168,76,0.2)',background:'linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.02))'}}>
+          <div className="gl" style={{color:'rgba(201,168,76,0.7)'}}>Revenue Bruto (30d)</div>
+          <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+            <div className="gv" style={{color:'#C9A84C'}}>$480.20</div>
+            <div className="gpct green">+18%</div>
+          </div>
+          <div className="gsub">vs $407.00 periodo anterior</div>
+        </div>
+      </div>
+
+      <div className="dark-box" style={{marginBottom:14}}>
+        <h3>Actividad Semanal — Revenue (12 semanas)</h3>
+        <div style={{display:'flex',alignItems:'flex-end',gap:6,height:120,marginBottom:20}}>
+          {weeklyRevenue.map((v,i) => (
+            <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:3,height:'100%',justifyContent:'flex-end'}}>
+              <span style={{fontSize:8,color:'#888'}}>{v>50?`$${v}`:''}</span>
+              <div style={{width:'100%',background:`linear-gradient(to top, rgba(201,168,76,0.4), #C9A84C)`,borderRadius:'4px 4px 0 0',height:`${(v/maxRev)*100}%`,minHeight:2}}/>
+              <span style={{fontSize:7,color:'#555',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'100%',textAlign:'center'}}>{weekLabels[i].split(' ')[0]}</span>
+            </div>
+          ))}
+        </div>
+        <h3 style={{marginTop:8}}>Nuevos Usuarios por Semana</h3>
+        <div style={{display:'flex',alignItems:'flex-end',gap:6,height:80}}>
+          {weeklyUsers.map((v,i) => (
+            <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,height:'100%',justifyContent:'flex-end'}}>
+              <span style={{fontSize:8,color:'#888'}}>{v>0?v:''}</span>
+              <div style={{width:'100%',background:`linear-gradient(to top, rgba(76,175,80,0.4), #4CAF50)`,borderRadius:'4px 4px 0 0',height:`${(v/maxUsr)*100}%`,minHeight:2}}/>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="two-col">
+        <div className="dark-box">
+          <h3>Promedios por Escritor</h3>
+          {[
+            ['Precio suscripción promedio','$5.80/mes'],
+            ['Episodios por escritor','12.1'],
+            ['Seguidores por escritor','20.7'],
+            ['Escritores activos','68 / 70'],
+          ].map(([l,v]) => (
+            <div className="breakdown-row" key={l}>
+              <span className="bk-label">{l}</span>
+              <span className="bk-value">{v}</span>
+            </div>
+          ))}
+        </div>
+        <div className="dark-box">
+          <h3>Revenue por Canal</h3>
+          {[
+            ['Suscripciones','$21,400','75','#C9A84C'],
+            ['Pay-Per-View','$4,800','17','#FFB74D'],
+            ['Regalos','$1,237','4','#F48FB1'],
+            ['Propinas','$963','3','#64B5F6'],
+          ].map(([l,v,p,c]) => (
+            <div key={l} style={{marginBottom:14}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                <span style={{fontSize:12,color:'#999'}}>{l}</span>
+                <span style={{fontSize:12,fontWeight:700,color:c}}>{v} ({p}%)</span>
+              </div>
+              <div className="progress-bar"><div className="progress-fill" style={{width:`${p}%`,background:c}}/></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="dark-box" style={{marginTop:14}}>
+        <h3>Distribución de Contenido</h3>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:24}}>
+          {[
+            ['127','Episodios Gratis','#4CAF50',15],
+            ['685','Solo Suscripción','#C9A84C',81],
+            ['35','Pay-Per-View','#FFB74D',4],
+          ].map(([v,l,c,p]) => (
+            <div key={l} style={{textAlign:'center'}}>
+              <div style={{fontSize:32,fontWeight:700,color:c}}>{v}</div>
+              <div style={{fontSize:11,color:'#666',margin:'4px 0 8px'}}>{l}</div>
+              <div className="progress-bar"><div className="progress-fill" style={{width:`${p}%`,background:c}}/></div>
+              <div style={{fontSize:10,color:'#555',marginTop:4}}>{p}% del total</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── APP ──
+const PAGES = {
+  panel: { label: 'Panel General', icon: '◆', component: PanelGeneral },
+  usuarios: { label: 'Usuarios', icon: '◇', component: Usuarios },
+  escritores: { label: 'Escritores', icon: '◈', component: Escritores },
+  contenido: { label: 'Contenido', icon: '▣', component: Contenido },
+  ingresos: { label: 'Ingresos', icon: '▲', component: Ingresos },
+  analytics: { label: 'Analytics', icon: '◉', component: Analytics },
+};
+
+function App() {
+  const [active, setActive] = useState('panel');
+  const Page = PAGES[active].component;
+  return (
+    <div className="layout">
+      <aside className="sidebar">
+        <div className="logo">
+          <span className="logo-text">bio<span>.me</span></span>
+          <span className="logo-badge">Admin</span>
+        </div>
+        <div className="admin-pill">
+          <div className="label">Administrador</div>
+          <div className="name">Rafael Bernardo Sanz</div>
+        </div>
+        <nav className="nav">
+          {Object.entries(PAGES).map(([key, p]) => (
+            <div key={key} className={`nav-link${active===key?' active':''}`} onClick={() => setActive(key)}>
+              <span className="icon">{p.icon}</span>
+              {p.label}
+            </div>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <div className="footer-link">← Writer Dashboard</div>
+          <div className="footer-link">← Ver sitio público</div>
+          <div className="footer-link danger">Cerrar sesión</div>
+        </div>
+      </aside>
+      <main className="main">
+        <div style={{maxWidth:1100}}>
+          <Page />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
