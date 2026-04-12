@@ -1,19 +1,29 @@
 import { NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-// Webhooks require the service role key to bypass RLS and securely grant entitlements
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Lazy Supabase admin client — solo se inicializa cuando llega un webhook real
+function getSupabaseAdmin() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!url || !key) {
+        throw new Error('Supabase admin credentials no configurados')
+    }
+    return createClient(url, key)
+}
 
 export async function POST(req: Request) {
+    // Stripe no configurado — responder OK para no bloquear
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+        return new NextResponse('Webhook no configurado', { status: 200 })
+    }
+
     const body = await req.text()
     const sig = req.headers.get('stripe-signature') as string
 
     let event: Stripe.Event
+    const stripe = getStripe()
 
     try {
         event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!)
@@ -21,24 +31,21 @@ export async function POST(req: Request) {
         return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
     }
 
-    // Handle the checkout.session.completed event
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object as Stripe.Checkout.Session
         const metadata = session.metadata
 
         if (metadata?.userId) {
+            const supabaseAdmin = getSupabaseAdmin()
             const type = metadata.type
             const userId = metadata.userId
 
-            // Grant PPV Entitlement
             if (type === 'ppv' && metadata.episodeId) {
                 await supabaseAdmin.from('entitlements').insert({
                     user_id: userId,
                     episode_id: metadata.episodeId,
                     entitlement_type: 'ppv'
                 })
-
-                // Log transaction
                 await supabaseAdmin.from('transactions').insert({
                     user_id: userId,
                     amount: (session.amount_total || 0) / 100,
@@ -48,11 +55,9 @@ export async function POST(req: Request) {
                 })
             }
 
-            // Grant Subscription Entitlement
             if (type === 'subscription' && metadata.creatorId) {
-                // Find valid_until based on interval
                 const validUntil = new Date()
-                validUntil.setMonth(validUntil.getMonth() + 1) // 1 month from now for MVP default
+                validUntil.setMonth(validUntil.getMonth() + 1)
 
                 await supabaseAdmin.from('entitlements').insert({
                     user_id: userId,
@@ -60,18 +65,16 @@ export async function POST(req: Request) {
                     entitlement_type: 'subscription',
                     valid_until: validUntil.toISOString()
                 })
-
                 await supabaseAdmin.from('transactions').insert({
                     user_id: userId,
                     creator_id: metadata.creatorId,
                     amount: (session.amount_total || 0) / 100,
                     transaction_type: 'subscription',
-                    stripe_payment_intent: session.subscription as string, // For subscriptions
+                    stripe_payment_intent: session.subscription as string,
                     status: 'completed'
                 })
             }
 
-            // Tip (legacy)
             if (type === 'tip' && metadata.creatorId) {
                 await supabaseAdmin.from('transactions').insert({
                     user_id: userId,
@@ -83,7 +86,6 @@ export async function POST(req: Request) {
                 })
             }
 
-            // Gift (emoji gift system)
             if (type === 'gift' && metadata.recipientId) {
                 const totalAmount = (session.amount_total || 0) / 100
                 const platformFee = +(totalAmount * 0.12).toFixed(2)
