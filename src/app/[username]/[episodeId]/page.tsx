@@ -3,6 +3,17 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/Navbar'
+import { Lock, ChevronLeft, Heart, MessageCircle, Gift, Play, Share2 } from 'lucide-react'
+import { GiftPanel } from '@/components/GiftPanel'
+import { ReadingProgress } from '@/components/ReadingProgress'
+import { TextHighlightShare } from '@/components/TextHighlightShare'
+import { ChapterSoundtrack } from '@/components/ChapterSoundtrack'
+import { EmotionalReactions } from '@/components/EmotionalReactions'
+import { LiveReaderCount } from '@/components/LiveReaderCount'
+import { ReaderRenderer } from '@/components/editor/ReaderRenderer'
+import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
+import ReadTracker from '@/components/ReadTracker'
+import { ReportButton } from '@/components/ReportButton'
 
 interface EpisodePageProps {
     params: Promise<{
@@ -17,7 +28,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
     const { data: creatorProfile } = await supabase
         .from('profiles')
-        .select('*, creators(profile_id, subscription_price)')
+        .select('*, creators(profile_id, subscription_price, accent_color, font_family, card_style, brand_tagline)')
         .eq('username', username.toLowerCase())
         .single()
 
@@ -52,263 +63,324 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
         }
     }
 
+    // First episode is always free
+    const { data: allEpisodes } = await supabase
+        .from('episodes')
+        .select('id, created_at')
+        .eq('creator_id', creatorProfile.id)
+        .eq('is_published', true)
+        .order('created_at', { ascending: true })
+        .limit(1)
+
+    const isFirstEpisode = allEpisodes?.[0]?.id === episode.id
+    if (isFirstEpisode && !episode.is_subscription_only && !episode.ppv_price) {
+        hasAccess = true
+    }
+
+    const isOwnProfile = user?.id === creatorProfile.id
     const initial = (creatorProfile.full_name || creatorProfile.username).charAt(0).toUpperCase()
+    const subPrice = creatorProfile.creators?.subscription_price || 5
+    const creatorIdForSub = creatorProfile.creators?.profile_id || creatorProfile.id
+
+    // Word count for reading time
+    const words = (episode.full_text || '').trim().split(/\s+/).filter(Boolean).length
+    const readMin = Math.max(1, Math.round(words / 220))
+
+    // Fetch emotional reactions for this episode
+    const { data: reactions } = await supabase
+        .from('reactions')
+        .select('emoji, user_id')
+        .eq('episode_id', episode.id)
+
+    const reactionCounts: Record<string, number> = {}
+    let myReaction: string | null = null
+    reactions?.forEach(r => {
+        reactionCounts[r.emoji] = (reactionCounts[r.emoji] || 0) + 1
+        if (user && r.user_id === user.id) myReaction = r.emoji
+    })
+
+    const branding = extractBranding(creatorProfile.creators)
 
     return (
-        <div className="min-h-screen pb-24" style={{ backgroundColor: 'var(--cream)' }}>
+        <CreatorBrandProvider branding={branding} className="min-h-screen pb-24 bg-[#0A0B0E] text-gray-100">
+            {hasAccess && <ReadTracker episodeId={episode.id} />}
+            {hasAccess && <ReadingProgress />}
             <Navbar />
 
-            {/* Episode breadcrumb bar */}
-            <div
-                className="sticky top-16 z-40"
-                style={{
-                    backgroundColor: 'var(--cream)',
-                    borderBottom: '1px solid var(--cream-mid)',
-                }}
-            >
+            {/* Sticky Back Header */}
+            <div className="sticky top-16 z-40 bg-[#0A0B0E]/90 backdrop-blur-md border-b border-gray-800">
                 <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
                     <Link
                         href={`/${username}`}
-                        className="flex items-center gap-3 transition-opacity hover:opacity-70"
+                        className="flex items-center gap-3 group"
                     >
-                        <div
-                            className="w-8 h-8 rounded-full overflow-hidden shrink-0"
-                            style={{ border: '2px solid var(--cream-mid)' }}
-                        >
+                        <div className="bg-[#15171C] border border-gray-800 p-1.5 rounded-full group-hover:border-green-500/30 transition">
+                            <ChevronLeft size={16} className="text-gray-400 group-hover:text-green-500" />
+                        </div>
+                        <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-gray-700">
                             {creatorProfile.avatar_url ? (
                                 <img src={creatorProfile.avatar_url} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                <div
-                                    className="w-full h-full flex items-center justify-center font-serif font-bold text-sm"
-                                    style={{ backgroundColor: 'var(--ink)', color: 'var(--cream)' }}
-                                >
+                                <div className="w-full h-full flex items-center justify-center font-bold text-sm bg-green-900/40 text-green-400">
                                     {initial}
                                 </div>
                             )}
                         </div>
-                        <span className="font-serif font-semibold text-sm" style={{ color: 'var(--ink)' }}>
-                            {creatorProfile.full_name || creatorProfile.username}
-                        </span>
+                        <div>
+                            <p className="font-bold text-sm text-white leading-none">
+                                {creatorProfile.full_name || creatorProfile.username}
+                            </p>
+                            <p className="text-[11px] text-gray-500 mt-0.5">@{creatorProfile.username}</p>
+                        </div>
                     </Link>
-                    <div className="text-xs font-medium" style={{ color: 'var(--ink-light)' }}>
-                        {episode.seasons?.title || 'Independiente'}
+                    <div className="flex items-center gap-2">
+                        {episode.seasons?.title && (
+                            <div className="text-[10px] font-bold text-green-400 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20 uppercase tracking-wider">
+                                {episode.seasons.title}
+                            </div>
+                        )}
+                        {isFirstEpisode && (
+                            <div className="text-[10px] font-bold text-yellow-400 bg-yellow-500/10 px-2.5 py-1 rounded-full border border-yellow-500/20 uppercase tracking-wider">
+                                Gratis
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            <main className="max-w-3xl mx-auto px-4 mt-12">
-                {/* Cover image */}
-                {episode.cover_image_url && (
-                    <div
-                        className="w-full aspect-video rounded-2xl overflow-hidden mb-10"
-                        style={{
-                            border: '1px solid var(--cream-mid)',
-                            boxShadow: '0 8px 32px rgba(20,16,10,0.10)',
-                        }}
-                    >
-                        <img src={episode.cover_image_url} alt={episode.title} className="w-full h-full object-cover" />
-                    </div>
-                )}
+            <main className="max-w-3xl mx-auto px-4 pt-8">
 
-                {/* Episode title */}
-                <h1
-                    className="font-serif font-bold leading-tight mb-6"
-                    style={{
-                        fontSize: 'clamp(2rem, 5vw, 3rem)',
-                        color: 'var(--ink)',
-                    }}
-                >
-                    {episode.title}
-                </h1>
+                {/* Live reader count */}
+                <div className="mb-4">
+                    <LiveReaderCount episodeId={episode.id} />
+                </div>
 
-                {/* Meta bar */}
-                <div
-                    className="flex items-center gap-4 text-sm mb-12 pb-8"
-                    style={{
-                        borderBottom: '1px solid var(--cream-mid)',
-                        color: 'var(--ink-light)',
-                    }}
-                >
+                {/* Meta */}
+                <div className="flex items-center gap-3 text-sm text-gray-500 mb-5 font-medium flex-wrap">
                     <span>
                         {new Date(episode.created_at).toLocaleDateString('es-ES', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
+                            month: 'long', day: 'numeric', year: 'numeric',
                         })}
                     </span>
-                    {!hasAccess && (
-                        <span
-                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
-                            style={{
-                                backgroundColor: 'var(--gold-bg)',
-                                color: 'var(--gold-dark)',
-                                border: '1px solid var(--cream-mid)',
-                            }}
-                        >
-                            ✦ Premium
-                        </span>
+                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                    <span>{readMin} min de lectura</span>
+                    {words > 0 && (
+                        <>
+                            <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                            <span>{words.toLocaleString('es-ES')} palabras</span>
+                        </>
                     )}
                 </div>
 
-                {/* Preview text — always free */}
+                {/* Title */}
+                <h1 className="font-bold text-3xl md:text-5xl text-white leading-[1.1] tracking-tight mb-8">
+                    {episode.title}
+                </h1>
+
+                {/* Cover */}
+                {(episode.cover_image_url || !hasAccess) && (
+                    <div className="mb-10 w-full rounded-2xl overflow-hidden relative border border-gray-800 bg-[#15171C] aspect-[16/9] flex items-center justify-center">
+                        {episode.cover_image_url ? (
+                            <img
+                                src={episode.cover_image_url}
+                                alt={episode.title}
+                                className={`w-full h-full object-cover transition-all ${!hasAccess ? 'blur-2xl opacity-40 scale-110' : ''}`}
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-green-900/30 via-[#15171C] to-[#0A0B0E]"></div>
+                        )}
+
+                        {!hasAccess && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/50 backdrop-blur-sm">
+                                <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/30 flex items-center justify-center mb-5">
+                                    <Lock className="w-7 h-7 text-green-400" />
+                                </div>
+                                <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Contenido exclusivo</h2>
+                                <p className="text-gray-300 text-sm mb-6 max-w-sm leading-relaxed">
+                                    Suscríbete a <strong>@{creatorProfile.username}</strong> por <strong>${subPrice}/mes</strong> para leer este episodio completo.
+                                </p>
+                                <Link href={`/api/checkout?type=subscription&creatorId=${creatorIdForSub}`}>
+                                    <Button className="bg-green-600 hover:bg-green-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-green-500/20 transition-transform hover:scale-105">
+                                        Suscribirme — ${subPrice}/mes
+                                    </Button>
+                                </Link>
+
+                                {!episode.is_subscription_only && episode.ppv_price && (
+                                    <div className="mt-5 text-center">
+                                        <span className="text-gray-500 text-[10px] uppercase tracking-widest block mb-2">O solo este episodio</span>
+                                        <form action={`/api/checkout?type=ppv&episodeId=${episode.id}`} method="POST">
+                                            <Button type="submit" variant="outline" className="border-gray-700 bg-[#15171C] text-gray-300 hover:text-white hover:bg-gray-800 font-bold h-10 px-6 rounded-xl">
+                                                Desbloquear por ${episode.ppv_price}
+                                            </Button>
+                                        </form>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Free preview (if there's one) */}
                 {episode.preview_text && (
-                    <div
-                        className="mb-10 pl-5 text-base leading-relaxed italic"
-                        style={{
-                            borderLeft: '3px solid var(--gold)',
-                            color: 'var(--ink-mid)',
-                            fontFamily: 'var(--font-playfair), Georgia, serif',
-                        }}
-                    >
+                    <div className="text-gray-400 text-xl leading-relaxed mb-8 font-medium italic border-l-4 border-green-500 pl-6 py-2">
                         {episode.preview_text}
                     </div>
                 )}
 
-                {/* ── Full Content or Paywall ─────────────────────── */}
-                {hasAccess ? (
-                    <div
-                        className="text-base leading-8 whitespace-pre-wrap"
-                        style={{
-                            color: 'var(--ink)',
-                            fontFamily: 'var(--font-playfair), Georgia, serif',
-                            fontSize: '1.0625rem',
-                        }}
-                    >
-                        {episode.full_text}
-                    </div>
-                ) : (
-                    /* ── Paywall ─────────────────────────────────── */
-                    <div className="relative">
-                        {/* Blurred continuation hint */}
+                {/* Full text — immersive reading */}
+                {hasAccess && episode.full_text && (
+                    <article className="prose prose-invert max-w-none">
+                        {/* 🎵 Chapter Soundtrack */}
+                        {episode.soundtrack_url && (
+                            <ChapterSoundtrack url={episode.soundtrack_url} title={episode.soundtrack_title} />
+                        )}
+
+                        {episode.content_json ? (
+                            <div className="text-gray-200 text-lg md:text-xl leading-[1.9] selection:bg-green-500/40 selection:text-white" style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}>
+                                <ReaderRenderer content={episode.content_json} />
+                            </div>
+                        ) : (
+                            <div
+                                data-reader-content
+                                className="text-gray-200 text-lg md:text-xl leading-[1.9] whitespace-pre-wrap font-serif-like selection:bg-green-500/40 selection:text-white"
+                                style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}
+                            >
+                                {episode.full_text}
+                            </div>
+                        )}
+                        <TextHighlightShare creatorUsername={creatorProfile.username} episodeTitle={episode.title} />
+
+                        {/* 🎭 Emotional Signature */}
+                        <EmotionalReactions
+                            episodeId={episode.id}
+                            initialCounts={reactionCounts}
+                            initialMyReaction={myReaction}
+                            totalReaders={reactions?.length || 0}
+                        />
+                    </article>
+                )}
+
+                {/* Paywall fade teaser for non-subscribers */}
+                {!hasAccess && episode.full_text && (
+                    <div className="relative mb-2">
                         <div
-                            className="rounded-2xl overflow-hidden mb-8"
+                            className="text-gray-300 text-lg md:text-xl leading-[1.9] whitespace-pre-wrap relative"
                             style={{
-                                border: '1px solid var(--cream-mid)',
-                                backgroundColor: 'var(--cream-dark)',
+                                fontFamily: 'Georgia, "Playfair Display", serif',
+                                maxHeight: '320px',
+                                overflow: 'hidden',
                             }}
                         >
-                            {/* Fake blurred text preview */}
-                            <div className="p-8 select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>
-                                <p className="text-base leading-8 mb-4" style={{ color: 'var(--ink)', fontFamily: 'var(--font-playfair), Georgia, serif' }}>
-                                    El resto de esta historia continúa aquí. Este es el momento en que todo cambia, donde el relato da un giro y la verdad finalmente sale a la luz. Desbloquéala para leer el capítulo completo.
-                                </p>
-                                <p className="text-base leading-8" style={{ color: 'var(--ink)', fontFamily: 'var(--font-playfair), Georgia, serif' }}>
-                                    Lo que vino después fue algo que jamás esperé. Después de todos esos años de espera, la respuesta llegó no como una tormenta sino como el susurro más silencioso...
-                                </p>
-                            </div>
-                            {/* Fade overlay */}
+                            {episode.full_text}
                             <div
-                                className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-                                style={{
-                                    background: 'linear-gradient(to bottom, transparent, var(--cream-dark))',
-                                }}
+                                className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none"
+                                style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(10,11,14,0.7) 50%, #0A0B0E 100%)' }}
                             />
-                        </div>
-
-                        {/* Paywall CTA card */}
-                        <div
-                            className="rounded-2xl p-8 text-center"
-                            style={{
-                                backgroundColor: 'white',
-                                border: '1px solid var(--cream-mid)',
-                                boxShadow: '0 8px 40px rgba(20,16,10,0.08)',
-                            }}
-                        >
-                            {/* Lock icon */}
-                            <div
-                                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6"
-                                style={{ backgroundColor: 'var(--gold-bg)' }}
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-7 h-7" style={{ color: 'var(--gold-dark)' }}>
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                </svg>
-                            </div>
-
-                            <h3
-                                className="font-serif font-bold text-2xl mb-3"
-                                style={{ color: 'var(--ink)' }}
-                            >
-                                Seguir leyendo
-                            </h3>
-                            <p
-                                className="text-sm leading-relaxed mb-8 max-w-sm mx-auto"
-                                style={{ color: 'var(--ink-light)' }}
-                            >
-                                Desbloquea esta historia y apoya a <strong style={{ color: 'var(--ink)' }}>@{creatorProfile.username}</strong>.
-                                Cada suscripción va directamente al escritor.
-                            </p>
-
-                            <div className="space-y-3 max-w-xs mx-auto">
-                                {episode.is_subscription_only ? (
-                                    <form action={`/api/checkout?type=subscription&creatorId=${creatorProfile.creators?.profile_id}`} method="POST">
-                                        <Button
-                                            type="submit"
-                                            size="lg"
-                                            className="w-full font-bold h-13 text-base rounded-xl"
-                                            style={{
-                                                backgroundColor: 'var(--ink)',
-                                                color: 'var(--cream)',
-                                                border: 'none',
-                                                boxShadow: '0 4px 20px rgba(20,16,10,0.20)',
-                                            }}
-                                        >
-                                            Suscribirse · ${creatorProfile.creators?.subscription_price}/mes
-                                        </Button>
-                                    </form>
-                                ) : (
-                                    <>
-                                        <form action={`/api/checkout?type=ppv&episodeId=${episode.id}`} method="POST">
-                                            <Button
-                                                type="submit"
-                                                size="lg"
-                                                className="w-full font-bold h-13 text-base rounded-xl"
-                                                style={{
-                                                    backgroundColor: 'var(--ink)',
-                                                    color: 'var(--cream)',
-                                                    border: 'none',
-                                                    boxShadow: '0 4px 20px rgba(20,16,10,0.20)',
-                                                }}
-                                            >
-                                                Desbloquear este episodio · ${episode.ppv_price}
-                                            </Button>
-                                        </form>
-                                        <div className="flex items-center gap-3" style={{ color: 'var(--ink-light)' }}>
-                                            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--cream-mid)' }} />
-                                            <span className="text-xs">o</span>
-                                            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--cream-mid)' }} />
-                                        </div>
-                                        <form action={`/api/checkout?type=subscription&creatorId=${creatorProfile.creators?.profile_id}`} method="POST">
-                                            <Button
-                                                type="submit"
-                                                variant="outline"
-                                                size="lg"
-                                                className="w-full font-semibold h-12 rounded-xl"
-                                                style={{
-                                                    borderColor: 'var(--cream-mid)',
-                                                    color: 'var(--ink)',
-                                                    backgroundColor: 'transparent',
-                                                }}
-                                            >
-                                                Suscribirse · ${creatorProfile.creators?.subscription_price}/mes
-                                            </Button>
-                                        </form>
-                                    </>
-                                )}
-                            </div>
-
-                            {!user && (
-                                <p className="mt-6 text-xs" style={{ color: 'var(--ink-light)' }}>
-                                    ¿Ya tienes cuenta?{' '}
-                                    <Link href="/login" className="underline" style={{ color: 'var(--gold-dark)' }}>
-                                        Inicia sesión
-                                    </Link>
-                                </p>
-                            )}
                         </div>
                     </div>
                 )}
+
+                {/* Reading paywall (when no cover) */}
+                {!hasAccess && !episode.cover_image_url && (
+                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-10 text-center my-12">
+                        <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto mb-5">
+                            <Lock className="w-7 h-7 text-green-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-white mb-2">Continúa la historia</h2>
+                        <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto leading-relaxed">
+                            Este episodio es solo para suscriptores de <strong>@{creatorProfile.username}</strong>.
+                        </p>
+                        <Link href={`/api/checkout?type=subscription&creatorId=${creatorIdForSub}`}>
+                            <Button className="bg-green-600 hover:bg-green-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-green-500/20">
+                                Suscribirme — ${subPrice}/mes
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+
+                {/* Engagement bar (sticky footer-like) */}
+                {hasAccess && (
+                    <>
+                        <div className="mt-16 py-6 border-y border-gray-800 flex items-center justify-between">
+                            <div className="flex items-center gap-1">
+                                <button className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-red-500 font-semibold text-sm">
+                                    <Heart size={18} />
+                                    <span>Me gusta</span>
+                                </button>
+                                <button className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white font-semibold text-sm">
+                                    <MessageCircle size={18} />
+                                    <span>Comentar</span>
+                                </button>
+                                <button className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white font-semibold text-sm">
+                                    <Share2 size={18} />
+                                    <span>Compartir</span>
+                                </button>
+                            </div>
+                            {!isOwnProfile && (
+                                <a href="#gift-panel" className="flex items-center gap-2 bg-green-500/10 text-green-400 border border-green-500/20 px-4 py-2 rounded-xl font-bold text-sm hover:bg-green-500/20 transition">
+                                    <Gift size={16} />
+                                    Enviar regalo
+                                </a>
+                            )}
+                        </div>
+
+                        {/* Gift section */}
+                        {!isOwnProfile && (
+                            <div id="gift-panel" className="mt-10 bg-gradient-to-br from-[#15171C] to-[#0F1114] p-6 rounded-2xl border border-gray-800">
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
+                                        <Gift className="text-green-400" size={18} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-base">Apoya a {creatorProfile.full_name || creatorProfile.username}</h3>
+                                        <p className="text-xs text-gray-500">El escritor recibe el 88% de cada regalo</p>
+                                    </div>
+                                </div>
+                                <GiftPanel recipientId={creatorProfile.id} recipientUsername={creatorProfile.username} postId={episode.id} />
+                            </div>
+                        )}
+
+                        {/* Author footer */}
+                        <div className="mt-10 p-6 rounded-2xl bg-[#15171C] border border-gray-800 flex items-center gap-4">
+                            <Link href={`/${username}`} className="shrink-0">
+                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-700 hover:border-green-500 transition">
+                                    {creatorProfile.avatar_url ? (
+                                        <img src={creatorProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center font-bold text-lg bg-green-900/40 text-green-400">
+                                            {initial}
+                                        </div>
+                                    )}
+                                </div>
+                            </Link>
+                            <div className="flex-1 min-w-0">
+                                <Link href={`/${username}`}>
+                                    <p className="font-bold text-white hover:text-green-400 transition">
+                                        {creatorProfile.full_name || creatorProfile.username}
+                                    </p>
+                                </Link>
+                                <p className="text-sm text-gray-500 truncate">
+                                    {creatorProfile.bio || 'Compartiendo su historia en bio.me.'}
+                                </p>
+                            </div>
+                            {!isOwnProfile && (
+                                <Link href={`/${username}`}>
+                                    <Button variant="outline" className="border-gray-700 bg-[#15171C] text-white hover:bg-gray-800 font-bold h-10 rounded-xl shrink-0">
+                                        Ver perfil
+                                    </Button>
+                                </Link>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {/* Report button */}
+                {!isOwnProfile && (
+                    <div className="mt-8 flex justify-end">
+                        <ReportButton targetType="episode" targetId={episode.id} />
+                    </div>
+                )}
             </main>
-        </div>
+        </CreatorBrandProvider>
     )
 }

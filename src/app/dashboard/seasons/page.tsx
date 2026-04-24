@@ -1,13 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
-import { Button } from '@/components/ui/button'
+import { redirect } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { createSeason } from './actions'
+import { Library, PlusCircle } from 'lucide-react'
 
 export default async function SeasonsPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+
+    const { data: _p } = await supabase.from('profiles').select('role').eq('id', user?.id ?? '').maybeSingle()
+    if (_p?.role !== 'creator') redirect('/dashboard')
 
     const { data: seasons } = await supabase
         .from('seasons')
@@ -16,56 +19,56 @@ export default async function SeasonsPage() {
         .order('created_at', { ascending: false })
 
     return (
-        <div className="space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Seasons</h1>
-                    <p className="text-gray-500">Organize your episodes into narrative arcs or seasons.</p>
-                </div>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold mb-1 text-white">Galerías / Series</h1>
+                <p className="text-sm text-gray-500">Agrupa tus posts exclusivos en series o galerías temáticas.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Create Season Form */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-1">
-                    <Card className="bg-white border-gray-200 shadow-sm sticky top-24">
-                        <CardHeader>
-                            <CardTitle className="text-gray-900">New Season</CardTitle>
-                            <CardDescription className="text-gray-500">Create a new arc to group episodes.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form action={createSeason} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="title" className="text-gray-700 font-medium">Title</Label>
-                                    <Input id="title" name="title" required placeholder="e.g. The Paris Years" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="description" className="text-gray-700 font-medium">Description (Optional)</Label>
-                                    <Input id="description" name="description" placeholder="A brief summary..." className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
-                                </div>
-                                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
-                                    Create Season
-                                </Button>
-                            </form>
-                        </CardContent>
-                    </Card>
+                    <div className="rounded-2xl p-6 sticky top-6 bg-[#15171C] border border-gray-800 shadow-md">
+                        <h2 className="font-bold text-white text-base mb-1">Nueva Galería</h2>
+                        <p className="text-xs text-gray-500 mb-5">Crea un álbum para agrupar posts.</p>
+                        <form action={createSeason} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-sm font-bold text-gray-400">Título</Label>
+                                <Input id="title" name="title" required placeholder="ej. Sesión en la playa" className="h-10 text-sm bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-green-500" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-sm font-bold text-gray-400">Descripción (opcional)</Label>
+                                <Input id="description" name="description" placeholder="Un breve resumen..." className="h-10 text-sm bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-green-500" />
+                            </div>
+                            <button type="submit" className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-green-600 hover:bg-green-500 text-white transition-all shadow-lg shadow-green-500/20">
+                                <PlusCircle size={16} />
+                                Crear Galería
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                {/* Existing Seasons List */}
-                <div className="md:col-span-2 space-y-4">
-                    {seasons?.length === 0 ? (
-                        <div className="p-8 text-center rounded-xl border border-dashed border-gray-300 bg-gray-50">
-                            <p className="text-gray-500">No seasons created yet. Start by creating one on the left.</p>
+                <div className="md:col-span-2 space-y-3">
+                    {!seasons || seasons.length === 0 ? (
+                        <div className="p-12 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 bg-green-500/10">
+                                <Library size={20} className="text-green-500" />
+                            </div>
+                            <p className="text-lg font-bold text-white mb-1">Sin galerías todavía</p>
+                            <p className="text-sm text-gray-500">Crea tu primera serie en el panel izquierdo.</p>
                         </div>
                     ) : (
-                        seasons?.map((season) => (
-                            <Card key={season.id} className="bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
-                                <CardHeader>
-                                    <CardTitle className="text-xl text-gray-900">{season.title}</CardTitle>
-                                    {season.description && (
-                                        <CardDescription className="text-gray-500 mt-2">{season.description}</CardDescription>
-                                    )}
-                                </CardHeader>
-                            </Card>
+                        seasons.map((season) => (
+                            <div key={season.id} className="rounded-2xl p-5 bg-[#15171C] border border-gray-800 hover:border-gray-700 transition-colors">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-green-500/10 border border-green-500/20">
+                                        <Library size={18} className="text-green-400" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-white text-base mb-1">{season.title}</h3>
+                                        {season.description && <p className="text-sm text-gray-500">{season.description}</p>}
+                                    </div>
+                                </div>
+                            </div>
                         ))
                     )}
                 </div>

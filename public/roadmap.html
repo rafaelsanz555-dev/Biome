@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bio.me · Roadmap de ejecución</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: 'Inter', system-ui, sans-serif; background: #0A0A0A; color: #fff; line-height: 1.55; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+a { color: inherit; text-decoration: none; }
+
+/* Header */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10,10,10,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 14px 32px; display: flex; justify-content: space-between; align-items: center;
+}
+.logo { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
+.logo span { color: #22C55E; }
+.header-tag { font-size: 12px; color: #6B7280; font-weight: 500; }
+.nav-jump { display: flex; gap: 4px; }
+.nav-jump a { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #9CA3AF; }
+.nav-jump a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+/* Hero */
+.hero {
+  padding: 140px 24px 80px; text-align: center; position: relative; overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.hero::before {
+  content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px; background: #22C55E; opacity: 0.12; filter: blur(120px); z-index: -1;
+}
+.hero .badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px; font-size: 11px;
+  font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  background: rgba(34,197,94,0.1); color: #4ADE80;
+  border: 1px solid rgba(34,197,94,0.2); margin-bottom: 24px;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 {
+  font-family: 'Playfair Display'; font-weight: 800; font-size: clamp(44px, 7vw, 68px);
+  letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 18px; max-width: 900px; margin-left: auto; margin-right: auto;
+}
+.hero h1 em { font-style: italic; background: linear-gradient(135deg, #4ADE80, #86EFAC); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p { color: #9CA3AF; font-size: 17px; max-width: 620px; margin: 0 auto 36px; line-height: 1.7; }
+
+.hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; }
+.hero-stat { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; text-align: left; }
+.hero-stat.green { background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.02)); border-color: rgba(34,197,94,0.25); }
+.hero-stat-num { font-family: 'Playfair Display'; font-weight: 800; font-size: 32px; margin-bottom: 4px; letter-spacing: -0.02em; }
+.hero-stat.green .hero-stat-num { color: #86EFAC; }
+.hero-stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6B7280; }
+
+/* Main wrap */
+.main { max-width: 1100px; margin: 0 auto; padding: 80px 32px; }
+
+.section-title { text-align: center; margin-bottom: 48px; }
+.section-eyebrow {
+  display: inline-block; padding: 5px 12px; border-radius: 999px;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
+  background: rgba(34,197,94,0.08); color: #4ADE80;
+  border: 1px solid rgba(34,197,94,0.15); margin-bottom: 14px;
+}
+.section-title h2 { font-family: 'Playfair Display'; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+.section-title p { color: #9CA3AF; font-size: 15px; max-width: 580px; margin: 0 auto; line-height: 1.7; }
+
+/* Status grid (what's ready) */
+.status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 100px; }
+.status-card { background: #15171C; border: 1px solid #262626; border-radius: 14px; padding: 20px; display: flex; gap: 14px; align-items: flex-start; }
+.status-check { width: 28px; height: 28px; border-radius: 8px; background: rgba(34,197,94,0.15); color: #4ADE80; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 800; }
+.status-card h4 { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.status-card p { color: #9CA3AF; font-size: 13px; line-height: 1.6; }
+
+/* Phases — roadmap sprints */
+.phases { display: flex; flex-direction: column; gap: 20px; margin-bottom: 100px; }
+.phase {
+  background: #15171C; border: 1px solid #262626; border-radius: 18px;
+  padding: 28px; position: relative; overflow: hidden;
+}
+.phase.p1 { border-color: rgba(239,68,68,0.25); background: linear-gradient(135deg, rgba(239,68,68,0.04), #15171C); }
+.phase.p2 { border-color: rgba(234,179,8,0.25); background: linear-gradient(135deg, rgba(234,179,8,0.04), #15171C); }
+.phase.p3 { border-color: rgba(34,197,94,0.25); background: linear-gradient(135deg, rgba(34,197,94,0.04), #15171C); }
+.phase.p4 { border-color: rgba(99,102,241,0.25); background: linear-gradient(135deg, rgba(99,102,241,0.04), #15171C); }
+
+.phase-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.phase-head-left { display: flex; align-items: center; gap: 14px; }
+.phase-num { font-family: 'Playfair Display'; font-weight: 800; font-size: 42px; line-height: 1; letter-spacing: -0.03em; opacity: 0.5; }
+.phase.p1 .phase-num { color: #F87171; }
+.phase.p2 .phase-num { color: #FACC15; }
+.phase.p3 .phase-num { color: #4ADE80; }
+.phase.p4 .phase-num { color: #A5B4FC; }
+
+.phase-title h3 { font-weight: 800; font-size: 20px; margin-bottom: 4px; }
+.phase-title p { color: #9CA3AF; font-size: 12px; font-weight: 500; }
+.phase-meta { display: flex; gap: 10px; }
+.phase-pill {
+  padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #D1D5DB;
+}
+.phase-pill.time { background: rgba(34,197,94,0.1); color: #4ADE80; border-color: rgba(34,197,94,0.2); }
+
+.task-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.task-item {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+.task-icon { width: 20px; height: 20px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #9CA3AF; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 700; margin-top: 1px; }
+.task-content h5 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.task-content p { color: #6B7280; font-size: 11px; line-height: 1.5; }
+.task-time { display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700; color: #4ADE80; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* Timeline */
+.timeline-wrap { margin: 0 0 100px; }
+.timeline {
+  background: #15171C; border: 1px solid #262626; border-radius: 20px;
+  padding: 40px; position: relative;
+}
+.timeline-title { text-align: center; font-weight: 800; font-size: 18px; margin-bottom: 36px; }
+.timeline-track { position: relative; padding: 0 20px; }
+.timeline-line { position: absolute; top: 16px; left: 10%; right: 10%; height: 2px; background: linear-gradient(to right, #EF4444, #EAB308, #22C55E, #6366F1); border-radius: 2px; }
+.timeline-points { display: flex; justify-content: space-between; position: relative; }
+.timeline-point { text-align: center; flex: 1; position: relative; z-index: 1; }
+.timeline-dot { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: #000; border: 3px solid #15171C; }
+.timeline-point.t1 .timeline-dot { background: #F87171; }
+.timeline-point.t2 .timeline-dot { background: #FACC15; }
+.timeline-point.t3 .timeline-dot { background: #4ADE80; }
+.timeline-point.t4 .timeline-dot { background: #A5B4FC; }
+.timeline-point h5 { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+.timeline-point p { font-size: 10px; color: #6B7280; }
+
+/* Beta criteria */
+.beta-criteria {
+  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02));
+  border: 1px solid rgba(34,197,94,0.25); border-radius: 20px;
+  padding: 40px; margin-bottom: 100px;
+}
+.beta-criteria h3 { font-family: 'Playfair Display'; font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.02em; }
+.beta-criteria p.intro { color: #9CA3AF; font-size: 14px; margin-bottom: 28px; max-width: 600px; }
+.criteria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.criterion { display: flex; gap: 12px; align-items: flex-start; padding: 14px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+.criterion-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(34,197,94,0.4); color: #4ADE80; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 800; margin-top: 1px; }
+.criterion-text { font-size: 13px; font-weight: 600; color: #E5E7EB; }
+.criterion-text strong { color: #86EFAC; }
+
+/* Resources + Risks */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 100px; }
+.resource-card { background: #15171C; border: 1px solid #262626; border-radius: 18px; padding: 28px; }
+.resource-card h3 { font-family: 'Playfair Display'; font-size: 22px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.resource-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.resource-item:last-child { border-bottom: none; }
+.resource-name { font-weight: 600; font-size: 13px; }
+.resource-name-sub { font-size: 11px; color: #6B7280; margin-top: 2px; }
+.resource-cost { font-weight: 800; font-size: 13px; color: #4ADE80; white-space: nowrap; }
+.resource-total { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; }
+
+.risk-item { padding: 14px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.15); border-radius: 10px; margin-bottom: 10px; }
+.risk-item:last-child { margin-bottom: 0; }
+.risk-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.risk-level { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; padding: 2px 7px; border-radius: 4px; background: rgba(239,68,68,0.15); color: #F87171; text-transform: uppercase; }
+.risk-level.med { background: rgba(234,179,8,0.15); color: #FACC15; }
+.risk-item h5 { font-weight: 700; font-size: 13px; }
+.risk-item p { color: #9CA3AF; font-size: 12px; line-height: 1.6; }
+
+/* CTA */
+.cta {
+  text-align: center; padding: 80px 32px; background: linear-gradient(180deg, transparent, rgba(34,197,94,0.08));
+  border-top: 1px solid rgba(34,197,94,0.1);
+}
+.cta h2 { font-family: 'Playfair Display'; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+.cta h2 em { font-style: italic; color: #86EFAC; }
+.cta p { color: #9CA3AF; font-size: 15px; margin-bottom: 30px; max-width: 540px; margin-left: auto; margin-right: auto; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-primary { background: #22C55E; color: #000; font-weight: 800; padding: 14px 28px; border-radius: 12px; font-size: 14px; box-shadow: 0 0 30px -10px rgba(34,197,94,0.6); transition: all .2s; }
+.btn-primary:hover { background: #16A34A; transform: translateY(-1px); }
+.btn-outline { background: rgba(255,255,255,0.04); color: #D1D5DB; font-weight: 700; padding: 14px 28px; border-radius: 12px; font-size: 14px; border: 1px solid rgba(255,255,255,0.1); transition: all .2s; }
+.btn-outline:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+footer { padding: 30px; text-align: center; font-size: 12px; color: #4B5563; border-top: 1px solid rgba(255,255,255,0.05); }
+
+@media (max-width: 820px) {
+  .hero-stats, .status-grid, .criteria-grid, .task-list, .two-col { grid-template-columns: 1fr; }
+  .timeline-points { flex-direction: column; gap: 20px; }
+  .timeline-line { display: none; }
+  .nav-jump { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="logo">bio<span>.me</span></div>
+    <span class="header-tag">· Roadmap de ejecución</span>
+  </div>
+  <nav class="nav-jump">
+    <a href="#estado">Estado</a>
+    <a href="#fases">Fases</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#beta">Beta</a>
+    <a href="#recursos">Recursos</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="badge"><span class="badge-dot"></span>Plan ejecutable · Abril 2026</div>
+  <h1>De prototipo a <em>beta testeable</em> en 8 semanas</h1>
+  <p>Un plan concreto de ejecución: lo que está listo, lo que falta, cuánto tiempo toma cada parte y qué se necesita para llegar a usuarios reales pagando de verdad.</p>
+
+  <div class="hero-stats">
+    <div class="hero-stat green">
+      <div class="hero-stat-num">72%</div>
+      <div class="hero-stat-label">Producto construido</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">18</div>
+      <div class="hero-stat-label">Features críticas listas</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">8</div>
+      <div class="hero-stat-label">Semanas hasta beta</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">~$95</div>
+      <div class="hero-stat-label">Costo mensual infra</div>
+    </div>
+  </div>
+</section>
+
+<div class="main">
+
+  <!-- ──────────────────── -->
+  <!-- ESTADO ACTUAL        -->
+  <!-- ──────────────────── -->
+  <section id="estado">
+    <div class="section-title">
+      <span class="section-eyebrow">✅ Estado actual</span>
+      <h2>Lo que ya está construido</h2>
+      <p>Producto core funcional, desplegado en producción, accesible en <strong>biome-app.vercel.app</strong>. Todo con diseño propio, stack moderno y arquitectura escalable.</p>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Landing page con calculadora de ingresos</h4>
+          <p>Hero + slider interactivo mostrando cuánto puede ganar un escritor según su precio (90% para el creador).</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Auth completo (email + password)</h4>
+          <p>Registro, login, logout, sesión persistente. Supabase Auth con RLS en todas las tablas.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Onboarding con selección de rol</h4>
+          <p>El usuario elige ser escritor o lector. Cada rol tiene una experiencia diferente en la UI.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Feed social tipo red</h4>
+          <p>Dashboard con tabs (Para ti, Trending, Nuevas voces), filtros rápidos, historias destacadas con imágenes, métricas y right sidebar.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Editor de episodios</h4>
+          <p>Título, portada, vista previa, historia completa, hasta 10 fotos, elección de monetización (free/suscripción/pago único), banda sonora Spotify/YouTube.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Perfil público del creador</h4>
+          <p>Cover, avatar, bio, stats (suscriptores/seguidores/episodios), lista de historias, CTA a suscribirse con social proof.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Experiencia de lectura inmersiva</h4>
+          <p>Tipografía editorial, barra de progreso, paywall con fade gradient, primer capítulo siempre gratis.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>🎵 Chapter Soundtrack (innovación)</h4>
+          <p>Cada episodio puede tener una canción de Spotify o YouTube que acompaña la lectura. Único en el mercado.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>🎭 Emotional Signature (innovación)</h4>
+          <p>Reacciones emoji por capítulo (❤️ 🔥 😢 😡 🤯 😂) con huella emocional agregada por lector.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>👥 Live Reader Count (innovación)</h4>
+          <p>"3 personas leyendo ahora" en tiempo real vía Supabase Realtime Presence. Rompe la soledad de leer.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Sistema de regalos</h4>
+          <p>7 niveles de regalos ($1–$50) con emojis. El creador recibe 88%. Integrado con checkout.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Stripe Connect (integración frontend)</h4>
+          <p>Flujo de checkout para suscripción y pago único (PPV). Falta configurar las keys de producción.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Dashboard de monetización</h4>
+          <p>Ingresos brutos, ganancias netas, regalos recibidos, transacciones, wallet en sidebar.</p>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-check">✓</div>
+        <div>
+          <h4>Discover page</h4>
+          <p>Grid de creadores con filtros por categoría (migración, supervivencia, amor y pérdida, etc.).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────── -->
+  <!-- FASES DEL ROADMAP    -->
+  <!-- ──────────────────── -->
+  <section id="fases">
+    <div class="section-title">
+      <span class="section-eyebrow">🔨 Plan de ejecución</span>
+      <h2>4 fases hasta beta</h2>
+      <p>De donde estamos hoy a una plataforma testeable con usuarios reales pagando de verdad. Tiempos realistas, tareas específicas.</p>
+    </div>
+
+    <div class="phases">
+
+      <div class="phase p1">
+        <div class="phase-head">
+          <div class="phase-head-left">
+            <span class="phase-num">01</span>
+            <div class="phase-title">
+              <h3>🔴 Crítico: Production-ready</h3>
+              <p>Sin esto no se puede cobrar dinero real</p>
+            </div>
+          </div>
+          <div class="phase-meta">
+            <span class="phase-pill time">Semanas 1–2</span>
+            <span class="phase-pill">~10 días</span>
+          </div>
+        </div>
+
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Stripe Connect en producción</h5>
+              <p>Cambiar keys de test a live, completar onboarding de plataforma, configurar cuentas para creadores.</p>
+              <span class="task-time">3 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Stripe webhooks configurados</h5>
+              <p>checkout.session.completed, subscription.updated, payment_failed — todos manejados y testeados.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Emails transaccionales (Resend)</h5>
+              <p>Bienvenida, confirmación de suscripción, nuevo suscriptor, nuevo regalo, nuevo episodio publicado.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Supabase Storage buckets</h5>
+              <p>Configurar post-images y avatars con RLS, límites de tamaño, compresión automática.</p>
+              <span class="task-time">1 día</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Editar / eliminar episodios</h5>
+              <p>Hoy solo se puede publicar. Falta página de edición + botón de despublicar.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Upload de avatar + bio en ajustes</h5>
+              <p>Los escritores necesitan una foto real y poder editar su bio después del onboarding.</p>
+              <span class="task-time">1 día</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Recuperación de contraseña</h5>
+              <p>Flujo "olvidé mi contraseña" + email de reset + link con token.</p>
+              <span class="task-time">1 día</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">!</div>
+            <div class="task-content">
+              <h5>Testeo end-to-end del flujo de pago</h5>
+              <p>De registro a cobro exitoso, incluyendo fallos y webhooks. Con tarjetas reales de test Stripe.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase p2">
+        <div class="phase-head">
+          <div class="phase-head-left">
+            <span class="phase-num">02</span>
+            <div class="phase-title">
+              <h3>🟡 MVP completo</h3>
+              <p>Lo mínimo viable para mostrar a usuarios finales</p>
+            </div>
+          </div>
+          <div class="phase-meta">
+            <span class="phase-pill time">Semanas 3–4</span>
+            <span class="phase-pill">~10 días</span>
+          </div>
+        </div>
+
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-icon">+</div>
+            <div class="task-content">
+              <h5>Google OAuth</h5>
+              <p>Login en un clic con Google (ya pedido por Rafael). Reduce fricción de registro.</p>
+              <span class="task-time">1 día</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">+</div>
+            <div class="task-content">
+              <h5>Notificaciones en la app</h5>
+              <p>Campanita real: nuevo suscriptor, nuevo regalo, reacción, nuevo comentario. Badge con conteo no leídas.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">+</div>
+            <div class="task-content">
+              <h5>Comentarios en episodios</h5>
+              <p>Sistema de comentarios con threading. Solo suscriptores pueden comentar episodios premium.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">+</div>
+            <div class="task-content">
+              <h5>Seguir / dejar de seguir creadores</h5>
+              <p>Follow gratuito (sin suscripción). Aparecen sus nuevos episodios en tu feed.</p>
+              <span class="task-time">1 día</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">+</div>
+            <div class="task-content">
+              <h5>Búsqueda real</h5>
+              <p>Por creador, título, tag. Con debounce y resultados instantáneos.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">+</div>
+            <div class="task-content">
+              <h5>Analytics de episodios</h5>
+              <p>Tracking real de vistas, tiempo de lectura, conversión. Dashboard para el escritor.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase p3">
+        <div class="phase-head">
+          <div class="phase-head-left">
+            <span class="phase-num">03</span>
+            <div class="phase-title">
+              <h3>🟢 Beta cerrada</h3>
+              <p>50 escritores fundadores + invitaciones</p>
+            </div>
+          </div>
+          <div class="phase-meta">
+            <span class="phase-pill time">Semanas 5–6</span>
+            <span class="phase-pill">~10 días</span>
+          </div>
+        </div>
+
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-icon">★</div>
+            <div class="task-content">
+              <h5>Reclutamiento de 50 escritores fundadores</h5>
+              <p>DM manual a storytellers en TikTok, Instagram, X. Precio bloqueado de $5/mes para siempre como incentivo.</p>
+              <span class="task-time">En paralelo</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">★</div>
+            <div class="task-content">
+              <h5>Sistema de invitaciones</h5>
+              <p>Links únicos por creador fundador para invitar a 3 amigos gratis por 1 mes.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">★</div>
+            <div class="task-content">
+              <h5>Política de contenido + moderación</h5>
+              <p>TOS claro, reporte de contenido, sistema básico de moderación manual.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">★</div>
+            <div class="task-content">
+              <h5>Onboarding guiado para escritores</h5>
+              <p>Checklist post-registro: foto, bio, primer episodio, precio. Con tooltips y progress.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">★</div>
+            <div class="task-content">
+              <h5>Instrumentación de métricas (PostHog)</h5>
+              <p>Trackear funnel completo. Registros → onboarding → primer episodio → primer cobro.</p>
+              <span class="task-time">1 día</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">★</div>
+            <div class="task-content">
+              <h5>Iteración basada en feedback real</h5>
+              <p>Entrevistas semanales con 5 fundadores. Ajustes en UX según dolor real.</p>
+              <span class="task-time">Continuo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase p4">
+        <div class="phase-head">
+          <div class="phase-head-left">
+            <span class="phase-num">04</span>
+            <div class="phase-title">
+              <h3>🔵 Lanzamiento público</h3>
+              <p>Product Hunt, prensa, adquisición de usuarios</p>
+            </div>
+          </div>
+          <div class="phase-meta">
+            <span class="phase-pill time">Semanas 7–8</span>
+            <span class="phase-pill">~10 días</span>
+          </div>
+        </div>
+
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-icon">↑</div>
+            <div class="task-content">
+              <h5>Lanzamiento en Product Hunt</h5>
+              <p>Preparar assets, maker story, coordinar con los 50 fundadores para upvotes el día del launch.</p>
+              <span class="task-time">3 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">↑</div>
+            <div class="task-content">
+              <h5>SEO + landing pages específicas</h5>
+              <p>Páginas para "storytellers venezolanos", "historias de migración", etc. Capturar búsquedas específicas.</p>
+              <span class="task-time">3 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">↑</div>
+            <div class="task-content">
+              <h5>Building in public en X/TikTok</h5>
+              <p>Rafael documenta el proceso. Audiencia natural para los primeros creadores.</p>
+              <span class="task-time">Continuo</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">↑</div>
+            <div class="task-content">
+              <h5>Sistema de referidos</h5>
+              <p>Invitá un amigo → ambos ganan 1 mes gratis. Growth loop orgánico.</p>
+              <span class="task-time">2 días</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">↑</div>
+            <div class="task-content">
+              <h5>Prensa + newsletters</h5>
+              <p>Pitch a Rest of World, LatAm Tech, medios de creator economy. "El OnlyFans de los storytellers".</p>
+              <span class="task-time">En paralelo</span>
+            </div>
+          </div>
+          <div class="task-item">
+            <div class="task-icon">↑</div>
+            <div class="task-content">
+              <h5>Meta: 200 escritores + $3K MRR</h5>
+              <p>Objetivo concreto al día 60 post-lanzamiento. Probamos que la economía funciona.</p>
+              <span class="task-time">Fin de fase</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ──────────────────── -->
+  <!-- TIMELINE VISUAL      -->
+  <!-- ──────────────────── -->
+  <section id="timeline" class="timeline-wrap">
+    <div class="section-title">
+      <span class="section-eyebrow">📅 Timeline</span>
+      <h2>8 semanas al milestone</h2>
+      <p>Un horizonte corto y concreto. Cada dos semanas, un hito medible.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-track">
+        <div class="timeline-line"></div>
+        <div class="timeline-points">
+          <div class="timeline-point t1">
+            <div class="timeline-dot">1</div>
+            <h5>Sem 1–2</h5>
+            <p>Production-ready<br>Stripe live · Emails</p>
+          </div>
+          <div class="timeline-point t2">
+            <div class="timeline-dot">2</div>
+            <h5>Sem 3–4</h5>
+            <p>MVP completo<br>OAuth · Comentarios</p>
+          </div>
+          <div class="timeline-point t3">
+            <div class="timeline-dot">3</div>
+            <h5>Sem 5–6</h5>
+            <p>Beta cerrada<br>50 fundadores</p>
+          </div>
+          <div class="timeline-point t4">
+            <div class="timeline-dot">4</div>
+            <h5>Sem 7–8</h5>
+            <p>Lanzamiento<br>Product Hunt</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────── -->
+  <!-- BETA CRITERIA        -->
+  <!-- ──────────────────── -->
+  <section id="beta">
+    <div class="section-title">
+      <span class="section-eyebrow">🎯 Beta testeable</span>
+      <h2>¿Cuándo decimos "ya está lista"?</h2>
+      <p>6 criterios concretos. Cuando los 6 estén cumplidos, abrimos registro público.</p>
+    </div>
+
+    <div class="beta-criteria">
+      <div class="criteria-grid">
+        <div class="criterion">
+          <div class="criterion-check">✓</div>
+          <p class="criterion-text">Un escritor puede <strong>registrarse, publicar y cobrar dinero real</strong> en menos de 15 minutos</p>
+        </div>
+        <div class="criterion">
+          <div class="criterion-check">✓</div>
+          <p class="criterion-text">Un lector puede <strong>suscribirse a un creador</strong> y recibir su contenido premium sin bugs</p>
+        </div>
+        <div class="criterion">
+          <div class="criterion-check">✓</div>
+          <p class="criterion-text">El flujo de <strong>regalos con Stripe funciona end-to-end</strong> sin intervención manual</p>
+        </div>
+        <div class="criterion">
+          <div class="criterion-check">✓</div>
+          <p class="criterion-text"><strong>10+ escritores fundadores</strong> han publicado al menos 3 episodios cada uno</p>
+        </div>
+        <div class="criterion">
+          <div class="criterion-check">✓</div>
+          <p class="criterion-text"><strong>5+ lectores reales</strong> han pagado una suscripción con dinero real y leído el contenido</p>
+        </div>
+        <div class="criterion">
+          <div class="criterion-check">✓</div>
+          <p class="criterion-text">El uptime está sobre <strong>99.5%</strong> y las métricas funnel se trackean correctamente</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────── -->
+  <!-- RECURSOS + RIESGOS  -->
+  <!-- ──────────────────── -->
+  <section id="recursos" class="two-col">
+    <div class="resource-card">
+      <h3>💰 Recursos necesarios</h3>
+      <div class="resource-item">
+        <div>
+          <div class="resource-name">Vercel Pro</div>
+          <div class="resource-name-sub">Hosting + builds ilimitados</div>
+        </div>
+        <div class="resource-cost">$20/mes</div>
+      </div>
+      <div class="resource-item">
+        <div>
+          <div class="resource-name">Supabase Pro</div>
+          <div class="resource-name-sub">DB + Storage + Realtime</div>
+        </div>
+        <div class="resource-cost">$25/mes</div>
+      </div>
+      <div class="resource-item">
+        <div>
+          <div class="resource-name">Stripe Connect</div>
+          <div class="resource-name-sub">2.9% + $0.30 por transacción</div>
+        </div>
+        <div class="resource-cost">Variable</div>
+      </div>
+      <div class="resource-item">
+        <div>
+          <div class="resource-name">Resend Pro</div>
+          <div class="resource-name-sub">50K emails/mes</div>
+        </div>
+        <div class="resource-cost">$20/mes</div>
+      </div>
+      <div class="resource-item">
+        <div>
+          <div class="resource-name">Dominio bio.me o similar</div>
+          <div class="resource-name-sub">Compra + renovación anual</div>
+        </div>
+        <div class="resource-cost">~$20/año</div>
+      </div>
+      <div class="resource-item">
+        <div>
+          <div class="resource-name">PostHog / Analytics</div>
+          <div class="resource-name-sub">Tracking de funnel</div>
+        </div>
+        <div class="resource-cost">Free tier</div>
+      </div>
+      <div class="resource-total">
+        <span>Total fijo mensual</span>
+        <span style="color: #4ADE80;">~$65/mes</span>
+      </div>
+      <p style="font-size: 11px; color: #6B7280; margin-top: 10px; line-height: 1.6;">Break-even: con ~15 escritores pagando $5/mes bio.me ya cubre la infraestructura. Todo lo demás es ganancia.</p>
+    </div>
+
+    <div class="resource-card">
+      <h3>⚠️ Riesgos identificados</h3>
+      <div class="risk-item">
+        <div class="risk-head">
+          <span class="risk-level">Alto</span>
+          <h5>Cold start de creadores</h5>
+        </div>
+        <p>Sin creadores no hay plataforma. Mitigación: Rafael recluta manualmente los primeros 50 fundadores vía DM antes del launch público.</p>
+      </div>
+      <div class="risk-item">
+        <div class="risk-head">
+          <span class="risk-level">Alto</span>
+          <h5>Cold start de lectores</h5>
+        </div>
+        <p>Los creadores traen su propia audiencia desde otras redes. Mitigación: incentivo de precio fundador + building in public de Rafael en X/TikTok.</p>
+      </div>
+      <div class="risk-item">
+        <div class="risk-head">
+          <span class="risk-level med">Medio</span>
+          <h5>Stripe Connect approval</h5>
+        </div>
+        <p>La activación de Stripe Connect para una plataforma nueva puede tomar 1–2 semanas de verificación. Mitigación: aplicar hoy, paralelizar con desarrollo.</p>
+      </div>
+      <div class="risk-item">
+        <div class="risk-head">
+          <span class="risk-level med">Medio</span>
+          <h5>Moderación de contenido</h5>
+        </div>
+        <p>Historias de vida pueden incluir trauma fuerte. Mitigación: TOS claro sobre qué es aceptable, sistema de reporte, revisión manual en la beta.</p>
+      </div>
+      <div class="risk-item">
+        <div class="risk-head">
+          <span class="risk-level med">Medio</span>
+          <h5>Chargebacks y fraude</h5>
+        </div>
+        <p>Creadores malintencionados cobrando y no entregando. Mitigación: Stripe Radar, verificación de identidad post-primera venta, payout delay de 7 días.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section class="cta">
+  <h2>Próximo hito:<br><em>production-ready en 10 días</em></h2>
+  <p>La parte más técnica ya está lista. Lo que viene es infraestructura (Stripe, email) y reclutamiento de los primeros fundadores.</p>
+  <div class="cta-btns">
+    <a href="https://biome-app.vercel.app" class="btn-primary">Ver bio.me en vivo →</a>
+    <a href="/prototype.html" class="btn-outline">Ver prototipo UX completo</a>
+  </div>
+</section>
+
+<footer>
+  © 2026 bio.me · Plan de ejecución actualizado 22 abril 2026
+</footer>
+
+</body>
+</html>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 
 const GIFTS = [
     { emoji: '❤️', label: 'Amor', price: 1 },
@@ -47,24 +46,7 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
     }
 
     return (
-        <div
-            className="rounded-2xl p-5"
-            style={{
-                backgroundColor: 'var(--cream-dark)',
-                border: '1px solid var(--cream-mid)',
-            }}
-        >
-            {/* Header */}
-            <div className="flex items-center gap-2 mb-4">
-                <span className="text-base" style={{ color: 'var(--gold)' }}>✦</span>
-                <h3
-                    className="font-semibold text-sm"
-                    style={{ color: 'var(--ink)' }}
-                >
-                    Enviar un regalo a <span style={{ color: 'var(--gold-dark)' }}>@{recipientUsername}</span>
-                </h3>
-            </div>
-
+        <div>
             {/* Gift grid */}
             <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
                 {GIFTS.map((g) => {
@@ -73,22 +55,14 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
                         <button
                             key={g.label}
                             onClick={() => setSelected(isSelected ? null : g)}
-                            className="flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all"
-                            style={{
-                                border: isSelected
-                                    ? '2px solid var(--gold)'
-                                    : '2px solid var(--cream-mid)',
-                                backgroundColor: isSelected
-                                    ? 'var(--gold-bg)'
-                                    : 'var(--cream)',
-                                transform: isSelected ? 'scale(1.06)' : 'scale(1)',
-                            }}
+                            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
+                                isSelected
+                                    ? 'bg-green-500/10 border-2 border-green-500 scale-105 shadow-lg shadow-green-500/10'
+                                    : 'bg-[#0A0B0E] border-2 border-gray-800 hover:border-gray-600 hover:bg-[#15171C]'
+                            }`}
                         >
-                            <span className="text-2xl">{g.emoji}</span>
-                            <span
-                                className="text-[10px] font-bold"
-                                style={{ color: isSelected ? 'var(--gold-dark)' : 'var(--ink-light)' }}
-                            >
+                            <span className="text-2xl drop-shadow-md">{g.emoji}</span>
+                            <span className={`text-[10px] font-bold ${isSelected ? 'text-green-400' : 'text-gray-500'}`}>
                                 ${g.price}
                             </span>
                         </button>
@@ -98,49 +72,41 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
 
             {/* Selected preview */}
             {selected && (
-                <div
-                    className="flex items-center justify-between rounded-xl px-4 py-3 mb-3"
-                    style={{
-                        backgroundColor: 'var(--gold-bg)',
-                        border: '1px solid var(--cream-mid)',
-                    }}
-                >
-                    <div className="flex items-center gap-2">
-                        <span className="text-xl">{selected.emoji}</span>
+                <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-green-500/10 border border-green-500/20">
+                    <div className="flex items-center gap-3">
+                        <span className="text-2xl drop-shadow-md">{selected.emoji}</span>
                         <div>
-                            <p className="text-sm font-bold" style={{ color: 'var(--ink)' }}>Regalo de {selected.label}</p>
-                            <p className="text-xs" style={{ color: 'var(--ink-light)' }}>
-                                @{recipientUsername} recibe ${(selected.price * 0.88).toFixed(2)}
+                            <p className="text-sm font-bold text-white">Regalo de {selected.label}</p>
+                            <p className="text-xs text-gray-400">
+                                @{recipientUsername} recibe <span className="text-green-400 font-bold">${(selected.price * 0.88).toFixed(2)}</span>
                             </p>
                         </div>
                     </div>
-                    <span className="text-lg font-black" style={{ color: 'var(--gold-dark)' }}>
+                    <span className="text-xl font-black text-green-400">
                         ${selected.price}
                     </span>
                 </div>
             )}
 
             {/* Send button */}
-            <Button
+            <button
                 onClick={sendGift}
                 disabled={!selected || loading}
-                className="w-full font-bold h-11 rounded-xl transition-all"
-                style={{
-                    backgroundColor: selected ? 'var(--ink)' : 'var(--cream-mid)',
-                    color: selected ? 'var(--cream)' : 'var(--ink-light)',
-                    border: 'none',
-                    opacity: loading ? 0.6 : 1,
-                }}
+                className={`w-full font-bold h-12 rounded-xl transition-all text-sm ${
+                    selected
+                        ? 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-500/20'
+                        : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                } ${loading ? 'opacity-60' : ''}`}
             >
                 {loading
                     ? 'Procesando...'
                     : selected
                     ? `Enviar ${selected.emoji} — $${selected.price}`
                     : 'Selecciona un regalo'}
-            </Button>
+            </button>
 
-            <p className="text-center text-[10px] mt-2" style={{ color: 'var(--ink-light)', opacity: 0.6 }}>
-                Pago seguro vía Stripe · El escritor recibe 88%
+            <p className="text-center text-[10px] mt-3 text-gray-600">
+                🔒 Pago seguro vía Stripe · El escritor recibe 88%
             </p>
         </div>
     )

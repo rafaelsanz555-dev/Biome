@@ -1,38 +1,12 @@
 import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/ui/button'
+import { EarningsCalculator } from '@/components/EarningsCalculator'
 
-const STORY_CATEGORIES = [
-    {
-        label: 'Migración',
-        description: 'Dejarlo todo atrás para empezar de nuevo.',
-        gradient: 'linear-gradient(160deg, #0A0C14 0%, #1A2A4A 50%, #2A4A7A 100%)',
-    },
-    {
-        label: 'Supervivencia',
-        description: 'Cuando la vida te pone a prueba al límite.',
-        gradient: 'linear-gradient(160deg, #140402 0%, #4A1208 50%, #8A2A10 100%)',
-    },
-    {
-        label: 'Amor y Pérdida',
-        description: 'Las historias que nos rompen y nos rehacen.',
-        gradient: 'linear-gradient(160deg, #0E040C 0%, #3A0A32 50%, #7A1460 100%)',
-    },
-    {
-        label: 'Construyendo',
-        description: 'De cero a algo real.',
-        gradient: 'linear-gradient(160deg, #0A0C02 0%, #2A3A0A 50%, #5A7A14 100%)',
-    },
-    {
-        label: 'Maternidad',
-        description: 'La epopeya más poco contada de la historia.',
-        gradient: 'linear-gradient(160deg, #100804 0%, #3A200A 50%, #7A4A14 100%)',
-    },
-    {
-        label: 'Comenzar de nuevo',
-        description: 'El coraje de empezar a cualquier edad.',
-        gradient: 'linear-gradient(160deg, #04100E 0%, #0A3A30 50%, #146A54 100%)',
-    },
+const CATEGORIES = [
+    { label: 'Exclusivos', icon: '💎', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
+    { label: 'Historias', icon: '🔥', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
+    { label: 'Comunidad', icon: '💬', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
 ]
 
 const GIFTS = [
@@ -45,517 +19,166 @@ const GIFTS = [
     { emoji: '🚀', label: 'Cohete', price: 50 },
 ]
 
-const STEPS = [
-    {
-        number: '01',
-        title: 'Escribe tu historia',
-        desc: 'Publica episodios de tu vida — momentos del día a día, grandes capítulos, verdades sin filtro. Texto y fotos, sin mínimo.',
-    },
-    {
-        number: '02',
-        title: 'Engancha gratis',
-        desc: 'Tu primer capítulo siempre es gratis. Los lectores se enganchan. Luego pagan para seguir leyendo.',
-    },
-    {
-        number: '03',
-        title: 'Gana desde el primer día',
-        desc: 'Suscripciones, regalos y propinas — dinero real de personas que aman tu historia.',
-    },
-]
-
 export default function LandingPage() {
     return (
-        <div className="min-h-screen" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans selection:bg-green-500/30">
             <Navbar />
 
-            {/* ── Hero ─────────────────────────────────────────── */}
-            <section className="relative overflow-hidden py-28 px-6">
-                {/* Warm glow — subtle, not heavy */}
-                <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                        background: 'radial-gradient(ellipse 70% 50% at 50% 30%, rgba(201,168,76,0.07) 0%, transparent 100%)',
-                    }}
-                />
+            {/* ── HERO ──────────────────────────────────────────── */}
+            <section className="relative overflow-hidden border-b border-gray-800/60 pb-20 pt-24 md:pb-32 md:pt-36">
+                {/* Background ambient glow */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[400px] bg-green-600/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
 
-                <div className="max-w-4xl mx-auto text-center relative">
-                    {/* Eyebrow label */}
-                    <div
-                        className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase mb-8 px-4 py-2 rounded-full"
-                        style={{
-                            backgroundColor: 'var(--gold-bg)',
-                            color: 'var(--gold-dark)',
-                            border: '1px solid var(--cream-mid)',
-                        }}
-                    >
-                        <span
-                            className="w-1.5 h-1.5 rounded-full animate-pulse"
-                            style={{ backgroundColor: 'var(--gold)' }}
-                        />
-                        La plataforma para escritores
+                <div className="relative max-w-4xl mx-auto px-6 text-center">
+                    <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase mb-8 px-4 py-2 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                        La red social premium para creadores
                     </div>
 
-                    {/* Main headline — Playfair, the identity piece */}
-                    <h1 className="font-serif font-bold leading-[1.1] mb-6" style={{ fontSize: 'clamp(2.8rem, 6vw, 5rem)', color: 'var(--ink)' }}>
-                        Tu vida merece ser leída.
-                        <br />
-                        <em style={{ color: 'var(--gold-warm)', fontStyle: 'italic' }}>Y merece ser pagada.</em>
+                    <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 tracking-tight">
+                        Tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">historia.</span><br />
+                        Tus ingresos.
                     </h1>
 
-                    <p
-                        className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
-                        style={{ color: 'var(--ink-light)' }}
-                    >
-                        bio.me es la única plataforma construida exclusivamente para escritores —
-                        publica tu vida en capítulos, construye una audiencia fiel
-                        y gana ingresos reales de quienes no pueden dejar de leerte.
+                    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+                        Sube publicaciones exclusivas, crea tu comunidad y recibe apoyo directo. 
+                        Tus fans más leales pagarán por ver lo que tienes que contar.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
-                            <Button
-                                size="lg"
-                                className="font-bold px-10 h-14 text-base w-full sm:w-auto rounded-xl transition-all hover:opacity-85"
-                                style={{
-                                    backgroundColor: 'var(--ink)',
-                                    color: 'var(--cream)',
-                                    border: 'none',
-                                    boxShadow: '0 4px 24px rgba(20,16,10,0.18)',
-                                }}
-                            >
-                                Empieza a escribir — $5/mes
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <Link href="/login" className="w-full sm:w-auto">
+                            <Button size="lg" className="bg-green-600 hover:bg-green-500 text-white font-bold px-10 h-14 text-base rounded-xl shadow-[0_0_40px_-10px_rgba(34,197,94,0.5)] transition-all hover:scale-105 w-full">
+                                Crear mi perfil — $5/mes
                             </Button>
                         </Link>
-                        <Link href="/discover">
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="font-semibold px-10 h-14 text-base w-full sm:w-auto rounded-xl"
-                                style={{
-                                    borderColor: 'var(--cream-mid)',
-                                    color: 'var(--ink)',
-                                    backgroundColor: 'transparent',
-                                }}
-                            >
-                                Explorar historias
+                        <Link href="/discover" className="w-full sm:w-auto">
+                            <Button size="lg" variant="outline" className="border-gray-700 bg-[#15171C] text-gray-300 hover:bg-gray-800 hover:text-white font-bold px-10 h-14 text-base rounded-xl w-full">
+                                Explorar creadores
                             </Button>
                         </Link>
                     </div>
-
-                    <p className="text-sm mt-6" style={{ color: 'var(--ink-light)', opacity: 0.6 }}>
-                        Sin compromiso a largo plazo · Cancela cuando quieras
-                    </p>
                 </div>
             </section>
 
-            {/* ── Story Categories ─────────────────────────────── */}
-            <section className="py-20 px-6" style={{ borderTop: '1px solid var(--cream-mid)' }}>
-                <div className="max-w-6xl mx-auto">
+            {/* ── FEED PREVIEW (MOCK) ────────────────────────── */}
+            <section className="py-20 px-6 border-b border-gray-800/60 bg-[#0A0B0E]">
+                <div className="max-w-2xl mx-auto">
                     <div className="text-center mb-12">
-                        <p
-                            className="text-xs font-bold tracking-widest uppercase mb-3"
-                            style={{ color: 'var(--gold)' }}
-                        >
-                            Historias que importan
-                        </p>
-                        <h2
-                            className="font-serif font-bold text-3xl md:text-4xl"
-                            style={{ color: 'var(--ink)' }}
-                        >
-                            Toda vida tiene capítulos que merecen ser compartidos
-                        </h2>
+                        <h2 className="text-2xl md:text-3xl font-bold text-white">Un feed exclusivo para tus fans</h2>
+                        <p className="text-gray-500 mt-2">Fotos, textos largos y propinas en cada publicación.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {STORY_CATEGORIES.map((cat) => (
-                            <Link href="/discover" key={cat.label} className="group block">
-                                <div
-                                    className="relative h-40 md:h-48 rounded-2xl overflow-hidden flex flex-col justify-end p-5 transition-transform duration-300 group-hover:-translate-y-0.5"
-                                    style={{
-                                        background: cat.gradient,
-                                        boxShadow: '0 4px 20px rgba(20,16,10,0.12)',
-                                    }}
-                                >
-                                    <p className="font-serif font-bold text-lg text-white leading-tight mb-1">
-                                        {cat.label}
-                                    </p>
-                                    <p className="text-xs leading-snug hidden md:block" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                        {cat.description}
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Earnings Proof — ONE dark section ────────────── */}
-            <section
-                className="py-24 px-6"
-                style={{ backgroundColor: 'var(--dark-section)' }}
-            >
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-16">
-                        <p
-                            className="text-xs font-bold tracking-widest uppercase mb-3"
-                            style={{ color: 'var(--gold)' }}
-                        >
-                            El cálculo es simple
-                        </p>
-                        <h2
-                            className="font-serif font-bold text-3xl md:text-4xl text-white"
-                        >
-                            Ingresos reales de quienes<br />aman tu historia
-                        </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[
-                            {
-                                scenario: '20 suscriptores',
-                                price: '$5/mes',
-                                monthly: '$90/mes',
-                                sub: 'Tu primer ingreso real',
-                            },
-                            {
-                                scenario: '100 suscriptores',
-                                price: '$5/mes',
-                                monthly: '$450/mes',
-                                sub: 'Ingreso extra constante',
-                                featured: true,
-                            },
-                            {
-                                scenario: '500 suscriptores',
-                                price: '$5/mes',
-                                monthly: '$2,250/mes',
-                                sub: 'Ingreso serio',
-                            },
-                        ].map((item) => (
-                            <div
-                                key={item.scenario}
-                                className="rounded-2xl p-7 text-center"
-                                style={{
-                                    backgroundColor: item.featured ? 'rgba(201,168,76,0.12)' : 'var(--dark-card)',
-                                    border: item.featured
-                                        ? '1px solid rgba(201,168,76,0.35)'
-                                        : '1px solid var(--dark-border)',
-                                }}
-                            >
-                                <p
-                                    className="text-xs font-semibold tracking-wider uppercase mb-4"
-                                    style={{ color: item.featured ? 'var(--gold)' : 'rgba(255,255,255,0.4)' }}
-                                >
-                                    {item.scenario}
-                                </p>
-                                <p
-                                    className="text-sm mb-2"
-                                    style={{ color: 'rgba(255,255,255,0.5)' }}
-                                >
-                                    @ {item.price} cada uno
-                                </p>
-                                <p
-                                    className="font-serif font-bold text-4xl mb-2"
-                                    style={{ color: item.featured ? 'var(--gold-warm)' : 'white' }}
-                                >
-                                    {item.monthly}
-                                </p>
-                                <p
-                                    className="text-sm"
-                                    style={{ color: 'rgba(255,255,255,0.4)' }}
-                                >
-                                    {item.sub}
-                                </p>
+                    {/* Fake Post Card */}
+                    <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-5 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-green-500 to-emerald-400 p-0.5">
+                                <div className="w-full h-full bg-[#15171C] rounded-full flex items-center justify-center font-bold text-lg">M</div>
                             </div>
-                        ))}
-                    </div>
-
-                    <p
-                        className="text-center text-xs mt-8"
-                        style={{ color: 'rgba(255,255,255,0.3)' }}
-                    >
-                        Tú recibes el 90% de cada suscripción · Comisión de plataforma: 10%
-                    </p>
-                </div>
-            </section>
-
-            {/* ── How it Works ─────────────────────────────────── */}
-            <section className="py-24 px-6" style={{ backgroundColor: 'var(--cream)' }}>
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-16">
-                        <p
-                            className="text-xs font-bold tracking-widest uppercase mb-3"
-                            style={{ color: 'var(--gold)' }}
-                        >
-                            Cómo funciona
-                        </p>
-                        <h2
-                            className="font-serif font-bold text-3xl md:text-4xl"
-                            style={{ color: 'var(--ink)' }}
-                        >
-                            Tres pasos hacia un ingreso<br />desde tu historia
-                        </h2>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {STEPS.map((step) => (
-                            <div key={step.number} className="flex flex-col">
-                                <span
-                                    className="font-serif font-bold text-5xl mb-4 leading-none"
-                                    style={{ color: 'var(--cream-mid)' }}
-                                >
-                                    {step.number}
-                                </span>
-                                <h3
-                                    className="font-serif font-semibold text-xl mb-3"
-                                    style={{ color: 'var(--ink)' }}
-                                >
-                                    {step.title}
-                                </h3>
-                                <p
-                                    className="text-sm leading-relaxed"
-                                    style={{ color: 'var(--ink-light)' }}
-                                >
-                                    {step.desc}
-                                </p>
+                            <div>
+                                <p className="font-bold text-white leading-tight">Maria Stories</p>
+                                <p className="text-xs text-gray-500">Ayer a las 10:30 PM • Solo subscriptores</p>
                             </div>
-                        ))}
+                        </div>
+                        <p className="text-gray-300 mb-4 leading-relaxed">
+                            Hoy tomé la decisión más difícil de mi vida. Empaqué todo en dos maletas y dejé mi apartamento. Para todos los que estuvieron apoyándome en este proceso, aquí les cuento la historia completa y lo que viene...
+                        </p>
+                        <div className="w-full h-48 bg-[#0A0B0E] rounded-xl flex items-center justify-center border border-gray-800 mb-4 overflow-hidden relative">
+                            {/* Blur mockup */}
+                            <div className="absolute inset-0 bg-green-500/5 backdrop-blur-xl"></div>
+                            <span className="relative text-green-400 font-bold flex items-center gap-2">
+                                🔒 Contenido bloqueado
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 pt-4 border-t border-gray-800/80">
+                            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-white/5 font-bold">
+                                ❤️ Me gusta
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300 hover:bg-green-500/10 font-bold ml-auto">
+                                🎁 Enviar propina
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* ── Gifts ────────────────────────────────────────── */}
-            <section
-                className="py-20 px-6"
-                style={{
-                    backgroundColor: 'var(--cream-dark)',
-                    borderTop: '1px solid var(--cream-mid)',
-                    borderBottom: '1px solid var(--cream-mid)',
-                }}
-            >
-                <div className="max-w-3xl mx-auto text-center">
-                    <p
-                        className="text-xs font-bold tracking-widest uppercase mb-3"
-                        style={{ color: 'var(--gold)' }}
-                    >
-                        Apreciación en dinero real
+            {/* ── EARNINGS CALCULATOR ──────────────────────────── */}
+            <EarningsCalculator />
+
+            {/* ── GIFTS ─────────────────────────────────────────── */}
+            <section className="py-24 px-6 border-b border-gray-800/60 bg-[#0A0B0E] relative overflow-hidden">
+                <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-green-600/10 blur-[100px] rounded-full pointer-events-none" />
+                
+                <div className="max-w-4xl mx-auto text-center relative z-10">
+                    <p className="text-xs font-bold tracking-widest uppercase text-green-500 mb-3">
+                        Monetización Directa
                     </p>
-                    <h2
-                        className="font-serif font-bold text-3xl mb-3"
-                        style={{ color: 'var(--ink)' }}
-                    >
-                        Los lectores te regalan dinero de verdad
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                        Convierten su aprecio en ingresos
                     </h2>
-                    <p
-                        className="text-base mb-10"
-                        style={{ color: 'var(--ink-light)' }}
-                    >
-                        Cuando tu historia impacta de verdad, lo hacen llover. Cada emoji es dinero real.
+                    <p className="text-gray-400 mb-14 text-lg leading-relaxed max-w-2xl mx-auto">
+                        Tus seguidores pueden enviarte regalos directamente en cualquier publicación. 
+                        Recibes el 88% de cada transacción de forma transparente.
                     </p>
 
-                    <div className="flex flex-wrap justify-center gap-3">
+                    <div className="flex flex-wrap justify-center gap-4">
                         {GIFTS.map((g) => (
                             <div
                                 key={g.label}
-                                className="flex flex-col items-center gap-1.5 px-5 py-4 rounded-2xl cursor-default transition-all"
-                                style={{
-                                    backgroundColor: 'var(--cream)',
-                                    border: '1px solid var(--cream-mid)',
-                                }}
+                                className="flex flex-col items-center gap-2 px-6 py-5 rounded-2xl bg-[#15171C] border border-gray-800 hover:border-green-500/50 hover:bg-[#1A1C23] transition-all cursor-default w-32"
                             >
-                                <span className="text-3xl">{g.emoji}</span>
-                                <span
-                                    className="text-xs font-semibold"
-                                    style={{ color: 'var(--ink-light)' }}
-                                >
-                                    {g.label}
-                                </span>
-                                <span
-                                    className="text-sm font-bold"
-                                    style={{ color: 'var(--gold-dark)' }}
-                                >
-                                    ${g.price}
-                                </span>
+                                <span className="text-4xl drop-shadow-lg mb-2">{g.emoji}</span>
+                                <span className="text-xs font-bold text-gray-500 tracking-wide uppercase">{g.label}</span>
+                                <span className="text-lg font-black text-white">${g.price}</span>
                             </div>
                         ))}
                     </div>
-
-                    <p
-                        className="text-xs mt-6"
-                        style={{ color: 'var(--ink-light)', opacity: 0.6 }}
-                    >
-                        Tú te quedas el 88% de cada regalo · Sin límite en lo que puedes ganar
-                    </p>
                 </div>
             </section>
 
-            {/* ── Pricing ──────────────────────────────────────── */}
-            <section className="py-24 px-6" style={{ backgroundColor: 'var(--cream)' }}>
-                <div className="max-w-lg mx-auto">
-                    <div className="text-center mb-12">
-                        <p
-                            className="text-xs font-bold tracking-widest uppercase mb-3"
-                            style={{ color: 'var(--gold)' }}
-                        >
-                            Precio
-                        </p>
-                        <h2
-                            className="font-serif font-bold text-3xl"
-                            style={{ color: 'var(--ink)' }}
-                        >
-                            Un precio. Historias ilimitadas.
-                        </h2>
-                    </div>
+            {/* ── PRICING ───────────────────────────────────────── */}
+            <section className="py-24 px-6 bg-[#15171C]">
+                <div className="max-w-lg mx-auto text-center">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Todo lo que necesitas.</h2>
+                    <p className="text-gray-400 mb-10 text-lg">Eres dueño de tu contenido y de tus ganancias.</p>
 
-                    <div
-                        className="rounded-3xl p-8"
-                        style={{
-                            backgroundColor: 'white',
-                            border: '1px solid var(--cream-mid)',
-                            boxShadow: '0 8px 40px rgba(20,16,10,0.08)',
-                        }}
-                    >
+                    <div className="bg-[#0A0B0E] border border-gray-800 rounded-[2rem] p-8 text-left shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                        
                         <div className="flex items-end gap-2 mb-2">
-                            <span
-                                className="font-serif font-black text-6xl"
-                                style={{ color: 'var(--ink)', lineHeight: 1 }}
-                            >
-                                $5
-                            </span>
-                            <span
-                                className="mb-2 text-lg"
-                                style={{ color: 'var(--ink-light)' }}
-                            >
-                                / mes
-                            </span>
+                            <span className="text-6xl font-black text-white">$5</span>
+                            <span className="text-gray-500 mb-2 text-xl font-medium">/ mes</span>
                         </div>
-                        <p
-                            className="text-sm mb-8"
-                            style={{ color: 'var(--ink-light)' }}
-                        >
-                            Para escritores. Los lectores siempre leen gratis.
-                        </p>
+                        <p className="text-gray-400 text-sm mb-8 font-medium">Suscripción para creadores. 0% de comisión en tus subs.</p>
 
-                        <ul className="space-y-3 mb-8">
+                        <ul className="space-y-4 mb-10">
                             {[
-                                'Publicaciones y episodios ilimitados',
-                                'Subida de fotos en cada publicación',
-                                'Tu propia página de perfil pública',
-                                'Sistema de regalos — tú te quedas el 88%',
-                                'Herramientas de gestión de suscriptores',
-                                'Panel de ganancias en tiempo real',
-                                'Cancela cuando quieras, sin penalizaciones',
-                            ].map((item) => (
-                                <li
-                                    key={item}
-                                    className="flex items-center gap-3 text-sm font-medium"
-                                    style={{ color: 'var(--ink)' }}
-                                >
-                                    <span
-                                        className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                                        style={{
-                                            backgroundColor: 'var(--gold-bg)',
-                                            color: 'var(--gold-dark)',
-                                        }}
-                                    >
-                                        ✓
-                                    </span>
+                                'Perfil público estilo red social',
+                                'Publicaciones con fotos (hasta 10)',
+                                'Bloqueo de contenido para subs',
+                                'Recibe regalos y propinas ($1 - $50)',
+                                'Tú defines el precio de tu membresía',
+                                'Panel de control y ganancias',
+                            ].map(item => (
+                                <li key={item} className="flex items-start gap-4 text-gray-300 font-medium">
+                                    <span className="w-6 h-6 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✓</span>
                                     {item}
                                 </li>
                             ))}
                         </ul>
 
                         <Link href="/login" className="block">
-                            <Button
-                                size="lg"
-                                className="w-full font-bold h-14 text-base rounded-xl transition-all hover:opacity-85"
-                                style={{
-                                    backgroundColor: 'var(--ink)',
-                                    color: 'var(--cream)',
-                                    border: 'none',
-                                    boxShadow: '0 4px 24px rgba(20,16,10,0.18)',
-                                }}
-                            >
-                                Empieza a escribir hoy
+                            <Button size="lg" className="w-full bg-white text-black hover:bg-gray-200 font-bold h-14 text-base rounded-xl transition-all">
+                                Crear mi cuenta →
                             </Button>
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* ── Final CTA ────────────────────────────────────── */}
-            <section
-                className="py-24 px-6 text-center"
-                style={{
-                    backgroundColor: 'var(--cream-dark)',
-                    borderTop: '1px solid var(--cream-mid)',
-                }}
-            >
-                <div className="max-w-2xl mx-auto">
-                    <h2
-                        className="font-serif font-bold text-4xl md:text-5xl mb-6 leading-tight"
-                        style={{ color: 'var(--ink)' }}
-                    >
-                        Tu historia lleva<br />
-                        <em style={{ color: 'var(--gold-warm)', fontStyle: 'italic' }}>demasiado tiempo esperando.</em>
-                    </h2>
-                    <p
-                        className="text-lg mb-10"
-                        style={{ color: 'var(--ink-light)' }}
-                    >
-                        Únete a bio.me y convierte la vida que has vivido en los ingresos que mereces.
-                    </p>
-                    <Link href="/login">
-                        <Button
-                            size="lg"
-                            className="font-bold px-12 h-14 text-base rounded-xl transition-all hover:opacity-85"
-                            style={{
-                                backgroundColor: 'var(--ink)',
-                                color: 'var(--cream)',
-                                border: 'none',
-                                boxShadow: '0 4px 24px rgba(20,16,10,0.18)',
-                            }}
-                        >
-                            Comienza tu historia
-                        </Button>
-                    </Link>
-                </div>
-            </section>
-
-            {/* ── Footer ───────────────────────────────────────── */}
-            <footer
-                className="py-12 px-6"
-                style={{ backgroundColor: 'var(--dark-section)' }}
-            >
+            <footer className="bg-[#0A0B0E] py-12 px-6 border-t border-gray-800/60">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-                    <Link href="/" className="flex items-center gap-0">
-                        <span className="font-serif text-2xl font-bold" style={{ color: 'var(--cream)' }}>
-                            bio
-                        </span>
-                        <span className="font-serif text-2xl font-bold" style={{ color: 'var(--gold)' }}>
-                            .me
-                        </span>
-                    </Link>
-
-                    <div className="flex items-center gap-8">
-                        <Link
-                            href="/discover"
-                            className="text-sm transition-colors"
-                            style={{ color: 'rgba(250,247,240,0.45)' }}
-                        >
-                            Descubrir
-                        </Link>
-                        <Link
-                            href="/login"
-                            className="text-sm transition-colors"
-                            style={{ color: 'rgba(250,247,240,0.45)' }}
-                        >
-                            Empieza a escribir
-                        </Link>
-                    </div>
-
-                    <p className="text-sm" style={{ color: 'rgba(250,247,240,0.3)' }}>
-                        © 2026 bio.me · Tu historia. Tus ingresos.
-                    </p>
+                    <p className="text-2xl font-bold text-white tracking-tight">bio<span className="text-green-500">.me</span></p>
+                    <p className="text-sm font-medium text-gray-600">© 2026 bio.me · Premium Social Feed</p>
                 </div>
             </footer>
         </div>

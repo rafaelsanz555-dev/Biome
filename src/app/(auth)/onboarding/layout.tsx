@@ -18,7 +18,7 @@ export default async function OnboardingLayout({
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
     if (profile) {
         // Already onboarded

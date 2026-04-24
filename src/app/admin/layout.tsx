@@ -21,7 +21,7 @@ export default async function AdminLayout({
         .from('profiles')
         .select('role, username, full_name')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
     if (profile?.role !== 'admin') {
         redirect('/discover')

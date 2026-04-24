@@ -24,55 +24,37 @@ export default async function LoginPage({
     const errorMsg = errorKey ? ERROR_MESSAGES[errorKey] || `Error: ${debugMsg || 'Intenta de nuevo.'}` : null
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center p-4"
-            style={{
-                backgroundColor: 'var(--cream)',
-                background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.13) 0%, var(--cream) 70%)',
-            }}
-        >
-            <div className="w-full max-w-sm flex flex-col items-center space-y-8">
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0A0B0E] text-white">
+            <div className="w-full max-w-sm flex flex-col items-center space-y-8 relative z-10">
 
                 {/* Logo */}
                 <div className="text-center space-y-2">
-                    <Link
-                        href="/"
-                        className="font-serif text-4xl font-bold tracking-tight hover:opacity-80 transition-opacity inline-block"
-                        style={{ color: 'var(--ink)' }}
-                    >
-                        bio<span style={{ color: 'var(--gold)' }}>.me</span>
+                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-green-500">
+                        b<span className="text-white">.</span>me
                     </Link>
-                    <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                    <p className="text-gray-500 font-medium tracking-wide text-sm">
                         Tu historia. Tu ingreso.
                     </p>
                 </div>
 
                 {/* Card */}
-                <div
-                    className="w-full rounded-2xl p-7"
-                    style={{
-                        backgroundColor: 'white',
-                        border: '1px solid var(--cream-mid)',
-                        boxShadow: '0 4px 24px rgba(20,16,10,0.07)',
-                    }}
-                >
-                    <div className="mb-6 space-y-1.5">
-                        <h1
-                            className="font-serif text-xl font-bold"
-                            style={{ color: 'var(--ink)' }}
-                        >
-                            {isRegistro ? 'Crea tu cuenta' : 'Inicia sesión'}
+                <div className="w-full rounded-2xl p-8 bg-[#15171C] border border-gray-800 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl rounded-full pointer-events-none"></div>
+
+                    <div className="mb-8 space-y-2 text-center relative z-10">
+                        <h1 className="text-2xl font-bold text-white tracking-tight">
+                            {isRegistro ? 'Crea tu cuenta' : 'Bienvenido de vuelta'}
                         </h1>
-                        <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                        <p className="text-sm text-gray-400">
                             {isRegistro
                                 ? 'Ingresa tu email y elige una contraseña.'
                                 : 'Ingresa con tu email y contraseña.'}
                         </p>
                     </div>
 
-                    <form action={isRegistro ? signup : login} className="space-y-4">
-                        <div className="space-y-1.5">
-                            <Label htmlFor="email" className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+                    <form action={isRegistro ? signup : login} className="space-y-5 relative z-10">
+                        <div className="space-y-2 text-left">
+                            <Label htmlFor="email" className="text-sm font-bold text-gray-300">
                                 Correo electrónico
                             </Label>
                             <Input
@@ -82,19 +64,12 @@ export default async function LoginPage({
                                 placeholder="tu@correo.com"
                                 required
                                 autoFocus
-                                className="h-11 text-sm placeholder:opacity-50 focus-visible:ring-1 focus-visible:ring-offset-0"
-                                style={{
-                                    backgroundColor: 'var(--cream-dark)',
-                                    borderColor: 'var(--cream-mid)',
-                                    color: 'var(--ink)',
-                                    // @ts-expect-error CSS custom property
-                                    '--tw-ring-color': 'var(--gold)',
-                                }}
+                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-green-500"
                             />
                         </div>
 
-                        <div className="space-y-1.5">
-                            <Label htmlFor="password" className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+                        <div className="space-y-2 text-left">
+                            <Label htmlFor="password" className="text-sm font-bold text-gray-300">
                                 Contraseña
                             </Label>
                             <Input
@@ -104,68 +79,46 @@ export default async function LoginPage({
                                 placeholder={isRegistro ? 'Mínimo 6 caracteres' : '••••••••'}
                                 required
                                 minLength={6}
-                                className="h-11 text-sm placeholder:opacity-50 focus-visible:ring-1 focus-visible:ring-offset-0"
-                                style={{
-                                    backgroundColor: 'var(--cream-dark)',
-                                    borderColor: 'var(--cream-mid)',
-                                    color: 'var(--ink)',
-                                    // @ts-expect-error CSS custom property
-                                    '--tw-ring-color': 'var(--gold)',
-                                }}
+                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-green-500"
                             />
                         </div>
 
                         {errorMsg && (
-                            <div
-                                className="text-sm p-3 rounded-xl"
-                                style={{
-                                    color: '#7A1A1A',
-                                    backgroundColor: '#FDF0F0',
-                                    border: '1px solid #E8CCCC',
-                                }}
-                            >
+                            <div className="text-sm p-3 rounded-xl text-red-400 bg-red-500/10 border border-red-500/20">
                                 {errorMsg}
                             </div>
                         )}
 
                         <Button
                             type="submit"
-                            className="w-full h-11 font-semibold text-sm tracking-wide transition-opacity hover:opacity-90"
-                            style={{
-                                backgroundColor: 'var(--ink)',
-                                color: 'var(--cream)',
-                                border: 'none',
-                            }}
+                            className="w-full h-12 font-bold text-base transition-all bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-[0_0_20px_-5px_rgba(34,197,94,0.4)]"
                         >
-                            {isRegistro ? 'Crear cuenta →' : 'Entrar →'}
+                            {isRegistro ? 'Crear cuenta' : 'Entrar'}
                         </Button>
                     </form>
 
-                    <div className="text-center mt-5">
+                    <div className="text-center mt-6 relative z-10">
                         {isRegistro ? (
-                            <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                            <p className="text-sm text-gray-500">
                                 ¿Ya tienes cuenta?{' '}
-                                <Link href="/login" className="font-semibold underline" style={{ color: 'var(--gold-dark)' }}>
+                                <Link href="/login" className="font-bold text-green-500 hover:text-green-400 hover:underline">
                                     Inicia sesión
                                 </Link>
                             </p>
                         ) : (
-                            <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                            <p className="text-sm text-gray-500">
                                 ¿No tienes cuenta?{' '}
-                                <Link href="/login?mode=registro" className="font-semibold underline" style={{ color: 'var(--gold-dark)' }}>
-                                    Regístrate
+                                <Link href="/login?mode=registro" className="font-bold text-green-500 hover:text-green-400 hover:underline">
+                                    Regístrate gratis
                                 </Link>
                             </p>
                         )}
                     </div>
-
-                    <p
-                        className="text-center text-xs mt-4"
-                        style={{ color: 'var(--ink-light)', opacity: 0.5 }}
-                    >
-                        Gratis para leer · $5/mes para publicar
-                    </p>
                 </div>
+
+                <p className="text-center text-xs text-gray-600 font-medium">
+                    Gratis para leer · $5/mes para publicar
+                </p>
             </div>
         </div>
     )

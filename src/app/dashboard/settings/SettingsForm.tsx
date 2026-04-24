@@ -5,16 +5,25 @@ import { updateProfileSettings } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { Camera, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
 
 export default function SettingsForm({ profile, creatorInfo }: { profile: any, creatorInfo: any }) {
     const [isPending, setIsPending] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [successMsg, setSuccessMsg] = useState('')
     const [avatarFile, setAvatarFile] = useState<File | null>(null)
+    const [previewUrl, setPreviewUrl] = useState<string | null>(profile?.avatar_url || null)
     const router = useRouter()
+
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0]
+        if (file) {
+            setAvatarFile(file)
+            setPreviewUrl(URL.createObjectURL(file))
+        }
+    }
 
     async function handleSubmit(formData: FormData) {
         setIsPending(true)
@@ -31,7 +40,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                 .upload(fileName, avatarFile, { upsert: true })
 
             if (uploadError) {
-                setErrorMsg('Error uploading avatar: ' + uploadError.message)
+                setErrorMsg('Error al subir la imagen: ' + uploadError.message)
                 setIsPending(false)
                 return
             }
@@ -48,104 +57,129 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
         if (res?.error) {
             setErrorMsg(res.error)
         } else {
-            setSuccessMsg('Profile updated successfully!')
+            setSuccessMsg('Perfil actualizado correctamente.')
             router.refresh()
         }
         setIsPending(false)
     }
 
+    const initial = (profile?.full_name || profile?.username || 'W').charAt(0).toUpperCase()
+
     return (
-        <form action={handleSubmit}>
-            <Card className="bg-white border-gray-200 shadow-sm">
-                <CardContent className="p-6 space-y-6">
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Profile Information</h3>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="full_name" className="text-gray-700 font-medium">Display Name</Label>
-                            <Input
-                                id="full_name"
-                                name="full_name"
-                                defaultValue={profile?.full_name || ''}
-                                placeholder="Your Name"
-                                className="bg-white border-gray-300 text-gray-900 focus-visible:ring-blue-500"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="bio" className="text-gray-700 font-medium">Bio</Label>
-                            <textarea
-                                id="bio"
-                                name="bio"
-                                rows={4}
-                                defaultValue={profile?.bio || ''}
-                                className="w-full rounded-md bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 p-3"
-                                placeholder="Tell your readers about yourself..."
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="avatar" className="text-gray-700 font-medium">Avatar Image</Label>
-                            <div className="flex items-center gap-4">
-                                {profile?.avatar_url && !avatarFile && (
-                                    <img src={profile.avatar_url} alt="Current avatar" className="w-12 h-12 rounded-full object-cover border border-gray-200" />
-                                )}
-                                <Input
-                                    id="avatar"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
-                                    className="bg-white border-gray-300 text-gray-500 file:text-gray-700 file:bg-gray-100 hover:file:bg-gray-200 file:border-0 file:rounded-md file:px-4 file:py-1 cursor-pointer focus-visible:ring-blue-500"
-                                />
+        <form action={handleSubmit} className="space-y-6">
+            
+            {/* Foto de Perfil */}
+            <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-6 shadow-md transition-all hover:border-gray-700">
+                <h3 className="text-lg font-bold text-white mb-4">Foto de Perfil</h3>
+                <div className="flex items-center gap-6">
+                    <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gray-700 bg-gray-900 shrink-0">
+                        {previewUrl ? (
+                            <img src={previewUrl} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center font-bold text-2xl text-green-500 bg-green-500/10">
+                                {initial}
                             </div>
-                        </div>
+                        )}
+                        <label htmlFor="avatar" className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                            <Camera size={20} className="text-white" />
+                        </label>
+                        <Input
+                            id="avatar"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
+                    </div>
+                    <div>
+                        <Label htmlFor="avatar" className="font-bold text-green-500 hover:text-green-400 cursor-pointer text-sm mb-1 inline-block">
+                            Cambiar imagen
+                        </Label>
+                        <p className="text-xs text-gray-500">JPG, GIF o PNG. Max 2MB.</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Información Personal */}
+            <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-6 shadow-md transition-all hover:border-gray-700">
+                <h3 className="text-lg font-bold text-white mb-4">Información del Perfil</h3>
+                
+                <div className="space-y-5">
+                    <div className="space-y-2 relative">
+                        <Label htmlFor="full_name" className="text-sm font-bold text-gray-400">Nombre Público</Label>
+                        <Input
+                            id="full_name"
+                            name="full_name"
+                            defaultValue={profile?.full_name || ''}
+                            placeholder="Tu Nombre o Seudónimo"
+                            className="bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-green-500 h-12"
+                        />
                     </div>
 
-                    <div className="space-y-4 pt-4 mt-6">
-                        <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Monetization</h3>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="subscription_price" className="text-gray-700 font-medium">Monthly Subscription Price ($)</Label>
-                            <div className="relative max-w-xs">
-                                <span className="absolute left-3 top-2.5 text-gray-500 font-bold">$</span>
-                                <Input
-                                    type="number"
-                                    id="subscription_price"
-                                    name="subscription_price"
-                                    step="0.01"
-                                    min="0.99"
-                                    max="999.99"
-                                    defaultValue={creatorInfo?.subscription_price || "4.99"}
-                                    className="pl-6 bg-white border-gray-300 text-gray-900 font-bold focus-visible:ring-blue-500"
-                                />
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">This is the default price for access to all your subscriber-only episodes.</p>
-                        </div>
+                    <div className="space-y-2 relative">
+                        <Label htmlFor="bio" className="text-sm font-bold text-gray-400">Biografía</Label>
+                        <textarea
+                            id="bio"
+                            name="bio"
+                            rows={4}
+                            defaultValue={profile?.bio || ''}
+                            className="w-full rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder:text-gray-600 outline-none focus-visible:ring-1 focus-visible:ring-green-500 p-4 resize-none transition-all"
+                            placeholder="Cuéntale a tus fans sobre ti..."
+                        />
+                        <p className="text-xs text-gray-600 text-right">Visible en tu perfil público.</p>
                     </div>
+                </div>
+            </div>
 
-                    {errorMsg && (
-                        <div className="text-sm font-medium text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
-                            {errorMsg}
-                        </div>
-                    )}
-
-                    {successMsg && (
-                        <div className="text-sm font-medium text-green-700 bg-green-50 p-3 rounded-md border border-green-200">
-                            {successMsg}
-                        </div>
-                    )}
-
-                    <div className="pt-4 border-t border-gray-200">
-                        <Button
-                            type="submit"
-                            disabled={isPending}
-                            className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-bold w-full sm:w-auto px-8"
-                        >
-                            {isPending ? 'Saving...' : 'Save Settings'}
-                        </Button>
+            {/* Monetización */}
+            <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-6 shadow-md transition-all hover:border-gray-700">
+                <h3 className="text-lg font-bold text-white mb-4">Monetización</h3>
+                
+                <div className="space-y-3">
+                    <Label htmlFor="subscription_price" className="text-sm font-bold text-gray-400">Precio de Suscripción Mensual ($)</Label>
+                    <div className="relative max-w-sm">
+                        <span className="absolute left-4 top-3 text-gray-500 font-bold">$</span>
+                        <Input
+                            type="number"
+                            id="subscription_price"
+                            name="subscription_price"
+                            step="0.01"
+                            min="0.99"
+                            max="999.99"
+                            defaultValue={creatorInfo?.subscription_price || "4.99"}
+                            className="pl-8 bg-[#0A0B0E] border-gray-800 text-white font-bold h-12 focus-visible:ring-green-500"
+                        />
                     </div>
-                </CardContent>
-            </Card>
+                    <p className="text-xs text-gray-500 mt-2">
+                        Al ajustar el precio se aplicará para nuevos suscriptores. Recibirás todo el dinero directo, sin comisiones de suscripción.
+                    </p>
+                </div>
+            </div>
+
+            {/* Alertas */}
+            {errorMsg && (
+                <div className="flex items-center gap-3 text-sm font-bold text-red-400 bg-red-500/10 p-4 rounded-xl border border-red-500/20">
+                    <AlertCircle size={18} /> {errorMsg}
+                </div>
+            )}
+
+            {successMsg && (
+                <div className="flex items-center gap-3 text-sm font-bold text-green-400 bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                    <CheckCircle2 size={18} /> {successMsg}
+                </div>
+            )}
+
+            {/* Submit */}
+            <div className="pt-2 flex justify-end">
+                <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="bg-green-600 hover:bg-green-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-green-500/20 transition-all flex items-center gap-2"
+                >
+                    <Save size={18} />
+                    {isPending ? 'Guardando...' : 'Guardar Cambios'}
+                </Button>
+            </div>
         </form>
     )
 }

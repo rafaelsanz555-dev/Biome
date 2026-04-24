@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bio.me · Prototipo UX completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: 'Inter', system-ui, sans-serif; background: #0A0A0A; color: #fff; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+img { max-width: 100%; }
+
+/* ─── Prototype Top Bar ─── */
+.proto-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: rgba(10,10,10,0.92); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 20px;
+}
+.proto-bar-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin: 0 auto; gap: 20px; flex-wrap: wrap; }
+.proto-brand { font-weight: 800; letter-spacing: -0.02em; font-size: 13px; }
+.proto-brand span.green { color: #22C55E; }
+.proto-brand span.sub { color: #6B7280; font-weight: 500; margin-left: 6px; }
+
+.flow-tabs { display: flex; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 10px; gap: 3px; }
+.flow-tab {
+  padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 700;
+  color: #9CA3AF; transition: all .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.flow-tab.active { background: #22C55E; color: #000; }
+.flow-tab:hover:not(.active) { color: #fff; }
+.flow-tab .count { opacity: 0.6; font-weight: 500; }
+
+.proto-controls { display: flex; gap: 8px; align-items: center; }
+.proto-btn {
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  background: rgba(255,255,255,0.06); color: #fff; transition: all .2s;
+}
+.proto-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+.proto-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.proto-label { color: #9CA3AF; font-weight: 500; font-size: 12px; min-width: 140px; text-align: center; }
+
+/* ─── Screens ─── */
+.screen { display: none; min-height: 100vh; padding-top: 60px; }
+.screen.active { display: block; animation: fade .35s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ─── Reusable ─── */
+.btn-primary {
+  background: #22C55E; color: #000; font-weight: 800; font-size: 14px;
+  padding: 12px 24px; border-radius: 12px; transition: all .2s;
+  box-shadow: 0 0 30px -10px rgba(34,197,94,0.6);
+}
+.btn-primary:hover { background: #16A34A; transform: translateY(-1px); }
+.btn-outline {
+  background: rgba(255,255,255,0.04); color: #D1D5DB; font-weight: 600; font-size: 14px;
+  padding: 12px 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-outline:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* ═══════════════════════════════════════════════ */
+/* ── LANDING ──                                    */
+/* ═══════════════════════════════════════════════ */
+.landing-nav {
+  position: sticky; top: 60px; z-index: 100;
+  background: rgba(10,10,10,0.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px; max-width: 1200px; margin: 0 auto;
+}
+.logo { font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
+.logo span { color: #22C55E; }
+.nav-links { display: flex; gap: 8px; }
+.nav-link { color: #9CA3AF; font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 8px; }
+.nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+.hero {
+  padding: 100px 24px 60px; text-align: center;
+  max-width: 900px; margin: 0 auto; position: relative;
+}
+.hero::before {
+  content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 400px; background: #22C55E; opacity: 0.15;
+  filter: blur(120px); border-radius: 50%; z-index: -1;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 999px; font-size: 11px;
+  font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  background: rgba(34,197,94,0.1); color: #4ADE80;
+  border: 1px solid rgba(34,197,94,0.2); margin-bottom: 28px;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 {
+  font-size: clamp(42px, 6.5vw, 72px); font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1.05; margin-bottom: 24px;
+}
+.hero h1 em { font-style: italic; background: linear-gradient(135deg, #4ADE80, #86EFAC); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero p { font-size: 18px; color: #9CA3AF; max-width: 600px; margin: 0 auto 36px; line-height: 1.6; }
+.hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero-ctas button { padding: 16px 32px; font-size: 15px; }
+
+.calc-wrap {
+  max-width: 900px; margin: 50px auto 60px; padding: 32px 24px;
+  background: linear-gradient(180deg, rgba(34,197,94,0.04), rgba(34,197,94,0.01));
+  border-radius: 28px; border: 1px solid rgba(255,255,255,0.06);
+}
+.calc-header h3 { font-family: 'Playfair Display'; font-size: 28px; font-weight: 700; margin-bottom: 8px; text-align: center; letter-spacing: -0.02em; }
+.calc-header p { color: #9CA3AF; font-size: 13px; max-width: 480px; margin: 0 auto 28px; text-align: center; line-height: 1.6; }
+.calc-slider-block { max-width: 560px; margin: 0 auto 30px; }
+.calc-slider-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: 12px; color: #9CA3AF; font-weight: 600; }
+.calc-price-display { font-family: 'Playfair Display'; font-size: 26px; font-weight: 700; color: #4ADE80; }
+.calc-slider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 8px;
+  background: rgba(255,255,255,0.08); border-radius: 999px; outline: none; cursor: pointer;
+}
+.calc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, #4ADE80, #16A34A); cursor: grab;
+  box-shadow: 0 0 20px rgba(34,197,94,0.5), 0 0 0 4px rgba(34,197,94,0.15);
+  border: 2px solid #0A0A0A;
+}
+.calc-slider-ticks { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: #4B5563; font-weight: 500; }
+.scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.scenario { padding: 20px 16px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+.scenario.featured { background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.04)); border-color: rgba(34,197,94,0.35); transform: scale(1.03); }
+.scenario-subs { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 6px; }
+.scenario.featured .scenario-subs { color: #4ADE80; }
+.scenario-formula { font-size: 10px; color: #4B5563; margin-bottom: 10px; font-family: monospace; }
+.scenario-amount { font-family: 'Playfair Display'; font-weight: 800; font-size: 26px; margin-bottom: 4px; letter-spacing: -0.02em; }
+.scenario.featured .scenario-amount { color: #86EFAC; }
+.scenario-label { font-size: 10px; color: #6B7280; font-weight: 500; }
+
+/* ═══════════════════════════════════════════════ */
+/* ── AUTH (Signup / Onboarding) ──                 */
+/* ═══════════════════════════════════════════════ */
+.auth-wrap {
+  min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px; position: relative;
+}
+.auth-wrap::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 400px; background: #22C55E; opacity: 0.1; filter: blur(100px); z-index: 0;
+}
+.auth-box { width: 100%; max-width: 400px; position: relative; z-index: 1; }
+.auth-logo { text-align: center; margin-bottom: 28px; }
+.auth-logo .logo { font-size: 36px; }
+.auth-logo .tagline { color: #6B7280; font-size: 13px; margin-top: 6px; }
+.auth-card { background: #15171C; border: 1px solid #262626; border-radius: 20px; padding: 32px; }
+.auth-card h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.auth-card .sub { color: #9CA3AF; font-size: 14px; margin-bottom: 24px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 700; color: #D1D5DB; margin-bottom: 6px; }
+.field input { width: 100%; height: 44px; padding: 0 14px; border-radius: 10px; background: #1A1C23; border: 1px solid #374151; color: #fff; font-size: 14px; font-family: inherit; }
+.field input:focus { outline: none; border-color: #22C55E; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+.auth-submit { width: 100%; height: 48px; background: #22C55E; color: #000; font-weight: 800; border-radius: 12px; font-size: 14px; box-shadow: 0 0 20px -5px rgba(34,197,94,0.4); transition: all .2s; }
+.auth-submit:hover { background: #16A34A; }
+.auth-switch { text-align: center; margin-top: 18px; font-size: 13px; color: #6B7280; }
+.auth-switch a { color: #22C55E; font-weight: 700; }
+
+.username-row { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid #374151; background: #1A1C23; }
+.username-prefix { padding: 0 14px; display: flex; align-items: center; background: #111318; color: #6B7280; font-size: 13px; font-weight: 500; border-right: 1px solid #374151; }
+.username-row input { border: none; background: transparent; }
+
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.role-card { padding: 16px; border-radius: 12px; border: 2px solid #374151; background: #1A1C23; cursor: pointer; transition: all .2s; }
+.role-card:hover { border-color: #4B5563; }
+.role-card.selected { border-color: #22C55E; background: rgba(34,197,94,0.1); }
+.role-card .role-icon { font-size: 20px; margin-bottom: 8px; }
+.role-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.role-card p { font-size: 11px; color: #9CA3AF; }
+
+/* ═══════════════════════════════════════════════ */
+/* ── DASHBOARD (Writer/Reader shared) ──           */
+/* ═══════════════════════════════════════════════ */
+.dash-layout { display: flex; min-height: calc(100vh - 60px); }
+.dash-sidebar { width: 240px; flex-shrink: 0; background: #121212; border-right: 1px solid #262626; display: flex; flex-direction: column; padding: 20px 0; }
+.sb-logo { padding: 0 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.sb-logo-circle { width: 28px; height: 28px; border-radius: 50%; background: #22C55E; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #000; }
+.sb-user { padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.sb-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, #22C55E, #047857);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px; position: relative; overflow: hidden;
+  flex-shrink: 0;
+}
+.sb-avatar.online::after { content: ''; position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #22C55E; border: 2px solid #121212; border-radius: 50%; }
+.sb-user-info h3 { font-size: 13px; font-weight: 700; text-transform: capitalize; }
+.sb-user-info p { font-size: 11px; color: #6B7280; }
+.sb-nav { padding: 12px 10px; flex: 1; }
+.sb-link { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #9CA3AF; margin-bottom: 2px; transition: all .15s; }
+.sb-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.sb-link.active { background: rgba(255,255,255,0.05); color: #fff; border-left: 3px solid #22C55E; padding-left: 9px; }
+.sb-link-icon { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.sb-section { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #4B5563; padding: 16px 12px 8px; }
+
+.sb-wallet { margin: 12px 16px 0; padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+.sb-wallet-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sb-wallet-amount { font-size: 13px; font-weight: 700; color: #EAB308; display: flex; align-items: center; gap: 6px; }
+.sb-wallet-amount .dollar-icon { width: 20px; height: 20px; background: rgba(234,179,8,0.2); border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+.sb-wallet-btn { width: 100%; background: rgba(255,255,255,0.06); color: #9CA3AF; padding: 7px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+
+.dash-main { flex: 1; background: #0A0A0A; min-width: 0; }
+.dash-topbar { height: 60px; border-bottom: 1px solid #262626; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(10,10,10,0.95); position: sticky; top: 60px; z-index: 50; }
+.dash-search { flex: 1; max-width: 480px; position: relative; }
+.dash-search input { width: 100%; height: 38px; padding: 0 14px 0 40px; border-radius: 10px; background: #1E1E1E; border: 1px solid transparent; color: #fff; font-size: 13px; font-family: inherit; }
+.dash-search-icon { position: absolute; left: 14px; top: 10px; color: #6B7280; }
+.dash-topbar-actions { display: flex; align-items: center; gap: 12px; }
+.dash-bell { position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: #9CA3AF; border-radius: 8px; cursor: pointer; }
+.dash-bell:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.dash-bell-dot { position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; background: #EF4444; border-radius: 50%; border: 2px solid #0A0A0A; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.dash-publish { background: rgba(34,197,94,0.1); color: #22C55E; border: 1px solid rgba(34,197,94,0.25); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+
+.dash-with-right { display: flex; }
+.dash-center { flex: 1; min-width: 0; padding: 24px; }
+.dash-right { width: 300px; flex-shrink: 0; border-left: 1px solid #262626; padding: 24px; background: #0A0A0A; }
+.right-widget { margin-bottom: 28px; }
+.widget-title { font-size: 13px; font-weight: 800; color: #D1D5DB; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+
+/* Feed tabs */
+.feed-tabs { display: flex; gap: 28px; border-bottom: 1px solid #262626; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.feed-tabs::-webkit-scrollbar { display: none; }
+.feed-tab { padding-bottom: 14px; color: #6B7280; font-size: 13px; font-weight: 600; border-bottom: 2px solid transparent; cursor: pointer; transition: all .15s; }
+.feed-tab.active { color: #22C55E; border-color: #22C55E; font-weight: 700; }
+.feed-tab:hover:not(.active) { color: #D1D5DB; }
+
+.filter-pills { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; padding-bottom: 6px; }
+.filter-pills::-webkit-scrollbar { display: none; }
+.filter-pill { padding: 7px 14px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #1E1E1E; border: 1px solid #333; color: #D1D5DB; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.filter-pill:hover { background: #2D2D2D; color: #fff; }
+.filter-pill.active { background: rgba(34,197,94,0.1); color: #4ADE80; border-color: rgba(34,197,94,0.25); }
+
+/* Story cards */
+.story-card { background: #1E1E1E; border: 1px solid #2D2D2D; border-radius: 18px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.story-hero { position: relative; height: 380px; }
+.story-hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+.story-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 60%, transparent 100%); }
+.story-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 24px; }
+.story-badges { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.story-badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; backdrop-filter: blur(8px); }
+.badge-free { background: rgba(234,179,8,0.25); color: #FACC15; border: 1px solid rgba(234,179,8,0.3); }
+.badge-series { background: rgba(59,130,246,0.25); color: #60A5FA; border: 1px solid rgba(59,130,246,0.3); }
+.badge-top { background: rgba(239,68,68,0.25); color: #F87171; border: 1px solid rgba(239,68,68,0.3); }
+.badge-exclusive { background: rgba(34,197,94,0.25); color: #4ADE80; border: 1px solid rgba(34,197,94,0.3); }
+.story-hero h2 { font-size: 28px; font-weight: 800; margin-bottom: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); line-height: 1.15; letter-spacing: -0.01em; }
+.story-hero .chapter-info { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 18px; font-weight: 500; }
+.story-author-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.story-author { display: flex; align-items: center; gap: 10px; }
+.story-author img { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25); object-fit: cover; }
+.story-author .name { font-weight: 600; font-size: 13px; }
+.story-metrics { display: flex; gap: 14px; font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 600; }
+.story-metrics span { display: flex; align-items: center; gap: 4px; }
+.story-footer { padding: 16px; background: #242424; border-top: 1px solid #333; }
+.story-read-btn { width: 100%; padding: 12px; background: #1a4d3a; color: #4ADE80; font-weight: 800; border-radius: 12px; font-size: 15px; border: 1px solid rgba(34,197,94,0.25); transition: all .2s; }
+.story-read-btn:hover { background: #24634c; }
+
+/* Compact story card */
+.story-compact { background: #1E1E1E; border: 1px solid #2D2D2D; border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+.story-compact-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.story-compact-author { display: flex; align-items: center; gap: 10px; }
+.story-compact-author img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+.story-compact-author .name { font-weight: 700; font-size: 14px; }
+.story-compact-author .time { font-size: 11px; color: #6B7280; }
+.story-compact h2 { font-size: 19px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; }
+.story-compact .preview { color: #9CA3AF; font-size: 13px; line-height: 1.55; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.story-compact .img { width: 100%; height: 200px; border-radius: 12px; overflow: hidden; margin-bottom: 12px; position: relative; }
+.story-compact .img img { width: 100%; height: 100%; object-fit: cover; }
+.story-compact-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+.metrics-row { display: flex; gap: 14px; font-size: 12px; color: #9CA3AF; font-weight: 500; }
+.metrics-row span { display: flex; align-items: center; gap: 4px; }
+
+/* Right sidebar widgets */
+.rw-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; transition: opacity .15s; }
+.rw-item:hover { opacity: 0.85; }
+.rw-avatar { width: 44px; height: 44px; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
+.rw-avatar.round { border-radius: 50%; width: 40px; height: 40px; }
+.rw-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.rw-info h5 { font-size: 13px; font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
+.rw-check { color: #22C55E; font-size: 11px; }
+.rw-info p { font-size: 11px; color: #6B7280; }
+.rw-earn { color: #22C55E; font-weight: 700; font-size: 12px; }
+.rw-crown { color: #EAB308; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+.rw-deng { background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; margin-left: 4px; }
+.rw-unlock-btn { width: 100%; margin-top: 12px; padding: 8px; background: #1a4d3a; color: #4ADE80; font-weight: 700; border-radius: 8px; font-size: 11px; border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+.rec-episode { position: relative; border-radius: 14px; overflow: hidden; height: 160px; margin-bottom: 10px; }
+.rec-episode img { width: 100%; height: 100%; object-fit: cover; }
+.rec-episode .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; }
+.rec-episode h5 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.rec-episode p { font-size: 11px; color: rgba(255,255,255,0.7); }
+
+/* Welcome banner */
+.welcome-banner { background: linear-gradient(135deg, #0F1F15 0%, #15171C 100%); border: 1px solid rgba(34,197,94,0.2); border-radius: 18px; padding: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.welcome-left { display: flex; align-items: center; gap: 16px; }
+.welcome-emoji { font-size: 38px; }
+.welcome-banner h2 { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.welcome-banner p { color: #9CA3AF; font-size: 13px; }
+.welcome-cta { background: rgba(34,197,94,0.15); color: #4ADE80; border: 1px solid rgba(34,197,94,0.3); padding: 10px 18px; border-radius: 11px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: #15171C; border: 1px solid #262626; border-radius: 14px; padding: 18px; }
+.stat-card.gold { background: linear-gradient(135deg, rgba(234,179,8,0.12), #15171C); border-color: rgba(234,179,8,0.3); }
+.stat-card.green { background: linear-gradient(135deg, rgba(34,197,94,0.15), #15171C); border-color: rgba(34,197,94,0.3); }
+.stat-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6B7280; }
+.stat-card.green .stat-label { color: #4ADE80; }
+.stat-card.gold .stat-label { color: #EAB308; }
+.stat-icon { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.stat-card.green .stat-icon { background: rgba(34,197,94,0.2); }
+.stat-card.gold .stat-icon { background: rgba(234,179,8,0.2); }
+.stat-value { font-size: 24px; font-weight: 800; margin-bottom: 2px; letter-spacing: -0.02em; }
+.stat-card.green .stat-value { color: #86EFAC; }
+.stat-card.gold .stat-value { color: #FACC15; }
+.stat-trend { font-size: 11px; color: #22C55E; font-weight: 700; }
+.stat-sub { font-size: 11px; color: #6B7280; }
+
+/* Activity feed */
+.activity-feed { background: #15171C; border: 1px solid #262626; border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+.section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 14px; }
+.activity-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1F2024; }
+.activity-item:last-child { border-bottom: none; }
+.activity-ava { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; overflow: hidden; }
+.activity-ava img { width: 100%; height: 100%; object-fit: cover; }
+.activity-main { flex: 1; }
+.activity-main p { font-size: 13px; }
+.activity-main .who { font-weight: 700; }
+.activity-meta { font-size: 11px; color: #6B7280; margin-top: 2px; }
+.activity-amount { font-size: 13px; font-weight: 700; color: #22C55E; }
+
+/* Section Divider / Tab Intro */
+.section-intro {
+  min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center;
+  padding: 60px 24px; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(34,197,94,0.08) 0%, transparent 70%);
+}
+.section-intro-content { max-width: 700px; }
+.section-intro .eyebrow {
+  display: inline-block; padding: 8px 20px; border-radius: 999px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
+  background: rgba(34,197,94,0.1); color: #4ADE80; border: 1px solid rgba(34,197,94,0.2);
+  margin-bottom: 28px;
+}
+.section-intro h1 { font-family: 'Playfair Display'; font-size: clamp(44px, 7vw, 68px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; line-height: 1.05; }
+.section-intro h1 em { font-style: italic; background: linear-gradient(135deg, #4ADE80, #86EFAC); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.section-intro p { font-size: 17px; color: #9CA3AF; max-width: 540px; margin: 0 auto 32px; line-height: 1.7; }
+.section-flow { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; max-width: 700px; margin: 0 auto 40px; }
+.flow-step {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #D1D5DB;
+}
+.flow-step.highlight { background: rgba(34,197,94,0.1); color: #4ADE80; border-color: rgba(34,197,94,0.2); }
+.flow-arrow { color: #4B5563; font-size: 18px; display: flex; align-items: center; }
+
+/* ═══════════════════════════════════════════════ */
+/* ── PUBLISH EPISODE ──                            */
+/* ═══════════════════════════════════════════════ */
+.publish-wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+.publish-header { margin-bottom: 20px; }
+.publish-header h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+.publish-header p { color: #9CA3AF; font-size: 13px; }
+.publish-grid { display: grid; grid-template-columns: 1fr 320px; gap: 18px; }
+.publish-main { background: #15171C; border: 1px solid #262626; border-radius: 18px; padding: 24px; }
+.publish-side { display: flex; flex-direction: column; gap: 14px; }
+.publish-side .card { background: #15171C; border: 1px solid #262626; border-radius: 14px; padding: 18px; }
+.pub-label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #9CA3AF; margin-bottom: 8px; }
+.pub-label .hint { color: #4ADE80; font-weight: 600; font-size: 10px; margin-left: 4px; text-transform: none; letter-spacing: 0; }
+.pub-input { width: 100%; padding: 12px 14px; border-radius: 10px; background: #0A0B0E; border: 1px solid #262626; color: #fff; font-size: 13px; font-family: inherit; margin-bottom: 16px; }
+.pub-title { width: 100%; padding: 16px; border-radius: 12px; background: #0A0B0E; border: 1px solid #262626; color: #fff; font-size: 22px; font-weight: 700; font-family: inherit; margin-bottom: 20px; }
+.pub-textarea { width: 100%; padding: 16px; border-radius: 12px; background: #0A0B0E; border: 1px solid #262626; color: #E5E7EB; font-size: 15px; line-height: 1.8; font-family: 'Georgia', serif; resize: vertical; margin-bottom: 16px; }
+.cover-upload { border: 2px dashed #374151; border-radius: 12px; padding: 32px; text-align: center; background: #0A0B0E; cursor: pointer; transition: all .2s; margin-bottom: 20px; }
+.cover-upload:hover { border-color: #22C55E; background: #0F1114; }
+.cover-upload-icon { font-size: 28px; color: #4B5563; margin-bottom: 8px; }
+.cover-upload p { color: #9CA3AF; font-size: 13px; font-weight: 600; }
+.cover-upload .sub { color: #6B7280; font-size: 11px; margin-top: 4px; font-weight: 500; }
+
+.soundtrack-highlight { background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02)); border: 1px solid rgba(34,197,94,0.3); border-radius: 14px; padding: 16px; margin-top: 16px; }
+.soundtrack-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.soundtrack-badge { background: #22C55E; color: #000; padding: 2px 7px; border-radius: 4px; font-size: 9px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+
+.mon-option { display: flex; gap: 12px; padding: 12px; border-radius: 10px; border: 2px solid #262626; background: #0A0B0E; cursor: pointer; margin-bottom: 8px; transition: all .2s; align-items: flex-start; }
+.mon-option:hover { border-color: #374151; }
+.mon-option.selected { border-color: #22C55E; background: rgba(34,197,94,0.06); }
+.mon-option input { margin-top: 4px; accent-color: #22C55E; }
+.mon-option-text h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+.mon-option-text p { font-size: 11px; color: #9CA3AF; }
+
+.publish-submit { width: 100%; background: #22C55E; color: #000; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 800; box-shadow: 0 0 20px -5px rgba(34,197,94,0.5); transition: all .2s; margin-top: 8px; }
+
+/* ═══════════════════════════════════════════════ */
+/* ── READING EXPERIENCE ──                         */
+/* ═══════════════════════════════════════════════ */
+.reading-progress { position: fixed; top: 60px; left: 0; right: 0; height: 3px; background: transparent; z-index: 60; }
+.reading-progress-bar { height: 100%; width: 35%; background: linear-gradient(to right, #22C55E, #4ADE80); box-shadow: 0 0 8px rgba(34,197,94,0.6); }
+
+.reading-hero { background: linear-gradient(180deg, rgba(20,83,45,0.3), transparent); border-bottom: 1px solid rgba(255,255,255,0.05); }
+.reading-wrap { max-width: 720px; margin: 0 auto; padding: 40px 24px 80px; }
+.reading-header-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #262626; margin-bottom: 28px; }
+.back-link { display: flex; align-items: center; gap: 10px; color: #D1D5DB; }
+.back-link img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.back-arrow { width: 28px; height: 28px; background: #15171C; border: 1px solid #262626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #9CA3AF; font-size: 14px; }
+
+.live-count { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); font-size: 11px; font-weight: 700; color: #4ADE80; margin-bottom: 16px; }
+.live-dot { position: relative; width: 8px; height: 8px; }
+.live-dot::before { content: ''; position: absolute; inset: 0; background: #4ADE80; border-radius: 50%; opacity: 0.75; animation: ping 2s cubic-bezier(0,0,0.2,1) infinite; }
+.live-dot::after { content: ''; position: absolute; inset: 2px; background: #22C55E; border-radius: 50%; }
+@keyframes ping { 75%, 100% { transform: scale(2.5); opacity: 0; } }
+
+.read-meta { display: flex; align-items: center; gap: 12px; color: #6B7280; font-size: 13px; font-weight: 500; margin-bottom: 18px; flex-wrap: wrap; }
+.read-meta .dot { width: 3px; height: 3px; background: #374151; border-radius: 50%; }
+.reading-wrap h1 { font-family: 'Playfair Display'; font-size: 42px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 28px; }
+.read-cover { width: 100%; height: 360px; border-radius: 16px; overflow: hidden; margin-bottom: 24px; }
+.read-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+.soundtrack-player { background: linear-gradient(135deg, #15171C, #0F1114); border: 1px solid #262626; border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
+.soundtrack-head { display: flex; align-items: center; justify-content: space-between; padding: 16px; cursor: pointer; transition: background .2s; }
+.soundtrack-head:hover { background: rgba(255,255,255,0.02); }
+.soundtrack-head-left { display: flex; align-items: center; gap: 12px; }
+.soundtrack-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #22C55E, #047857); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(34,197,94,0.3); }
+.soundtrack-head p.eyebrow { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #4ADE80; margin-bottom: 2px; }
+.soundtrack-head p.track { font-weight: 700; font-size: 14px; }
+.soundtrack-player-embed { padding: 12px 16px 16px; }
+.spotify-mock {
+  background: #121212; border-radius: 12px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 14px;
+  border: 1px solid #262626;
+}
+.spotify-mock img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; }
+.spotify-mock-info { flex: 1; min-width: 0; }
+.spotify-mock-title { font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 2px; }
+.spotify-mock-artist { font-size: 12px; color: #9CA3AF; }
+.spotify-mock-play { width: 40px; height: 40px; background: #22C55E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; }
+.spotify-mock-bar { height: 3px; background: rgba(255,255,255,0.1); border-radius: 999px; margin-top: 8px; position: relative; overflow: hidden; }
+.spotify-mock-bar::before { content: ''; position: absolute; inset: 0; right: 60%; background: #22C55E; border-radius: 999px; }
+
+.read-content { font-family: Georgia, 'Playfair Display', serif; font-size: 19px; line-height: 1.85; color: #E5E7EB; }
+.read-content p { margin-bottom: 20px; }
+.read-content p:first-child::first-letter { font-size: 52px; float: left; padding: 4px 12px 0 0; font-weight: 800; color: #22C55E; line-height: 1; }
+.read-content .fade { position: relative; max-height: 260px; overflow: hidden; }
+.read-content .fade::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 180px; background: linear-gradient(to bottom, transparent, #0A0A0A 80%); }
+
+.highlight-popup {
+  position: absolute; top: 180px; left: 50%; transform: translateX(-50%);
+  background: #15171C; border: 1px solid #374151;
+  border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  padding: 6px; display: flex; gap: 4px;
+  z-index: 10;
+}
+.highlight-btn { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff; }
+.highlight-btn:hover { background: rgba(255,255,255,0.08); }
+.highlight-btn.twitter { color: #fff; }
+.highlight-popup::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 10px; height: 10px; background: #15171C; border-right: 1px solid #374151; border-bottom: 1px solid #374151; }
+
+.highlighted { background: rgba(34,197,94,0.25); color: #fff; padding: 2px 0; }
+
+/* Paywall */
+.paywall { padding: 36px; text-align: center; border: 1px solid #262626; border-radius: 18px; background: linear-gradient(180deg, transparent, rgba(34,197,94,0.04)); margin-top: 20px; }
+.paywall-icon { width: 60px; height: 60px; border-radius: 16px; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 24px; }
+.paywall h3 { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+.paywall p { color: #9CA3AF; font-size: 14px; margin-bottom: 20px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.paywall-benefits { display: flex; justify-content: center; gap: 18px; margin-bottom: 24px; font-size: 12px; color: #9CA3AF; flex-wrap: wrap; }
+.paywall-benefits span { display: flex; align-items: center; gap: 6px; }
+.btn-subscribe-big { background: #22C55E; color: #000; font-weight: 800; font-size: 15px; padding: 14px 32px; border-radius: 12px; box-shadow: 0 0 25px -5px rgba(34,197,94,0.5); }
+
+/* Emotional Reactions */
+.emotional-reactions { background: #15171C; border: 1px solid #262626; border-radius: 18px; padding: 24px; margin: 40px 0; }
+.emotional-header { margin-bottom: 18px; }
+.emotional-header .eyebrow { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #4ADE80; margin-bottom: 4px; }
+.emotional-header h3 { font-weight: 800; font-size: 18px; }
+.emotional-header p { color: #6B7280; font-size: 12px; margin-top: 4px; }
+.emotion-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.emotion-btn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border-radius: 12px; border: 2px solid #262626; background: #0A0B0E; overflow: hidden; transition: all .2s; cursor: pointer; }
+.emotion-btn:hover:not(.selected) { border-color: #374151; }
+.emotion-btn.selected { border-color: #22C55E; background: rgba(34,197,94,0.1); transform: scale(1.03); box-shadow: 0 0 15px -5px rgba(34,197,94,0.3); }
+.emotion-btn .emoji { font-size: 22px; }
+.emotion-btn .label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #6B7280; }
+.emotion-btn.selected .label { color: #4ADE80; }
+.emotion-btn .count { font-size: 11px; font-weight: 700; color: #9CA3AF; }
+.emotion-btn.selected .count { color: #fff; }
+.emotion-btn .bar { position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(34,197,94,0.4); transition: width .3s; }
+.emotion-btn.selected .bar { background: #22C55E; }
+
+.engagement-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-top: 1px solid #262626; border-bottom: 1px solid #262626; margin: 28px 0; }
+.engagement-actions { display: flex; gap: 4px; }
+.engagement-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; color: #9CA3AF; font-weight: 600; font-size: 13px; }
+.engagement-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.engagement-btn.tip { background: rgba(34,197,94,0.1); color: #4ADE80; border: 1px solid rgba(34,197,94,0.2); }
+
+/* Gift Panel */
+.gift-panel { background: linear-gradient(135deg, #15171C, #0F1114); border: 1px solid #262626; border-radius: 18px; padding: 24px; margin: 24px 0; }
+.gift-panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.gift-panel-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.gift-panel h3 { font-weight: 800; font-size: 16px; margin-bottom: 2px; }
+.gift-panel p.sub { font-size: 12px; color: #6B7280; }
+.gift-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 14px; }
+.gift-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px; border-radius: 10px; border: 2px solid #262626; background: #0A0B0E; transition: all .2s; cursor: pointer; }
+.gift-btn:hover { border-color: #374151; }
+.gift-btn.selected { border-color: #22C55E; background: rgba(34,197,94,0.1); transform: scale(1.05); }
+.gift-btn .emoji-big { font-size: 22px; }
+.gift-btn .price { font-size: 10px; font-weight: 800; color: #9CA3AF; }
+.gift-btn.selected .price { color: #4ADE80; }
+
+/* Profile (Reader view of creator) */
+.profile-cover-bg { height: 220px; position: relative; overflow: hidden; }
+.profile-cover-bg img { width: 100%; height: 100%; object-fit: cover; }
+.profile-cover-bg .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(10,10,10,1) 100%); }
+.profile-wrap-reader { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; }
+.profile-card { background: #15171C; border: 1px solid #262626; border-radius: 20px; padding: 28px; margin-top: -80px; position: relative; z-index: 1; }
+.profile-head { display: flex; gap: 20px; align-items: flex-start; }
+.profile-ava-big {
+  width: 96px; height: 96px; border-radius: 22px; flex-shrink: 0;
+  overflow: hidden; border: 4px solid #15171C; margin-top: -48px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.profile-ava-big img { width: 100%; height: 100%; object-fit: cover; }
+.profile-info { flex: 1; padding-top: 4px; }
+.profile-info h1 { font-size: 24px; font-weight: 800; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+.verified { color: #22C55E; font-size: 16px; }
+.profile-info .handle { color: #6B7280; font-size: 13px; margin-bottom: 4px; }
+.profile-stats { display: flex; gap: 16px; margin: 8px 0 14px; font-size: 13px; color: #9CA3AF; font-weight: 500; flex-wrap: wrap; }
+.profile-stats strong { color: #fff; }
+.profile-info .bio { color: #D1D5DB; font-size: 14px; line-height: 1.6; margin-bottom: 16px; max-width: 560px; }
+.profile-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.profile-actions .social-proof { font-size: 11px; color: #6B7280; font-weight: 500; margin-top: 4px; width: 100%; }
+.btn-subscribe { background: #22C55E; color: #000; font-weight: 800; font-size: 14px; padding: 11px 20px; border-radius: 11px; box-shadow: 0 0 20px -5px rgba(34,197,94,0.4); }
+.btn-follow { background: rgba(255,255,255,0.04); color: #D1D5DB; font-weight: 600; font-size: 14px; padding: 11px 20px; border-radius: 11px; border: 1px solid rgba(255,255,255,0.1); }
+
+.ep-list-title { color: #6B7280; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin: 32px 0 14px; }
+.ep-item { display: flex; gap: 16px; background: #15171C; border: 1px solid #262626; border-radius: 14px; overflow: hidden; margin-bottom: 10px; transition: all .2s; }
+.ep-item:hover { border-color: #374151; }
+.ep-item-cover { width: 120px; flex-shrink: 0; background: linear-gradient(135deg, #14532d, #052e16); position: relative; }
+.ep-item-cover img { width: 100%; height: 100%; object-fit: cover; }
+.ep-item-body { flex: 1; padding: 16px; }
+.ep-item-body h3 { font-family: 'Playfair Display'; font-weight: 700; font-size: 17px; margin-bottom: 4px; }
+.ep-item-body .preview { color: #6B7280; font-size: 12px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+.ep-item-footer { display: flex; align-items: center; justify-content: space-between; }
+.ep-badges { display: flex; gap: 6px; }
+.ep-mini-badge { font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.ep-mini-badge.free { background: rgba(234,179,8,0.15); color: #FACC15; }
+.ep-mini-badge.sub { background: rgba(34,197,94,0.1); color: #4ADE80; }
+.ep-read-btn { font-size: 11px; font-weight: 800; color: #22C55E; padding: 6px 12px; border-radius: 7px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
+
+/* Discover Grid */
+.discover-hero { background: linear-gradient(135deg, rgba(34,197,94,0.15), #15171C); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 70px 24px 50px; text-align: center; position: relative; overflow: hidden; }
+.discover-hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; }
+.discover-hero p { color: #9CA3AF; font-size: 16px; }
+.creator-grid-wrap { max-width: 1100px; margin: 0 auto; padding: 36px 24px 60px; }
+.discover-pills { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+.discover-pill { padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #15171C; border: 1px solid #262626; color: #9CA3AF; cursor: pointer; }
+.discover-pill.active { background: rgba(34,197,94,0.1); color: #4ADE80; border-color: rgba(34,197,94,0.25); }
+.creator-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.creator-card-d { background: #15171C; border: 1px solid #262626; border-radius: 16px; overflow: hidden; transition: all .25s; cursor: pointer; }
+.creator-card-d:hover { transform: translateY(-3px); border-color: rgba(34,197,94,0.3); box-shadow: 0 10px 40px rgba(34,197,94,0.15); }
+.creator-cover-d { height: 100px; position: relative; }
+.creator-cover-d img { width: 100%; height: 100%; object-fit: cover; }
+.creator-free-badge { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 800; background: rgba(34,197,94,0.25); color: #86EFAC; border: 1px solid rgba(34,197,94,0.3); backdrop-filter: blur(8px); }
+.creator-ava-d { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; margin: -30px 0 0 20px; border: 3px solid #15171C; position: relative; z-index: 1; }
+.creator-ava-d img { width: 100%; height: 100%; object-fit: cover; }
+.creator-body-d { padding: 10px 20px 20px; }
+.creator-body-d h3 { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+.creator-body-d .handle { font-size: 12px; color: #6B7280; margin-bottom: 10px; }
+.creator-body-d .bio { font-size: 12px; color: #9CA3AF; line-height: 1.5; margin-bottom: 14px; min-height: 36px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.creator-footer-d { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #1F2024; }
+.creator-price-d { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #D1D5DB; }
+.creator-see-d { font-size: 11px; font-weight: 800; color: #4ADE80; }
+
+/* Stripe Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.active { display: flex; animation: fade .3s ease; }
+.modal-box { background: #15171C; border: 1px solid #262626; border-radius: 20px; padding: 28px; max-width: 420px; width: 100%; }
+.modal-box.success { text-align: center; }
+.stripe-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid #262626; }
+.stripe-brand { font-size: 18px; font-weight: 800; color: #635BFF; letter-spacing: -0.02em; }
+.stripe-amount { text-align: right; }
+.stripe-amount .num { font-size: 22px; font-weight: 800; }
+.stripe-amount .per { font-size: 11px; color: #6B7280; }
+.modal-close { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #9CA3AF; display: flex; align-items: center; justify-content: center; }
+.success-check { width: 72px; height: 72px; border-radius: 50%; background: rgba(34,197,94,0.15); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px; border: 2px solid rgba(34,197,94,0.3); }
+.modal-box.success h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.modal-box.success p { color: #9CA3AF; font-size: 14px; margin-bottom: 22px; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .stats-grid, .scenarios, .creator-grid, .publish-grid { grid-template-columns: 1fr; }
+  .dash-sidebar, .dash-right { display: none; }
+  .proto-label { display: none; }
+  .gift-grid { grid-template-columns: repeat(4, 1fr); }
+  .emotion-grid { grid-template-columns: repeat(3, 1fr); }
+  .flow-tab .count { display: none; }
+}
+
+/* Scroll */
+html { scroll-behavior: smooth; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #374151; }
+</style>
+</head>
+<body>
+
+<!-- ╔═══════════════════════════════════════════════╗ -->
+<!-- ║ PROTOTYPE NAVIGATION BAR                       ║ -->
+<!-- ╚═══════════════════════════════════════════════╝ -->
+<div class="proto-bar">
+  <div class="proto-bar-inner">
+    <div class="proto-brand">bio<span class="green">.me</span><span class="sub">· Prototipo UX completo</span></div>
+    <div class="flow-tabs">
+      <button class="flow-tab active" id="tab-writer" onclick="switchFlow('writer')">
+        ✍️ Escritor <span class="count">· 7</span>
+      </button>
+      <button class="flow-tab" id="tab-reader" onclick="switchFlow('reader')">
+        📖 Lector <span class="count">· 7</span>
+      </button>
+    </div>
+    <div class="proto-controls">
+      <span class="proto-label" id="screenLabel">1 / 7</span>
+      <button class="proto-btn" id="prevBtn" onclick="prev()">← Atrás</button>
+      <button class="proto-btn" id="nextBtn" onclick="next()">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ╔═══════════════════════════════════════════════╗ -->
+<!-- ║                                                ║ -->
+<!-- ║  🖊️  EXPERIENCIA DEL ESCRITOR  (7 pantallas)  ║ -->
+<!-- ║                                                ║ -->
+<!-- ╚═══════════════════════════════════════════════╝ -->
+
+<!-- ── W0: INTRO ── -->
+<section class="screen active" id="writer-0">
+  <div class="section-intro">
+    <div class="section-intro-content">
+      <span class="eyebrow">Flujo 1 de 2</span>
+      <h1>Experiencia del<br><em>Storyteller</em></h1>
+      <p>El viaje completo de una persona que descubre bio.me, se registra, publica su primer episodio y empieza a ganar dinero contando su historia real.</p>
+      <div class="section-flow">
+        <div class="flow-step">1. Landing</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">2. Registro</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">3. Onboarding</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">4. Dashboard vacío</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step highlight">5. Publicar episodio</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">6. Dashboard activo</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">7. Monetización</div>
+      </div>
+      <button class="btn-primary" onclick="goToIndex('writer', 1)">Empezar el flujo del escritor →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── W1: LANDING ── -->
+<section class="screen" id="writer-1">
+  <nav class="landing-nav">
+    <div class="logo">bio<span>.me</span></div>
+    <div class="nav-links">
+      <a class="nav-link">Descubrir</a>
+      <a class="nav-link">Para storytellers</a>
+      <a class="nav-link">Iniciar sesión</a>
+    </div>
+    <button class="btn-primary" onclick="next()" style="padding: 10px 20px; font-size: 13px;">Empieza gratis</button>
+  </nav>
+
+  <div class="hero">
+    <div class="badge"><span class="badge-dot"></span>La plataforma para storytellers</div>
+    <h1>Tu vida merece ser leída.<br><em>Y merece ser pagada.</em></h1>
+    <p>bio.me es la única plataforma construida exclusivamente para storytellers — personas que saben narrar su vida real y construir una audiencia que paga por seguir leyendo.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="next()">Empieza a escribir — $5/mes</button>
+      <button class="btn-outline" onclick="switchFlow('reader')">Explorar historias</button>
+    </div>
+  </div>
+
+  <div class="calc-wrap">
+    <div class="calc-header">
+      <div style="text-align: center; margin-bottom: 16px;"><span style="display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; background: rgba(34,197,94,0.1); color: #4ADE80; border: 1px solid rgba(34,197,94,0.2); text-transform: uppercase;">💡 Tú decides tu precio</span></div>
+      <h3>Calcula cuánto puedes ganar</h3>
+      <p>Tú pones el precio de tu suscripción. Sugerimos entre $3 y $15. Recibes el <strong style="color:#22C55E;">90%</strong> — bio.me retiene solo 10%.</p>
+    </div>
+    <div class="calc-slider-block">
+      <div class="calc-slider-label">
+        <span>Precio mensual:</span>
+        <span class="calc-price-display" id="priceDisplay">$5<span style="color:#6B7280;font-size:16px;font-weight:500;">/mes</span></span>
+      </div>
+      <input type="range" min="2" max="20" step="1" value="5" class="calc-slider" id="priceSlider" oninput="updateEarnings()">
+      <div class="calc-slider-ticks"><span>$2</span><span>$5</span><span>$10</span><span>$15</span><span>$20</span></div>
+    </div>
+    <div class="scenarios">
+      <div class="scenario">
+        <div class="scenario-subs">20 suscriptores</div>
+        <div class="scenario-formula" id="formula-20">20 × $5 × 90%</div>
+        <div class="scenario-amount" id="amount-20">$90/mes</div>
+        <div class="scenario-label">Primer ingreso real</div>
+      </div>
+      <div class="scenario featured">
+        <div class="scenario-subs">100 suscriptores</div>
+        <div class="scenario-formula" id="formula-100">100 × $5 × 90%</div>
+        <div class="scenario-amount" id="amount-100">$450/mes</div>
+        <div class="scenario-label">Ingreso constante</div>
+      </div>
+      <div class="scenario">
+        <div class="scenario-subs">500 suscriptores</div>
+        <div class="scenario-formula" id="formula-500">500 × $5 × 90%</div>
+        <div class="scenario-amount" id="amount-500">$2,250/mes</div>
+        <div class="scenario-label">Ingreso full-time</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── W2: SIGNUP ── -->
+<section class="screen" id="writer-2">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="logo">bio<span>.me</span></div>
+        <p class="tagline">Tu historia. Tu ingreso.</p>
+      </div>
+      <div class="auth-card">
+        <h1>Crea tu cuenta</h1>
+        <p class="sub">Ingresa tu email y elige una contraseña.</p>
+        <div class="field">
+          <label>Correo electrónico</label>
+          <input type="email" value="rafael@biome.co" readonly>
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" value="••••••••••">
+        </div>
+        <button class="auth-submit" onclick="next()">Crear cuenta</button>
+        <p class="auth-switch">¿Ya tienes cuenta? <a>Inicia sesión</a></p>
+      </div>
+      <p style="text-align:center;font-size:11px;color:#4B5563;margin-top:20px;">Gratis para leer · $5/mes para publicar</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── W3: ONBOARDING ── -->
+<section class="screen" id="writer-3">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo"><div class="logo">bio<span>.me</span></div></div>
+      <div class="auth-card">
+        <h1>Completa tu perfil</h1>
+        <p class="sub">Elige tu nombre de usuario y cómo quieres usar bio.me.</p>
+        <div class="field">
+          <label>Nombre de usuario</label>
+          <div class="username-row">
+            <span class="username-prefix">bio.me/@</span>
+            <input type="text" value="rafael" style="height:44px;padding:0 14px;">
+          </div>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:13px;font-weight:700;color:#D1D5DB;margin-bottom:10px;">Quiero...</label>
+          <div class="role-grid">
+            <div class="role-card selected">
+              <div class="role-icon">✍️</div>
+              <h4>Escribir</h4>
+              <p>Publicar y ganar dinero</p>
+            </div>
+            <div class="role-card">
+              <div class="role-icon">📖</div>
+              <h4>Leer</h4>
+              <p>Seguir escritores</p>
+            </div>
+          </div>
+        </div>
+        <button class="auth-submit" onclick="next()">Empezar en bio.me →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── W4: WRITER EMPTY DASHBOARD ── -->
+<section class="screen" id="writer-4">
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="sb-logo">
+        <div class="sb-logo-circle">▶</div>
+        <div class="logo">bio<span>.me</span></div>
+      </div>
+      <div class="sb-user">
+        <div class="sb-avatar online"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt=""></div>
+        <div class="sb-user-info"><h3>rafael</h3><p>Creador verificado</p></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="sb-link active"><span class="sb-link-icon">🏠</span> Inicio</a>
+        <a class="sb-link"><span class="sb-link-icon">🧭</span> Discovery</a>
+        <a class="sb-link"><span class="sb-link-icon">📖</span> Mis historias</a>
+        <a class="sb-link"><span class="sb-link-icon">💰</span> Monetización</a>
+        <a class="sb-link"><span class="sb-link-icon">👥</span> Audiencia</a>
+        <div class="sb-section">Biblioteca</div>
+        <a class="sb-link"><span class="sb-link-icon">⭐</span> Mis suscripciones</a>
+        <a class="sb-link"><span class="sb-link-icon">🕒</span> Historial</a>
+        <a class="sb-link"><span class="sb-link-icon">📝</span> Borradores</a>
+        <a class="sb-link"><span class="sb-link-icon">⚙️</span> Ajustes</a>
+      </nav>
+      <div class="sb-wallet">
+        <div class="sb-wallet-row">
+          <span class="sb-wallet-amount"><span class="dollar-icon">$</span>$0.00</span>
+          <span style="color:#6B7280;">⌄</span>
+        </div>
+        <button class="sb-wallet-btn">⟳ Retirar</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="dash-search">
+          <span class="dash-search-icon">🔍</span>
+          <input placeholder="Buscar historias, creadores, tags...">
+        </div>
+        <div class="dash-topbar-actions">
+          <div class="dash-bell">🔔</div>
+          <button class="dash-publish" onclick="next()">✎ Publicar</button>
+        </div>
+      </div>
+
+      <div style="padding: 24px; max-width: 1000px;">
+        <div class="welcome-banner">
+          <div class="welcome-left">
+            <span class="welcome-emoji">👋</span>
+            <div>
+              <h2>Rafael, ¿listo para publicar tu primera historia?</h2>
+              <p>Tu primer capítulo siempre es gratis. Es tu anzuelo. Hazlo memorable.</p>
+            </div>
+          </div>
+          <button class="welcome-cta" onclick="next()">✎ Crear episodio</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Suscriptores</span><div class="stat-icon">👥</div></div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Aún nadie te sigue</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Episodios</span><div class="stat-icon">📖</div></div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Sin publicaciones</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Ganancias</span><div class="stat-icon">💰</div></div>
+            <div class="stat-value">$0</div>
+            <div class="stat-sub">Listo para empezar</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Regalos</span><div class="stat-icon">🎁</div></div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Sin regalos aún</div>
+          </div>
+        </div>
+
+        <div style="background: #15171C; border: 1px dashed #374151; border-radius: 18px; padding: 40px; text-align: center;">
+          <div style="font-size: 40px; margin-bottom: 10px;">✦</div>
+          <h3 style="font-family:'Playfair Display';font-size:22px;font-weight:700;margin-bottom:8px;">Empieza publicando tu primer episodio</h3>
+          <p style="color:#9CA3AF;font-size:13px;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto;">El primer capítulo es siempre gratis. Es tu oportunidad para enganchar lectores. Hazlo inolvidable.</p>
+          <button class="btn-primary" onclick="next()">✎ Crear mi primer episodio →</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ── W5: PUBLISH EPISODE ── -->
+<section class="screen" id="writer-5">
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="sb-logo"><div class="sb-logo-circle">▶</div><div class="logo">bio<span>.me</span></div></div>
+      <div class="sb-user">
+        <div class="sb-avatar online"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt=""></div>
+        <div class="sb-user-info"><h3>rafael</h3><p>Creador verificado</p></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="sb-link"><span class="sb-link-icon">🏠</span> Inicio</a>
+        <a class="sb-link"><span class="sb-link-icon">🧭</span> Discovery</a>
+        <a class="sb-link active"><span class="sb-link-icon">📖</span> Mis historias</a>
+        <a class="sb-link"><span class="sb-link-icon">💰</span> Monetización</a>
+        <a class="sb-link"><span class="sb-link-icon">👥</span> Audiencia</a>
+      </nav>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="dash-search"><span class="dash-search-icon">🔍</span><input placeholder="Buscar..."></div>
+      </div>
+
+      <div class="publish-wrap">
+        <div class="publish-header">
+          <h1>Nuevo Episodio</h1>
+          <p>Escribe, elige el acceso y publica cuando estés listo.</p>
+        </div>
+
+        <div class="publish-grid">
+          <div class="publish-main">
+            <label class="pub-label">Título del episodio</label>
+            <input class="pub-title" value="Cuando dejé Miami" readonly>
+
+            <label class="pub-label">Imagen de portada <span class="hint" style="color:#6B7280;">· opcional</span></label>
+            <div style="width:100%;height:220px;border-radius:12px;overflow:hidden;margin-bottom:20px;border:1px solid #262626;position:relative;">
+              <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&h=600&fit=crop" style="width:100%;height:100%;object-fit:cover;" />
+              <button style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;cursor:pointer;">✕</button>
+            </div>
+
+            <label class="pub-label">Adelanto gratis <span class="hint">· visible para todos</span></label>
+            <textarea class="pub-textarea" rows="3" readonly>Un lunes de octubre empaqué dos maletas, dejé mi apartamento y me subí a un avión sin boleto de regreso. Nadie me despidió en el aeropuerto.</textarea>
+
+            <label class="pub-label" style="display:flex;justify-content:space-between;align-items:center;">
+              <span>Tu historia</span>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:9px;padding:3px 7px;border-radius:5px;background:rgba(34,197,94,0.1);color:#4ADE80;border:1px solid rgba(34,197,94,0.2);">🔒 Solo suscriptores</span>
+            </label>
+            <textarea class="pub-textarea" rows="10" readonly>Mi mamá llamaba cada dos horas esa mañana. Yo no contestaba. Sabía que si escuchaba su voz me iba a arrepentir.
+
+Había vivido 34 años en Miami. Mi carrera, mi apartamento, mi gente, mi ceviche de los viernes. Todo.
+
+Pero algo dentro de mí se había muerto lento durante los últimos tres años — ese algo que sabes que si no te mueves, se lleva contigo todo lo demás.
+
+Buenos Aires no era un plan. Era una apuesta...</textarea>
+
+            <div class="soundtrack-highlight">
+              <div class="soundtrack-header">
+                <span style="font-size:14px;">🎵</span>
+                <span class="pub-label" style="margin-bottom:0;">Banda sonora</span>
+                <span class="soundtrack-badge">Nuevo en bio.me</span>
+              </div>
+              <p style="font-size:11px;color:#9CA3AF;margin-bottom:10px;">La canción que acompaña este capítulo. Los lectores la escuchan mientras te leen.</p>
+              <input class="pub-input" style="margin-bottom:8px;" value="https://open.spotify.com/track/3vkCueOmm7xQDoJ17W1Pm3" readonly>
+              <input class="pub-input" style="margin-bottom:0;" value="Gian Marco — Si Me Tenías" readonly>
+            </div>
+          </div>
+
+          <div class="publish-side">
+            <div class="card">
+              <label class="pub-label">Serie / Temporada</label>
+              <select class="pub-input" style="margin-bottom:0;">
+                <option>Serie: Salir de Miami</option>
+                <option>Sin serie — episodio independiente</option>
+              </select>
+            </div>
+            <div class="card">
+              <label class="pub-label">Acceso y precio</label>
+              <div class="mon-option">
+                <input type="radio" name="mon">
+                <div class="mon-option-text"><h4>👁 Gratis</h4><p>Cualquiera puede leer</p></div>
+              </div>
+              <div class="mon-option selected">
+                <input type="radio" name="mon" checked>
+                <div class="mon-option-text"><h4>🔒 Solo suscriptores</h4><p>Debe estar suscrito para leer</p></div>
+              </div>
+              <div class="mon-option">
+                <input type="radio" name="mon">
+                <div class="mon-option-text"><h4>💎 Pago único</h4><p>Precio de desbloqueo</p></div>
+              </div>
+            </div>
+            <button class="publish-submit" onclick="next()">Publicar episodio →</button>
+            <p style="font-size:10px;color:#6B7280;text-align:center;">Tu primer capítulo siempre es gratis</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ── W6: WRITER ACTIVE DASHBOARD (fully populated) ── -->
+<section class="screen" id="writer-6">
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="sb-logo"><div class="sb-logo-circle">▶</div><div class="logo">bio<span>.me</span></div></div>
+      <div class="sb-user">
+        <div class="sb-avatar online"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt=""></div>
+        <div class="sb-user-info"><h3>rafael</h3><p>Creador verificado</p></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="sb-link active"><span class="sb-link-icon">🏠</span> Inicio</a>
+        <a class="sb-link"><span class="sb-link-icon">🧭</span> Discovery</a>
+        <a class="sb-link"><span class="sb-link-icon">📖</span> Mis historias</a>
+        <a class="sb-link"><span class="sb-link-icon">💰</span> Monetización</a>
+        <a class="sb-link"><span class="sb-link-icon">👥</span> Audiencia</a>
+      </nav>
+      <div class="sb-wallet">
+        <div class="sb-wallet-row">
+          <span class="sb-wallet-amount"><span class="dollar-icon">$</span>$211.50</span>
+          <span style="color:#6B7280;">⌄</span>
+        </div>
+        <button class="sb-wallet-btn">⟳ Retirar</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="dash-search"><span class="dash-search-icon">🔍</span><input placeholder="Buscar..."></div>
+        <div class="dash-topbar-actions">
+          <div class="dash-bell">🔔<span class="dash-bell-dot">3</span></div>
+          <button class="dash-publish">✎ Publicar</button>
+        </div>
+      </div>
+
+      <div style="padding:24px; max-width:1000px;">
+        <div class="welcome-banner">
+          <div class="welcome-left">
+            <span class="welcome-emoji">🔥</span>
+            <div>
+              <h2>Estás creciendo, Rafael</h2>
+              <p>Ganaste <strong style="color:#22C55E;">+$47 esta semana</strong>. 12 suscriptores nuevos desde el martes.</p>
+            </div>
+          </div>
+          <button class="welcome-cta">✎ Próximo episodio</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Suscriptores</span><div class="stat-icon">👥</div></div>
+            <div class="stat-value">47</div>
+            <div class="stat-trend">↑ +12 esta semana</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-head"><span class="stat-label">Ingresos / mes</span><div class="stat-icon">💰</div></div>
+            <div class="stat-value">$211.50</div>
+            <div class="stat-trend">↑ +28% vs mes anterior</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Episodios</span><div class="stat-icon">📖</div></div>
+            <div class="stat-value">8</div>
+            <div class="stat-sub">6.2K lecturas totales</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-head"><span class="stat-label">Regalos</span><div class="stat-icon">🎁</div></div>
+            <div class="stat-value">89</div>
+            <div class="stat-sub">$142 en propinas</div>
+          </div>
+        </div>
+
+        <div class="activity-feed">
+          <div class="section-title">⚡ Actividad reciente</div>
+          <div class="activity-item">
+            <div class="activity-ava"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt=""></div>
+            <div class="activity-main">
+              <p><span class="who">@ana_vega</span> se suscribió por <strong>$5/mes</strong></p>
+              <div class="activity-meta">hace 12 min</div>
+            </div>
+            <span class="activity-amount">+$4.50</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ava"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" alt=""></div>
+            <div class="activity-main">
+              <p><span class="who">@carlos_m</span> te envió un regalo <strong>🔥 Fuego</strong> en "Cuando dejé Miami"</p>
+              <div class="activity-meta">hace 1 hora</div>
+            </div>
+            <span class="activity-amount">+$1.76</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ava"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt=""></div>
+            <div class="activity-main">
+              <p><span class="who">@maria_soto</span> te envió <strong>💎 Diamante</strong> en "El día que mi mamá dejó de hablarme"</p>
+              <div class="activity-meta">hace 3 horas</div>
+            </div>
+            <span class="activity-amount">+$8.80</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-ava"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&h=100&fit=crop" alt=""></div>
+            <div class="activity-main">
+              <p><span class="who">@lena_k</span> reaccionó <strong>❤️ Conmovedor</strong> en "Buenos Aires: el primer mes"</p>
+              <div class="activity-meta">hace 5 horas</div>
+            </div>
+            <span style="font-size:13px;color:#4ADE80;font-weight:700;">Nueva reacción</span>
+          </div>
+        </div>
+
+        <div style="background:#15171C;border:1px solid #262626;border-radius:18px;overflow:hidden;">
+          <div style="padding:20px 22px;border-bottom:1px solid #262626;display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-weight:800;">Tus episodios</h3>
+            <span style="font-size:12px;color:#6B7280;">8 publicados · 2 borradores</span>
+          </div>
+          <div class="ep-item" style="margin:0;border:none;border-bottom:1px solid #1F2024;border-radius:0;">
+            <div class="ep-item-cover" style="width:100px;"><img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=200&h=250&fit=crop" alt=""></div>
+            <div class="ep-item-body">
+              <div style="display:flex;gap:8px;margin-bottom:4px;"><span class="ep-mini-badge free">Gratis</span><span class="ep-mini-badge sub">47 subs</span></div>
+              <h3>Cuando dejé Miami</h3>
+              <p class="preview">Un lunes de octubre empaqué dos maletas, dejé mi apartamento y me subí a un avión sin boleto de regreso...</p>
+              <div class="metrics-row">
+                <span>❤️ 3.2K</span>
+                <span>💬 89</span>
+                <span>🎁 31</span>
+                <span style="color:#22C55E;font-weight:700;">💰 $47.50</span>
+              </div>
+            </div>
+          </div>
+          <div class="ep-item" style="margin:0;border:none;border-bottom:1px solid #1F2024;border-radius:0;">
+            <div class="ep-item-cover" style="width:100px;"><img src="https://images.unsplash.com/photo-1516627145497-ae6968895b40?w=200&h=250&fit=crop" alt=""></div>
+            <div class="ep-item-body">
+              <div style="display:flex;gap:8px;margin-bottom:4px;"><span class="ep-mini-badge sub">Exclusivo</span></div>
+              <h3>El día que mi mamá dejó de hablarme</h3>
+              <p class="preview">Fue un sábado. Llevaba dos meses sin llamarla. Cuando finalmente marqué, el teléfono sonó ocho veces...</p>
+              <div class="metrics-row">
+                <span>❤️ 1.8K</span>
+                <span>💬 142</span>
+                <span>🎁 42</span>
+                <span style="color:#22C55E;font-weight:700;">💰 $68.20</span>
+              </div>
+            </div>
+          </div>
+          <div class="ep-item" style="margin:0;border:none;border-radius:0;">
+            <div class="ep-item-cover" style="width:100px;"><img src="https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=200&h=250&fit=crop" alt=""></div>
+            <div class="ep-item-body">
+              <div style="display:flex;gap:8px;margin-bottom:4px;"><span class="ep-mini-badge sub">Exclusivo</span></div>
+              <h3>Buenos Aires: el primer mes</h3>
+              <p class="preview">Nadie me dijo que el otoño en Buenos Aires es una lección de humildad. Llegué con ropa de Miami...</p>
+              <div class="metrics-row">
+                <span>❤️ 1.2K</span>
+                <span>💬 56</span>
+                <span>🎁 16</span>
+                <span style="color:#22C55E;font-weight:700;">💰 $28.40</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ── W7: MONETIZATION VIEW ── -->
+<section class="screen" id="writer-7">
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="sb-logo"><div class="sb-logo-circle">▶</div><div class="logo">bio<span>.me</span></div></div>
+      <div class="sb-user">
+        <div class="sb-avatar online"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt=""></div>
+        <div class="sb-user-info"><h3>rafael</h3><p>Creador verificado</p></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="sb-link"><span class="sb-link-icon">🏠</span> Inicio</a>
+        <a class="sb-link"><span class="sb-link-icon">🧭</span> Discovery</a>
+        <a class="sb-link"><span class="sb-link-icon">📖</span> Mis historias</a>
+        <a class="sb-link active"><span class="sb-link-icon">💰</span> Monetización</a>
+        <a class="sb-link"><span class="sb-link-icon">👥</span> Audiencia</a>
+      </nav>
+      <div class="sb-wallet">
+        <div class="sb-wallet-row"><span class="sb-wallet-amount"><span class="dollar-icon">$</span>$211.50</span></div>
+        <button class="sb-wallet-btn">⟳ Retirar ahora</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="dash-search"><span class="dash-search-icon">🔍</span><input placeholder="Buscar..."></div>
+      </div>
+
+      <div style="padding:24px;max-width:1000px;">
+        <h1 style="font-size:26px;font-weight:800;margin-bottom:4px;">Monetización</h1>
+        <p style="color:#9CA3AF;font-size:13px;margin-bottom:24px;">Ingresos, regalos y transacciones.</p>
+
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">Ingresos brutos</span><div class="stat-icon">📈</div></div>
+            <div class="stat-value">$243.50</div>
+            <div class="stat-sub">Antes de comisiones</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-head"><span class="stat-label">Ganancias netas</span><div class="stat-icon">💳</div></div>
+            <div class="stat-value">$211.50</div>
+            <div class="stat-sub">Lo que te llevas a casa</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-head"><span class="stat-label">Regalos recibidos</span><div class="stat-icon">🎁</div></div>
+            <div class="stat-value">89</div>
+            <div class="stat-sub">$142 en propinas</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="activity-feed">
+            <div class="section-title">🎁 Regalos recibidos</div>
+            <div class="activity-item">
+              <div style="font-size:22px;">💎</div>
+              <div class="activity-main">
+                <p class="who">@maria_soto</p>
+                <div class="activity-meta">Diamante · hoy</div>
+              </div>
+              <span class="activity-amount">+$8.80</span>
+            </div>
+            <div class="activity-item">
+              <div style="font-size:22px;">🔥</div>
+              <div class="activity-main">
+                <p class="who">@carlos_m</p>
+                <div class="activity-meta">Fuego · hace 1h</div>
+              </div>
+              <span class="activity-amount">+$1.76</span>
+            </div>
+            <div class="activity-item">
+              <div style="font-size:22px;">👑</div>
+              <div class="activity-main">
+                <p class="who">@ana_vega</p>
+                <div class="activity-meta">Corona · ayer</div>
+              </div>
+              <span class="activity-amount">+$22.00</span>
+            </div>
+            <div class="activity-item">
+              <div style="font-size:22px;">❤️</div>
+              <div class="activity-main">
+                <p class="who">@lena_k</p>
+                <div class="activity-meta">Amor · ayer</div>
+              </div>
+              <span class="activity-amount">+$0.88</span>
+            </div>
+          </div>
+          <div class="activity-feed">
+            <div class="section-title">💳 Suscripciones y pagos</div>
+            <div class="activity-item">
+              <div class="activity-ava"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt=""></div>
+              <div class="activity-main">
+                <p><span class="who">Suscripción</span></p>
+                <div class="activity-meta">@ana_vega · hoy</div>
+              </div>
+              <span class="activity-amount">+$4.50</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-ava"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&h=100&fit=crop" alt=""></div>
+              <div class="activity-main">
+                <p><span class="who">Suscripción</span></p>
+                <div class="activity-meta">@lena_k · ayer</div>
+              </div>
+              <span class="activity-amount">+$4.50</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-ava"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt=""></div>
+              <div class="activity-main">
+                <p><span class="who">Pago único</span></p>
+                <div class="activity-meta">@juan_r · hace 2 días</div>
+              </div>
+              <span class="activity-amount">+$1.79</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;padding:20px;background:linear-gradient(135deg,rgba(34,197,94,0.08),#15171C);border:1px solid rgba(34,197,94,0.2);border-radius:16px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h4 style="font-weight:800;margin-bottom:4px;">💸 Retirar a tu banco</h4>
+            <p style="font-size:12px;color:#9CA3AF;">Disponible para retirar: <strong style="color:#22C55E;">$211.50</strong> · Stripe Connect</p>
+          </div>
+          <button class="btn-primary" style="padding:10px 20px;font-size:13px;" onclick="switchFlow('reader')">Retirar ahora →</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ╔═══════════════════════════════════════════════╗ -->
+<!-- ║                                                ║ -->
+<!-- ║  📖  EXPERIENCIA DEL LECTOR  (7 pantallas)    ║ -->
+<!-- ║                                                ║ -->
+<!-- ╚═══════════════════════════════════════════════╝ -->
+
+<!-- ── R0: INTRO ── -->
+<section class="screen" id="reader-0">
+  <div class="section-intro">
+    <div class="section-intro-content">
+      <span class="eyebrow">Flujo 2 de 2</span>
+      <h1>Experiencia del<br><em>Lector</em></h1>
+      <p>El viaje completo de alguien que descubre bio.me como lector, se registra, explora creadores, encuentra una historia que le hable y decide pagar para seguir leyendo.</p>
+      <div class="section-flow">
+        <div class="flow-step">1. Registro</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">2. Onboarding</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step highlight">3. Feed</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">4. Discover</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">5. Perfil</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step highlight">6. Leyendo</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">7. Pago</div>
+      </div>
+      <button class="btn-primary" onclick="goToIndex('reader', 1)">Empezar el flujo del lector →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── R1: SIGNUP ── -->
+<section class="screen" id="reader-1">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="logo">bio<span>.me</span></div>
+        <p class="tagline">Tu historia. Tu ingreso.</p>
+      </div>
+      <div class="auth-card">
+        <h1>Crea tu cuenta</h1>
+        <p class="sub">Gratis para leer. Solo creas cuenta si quieres suscribirte a un creador.</p>
+        <div class="field">
+          <label>Correo electrónico</label>
+          <input type="email" value="ana.vega@gmail.com" readonly>
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" value="••••••••••">
+        </div>
+        <button class="auth-submit" onclick="next()">Crear cuenta</button>
+      </div>
+      <p style="text-align:center;font-size:11px;color:#4B5563;margin-top:20px;">Los lectores nunca pagan a bio.me directamente · Solo a los creadores</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── R2: ONBOARDING ── -->
+<section class="screen" id="reader-2">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo"><div class="logo">bio<span>.me</span></div></div>
+      <div class="auth-card">
+        <h1>Completa tu perfil</h1>
+        <p class="sub">Elige tu nombre de usuario y cómo quieres usar bio.me.</p>
+        <div class="field">
+          <label>Nombre de usuario</label>
+          <div class="username-row">
+            <span class="username-prefix">bio.me/@</span>
+            <input type="text" value="anavega" style="height:44px;padding:0 14px;">
+          </div>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:13px;font-weight:700;color:#D1D5DB;margin-bottom:10px;">Quiero...</label>
+          <div class="role-grid">
+            <div class="role-card">
+              <div class="role-icon">✍️</div>
+              <h4>Escribir</h4>
+              <p>Publicar y ganar dinero</p>
+            </div>
+            <div class="role-card selected">
+              <div class="role-icon">📖</div>
+              <h4>Leer</h4>
+              <p>Seguir escritores</p>
+            </div>
+          </div>
+        </div>
+        <button class="auth-submit" onclick="next()">Empezar en bio.me →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── R3: READER FEED (fully populated like screenshot) ── -->
+<section class="screen" id="reader-3">
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="sb-logo"><div class="sb-logo-circle">▶</div><div class="logo">bio<span>.me</span></div></div>
+      <div class="sb-user">
+        <div class="sb-avatar online"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop" alt=""></div>
+        <div class="sb-user-info"><h3>anavega</h3><p>Lector</p></div>
+      </div>
+      <nav class="sb-nav">
+        <a class="sb-link active"><span class="sb-link-icon">🏠</span> Inicio</a>
+        <a class="sb-link"><span class="sb-link-icon">🧭</span> Discovery</a>
+        <div class="sb-section">Biblioteca</div>
+        <a class="sb-link"><span class="sb-link-icon">⭐</span> Mis suscripciones</a>
+        <a class="sb-link"><span class="sb-link-icon">🕒</span> Historial</a>
+        <a class="sb-link"><span class="sb-link-icon">⚙️</span> Ajustes</a>
+      </nav>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="dash-search"><span class="dash-search-icon">🔍</span><input placeholder="Buscar usuarios, historias o tags..."></div>
+        <div class="dash-topbar-actions">
+          <div class="dash-bell">🔔<span class="dash-bell-dot">1</span></div>
+          <button class="dash-publish" onclick="goToIndex('reader', 4)">🧭 Explorar</button>
+        </div>
+      </div>
+
+      <div class="dash-with-right">
+        <div class="dash-center">
+          <div class="feed-tabs">
+            <div class="feed-tab active">Para ti</div>
+            <div class="feed-tab">Trending</div>
+            <div class="feed-tab">Nuevas voces</div>
+            <div class="feed-tab">Historias reales</div>
+            <div class="feed-tab">Más regaladas</div>
+          </div>
+          <div class="filter-pills">
+            <div class="filter-pill active">Gratis el primer capítulo</div>
+            <div class="filter-pill">Series en progreso</div>
+            <div class="filter-pill">Top gifted</div>
+            <div class="filter-pill">Top episodios</div>
+          </div>
+
+          <article class="story-card">
+            <div class="story-hero">
+              <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=600&fit=crop" alt="">
+              <div class="story-hero-overlay"></div>
+              <div class="story-hero-content">
+                <div class="story-badges">
+                  <span class="story-badge badge-free">Gratis el primer capítulo</span>
+                  <span class="story-badge badge-series">▶ Series en progreso</span>
+                </div>
+                <h2>Cuando dormía en un sofá prestado</h2>
+                <p class="chapter-info">Capítulo 4 de 12 · Rafael Sanz</p>
+                <div class="story-author-row">
+                  <div class="story-author">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="">
+                    <span class="name">Rafael Sanz</span>
+                    <span style="color:#4ADE80;font-size:14px;">✓</span>
+                  </div>
+                  <div class="story-metrics">
+                    <span>❤️ 4.2k <span style="display:none;color:#9CA3AF;">lecturas</span></span>
+                    <span>💬 182</span>
+                    <span>🎁 93</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="story-footer">
+              <button class="story-read-btn" onclick="goToIndex('reader', 5)">Leer episodio</button>
+            </div>
+          </article>
+
+          <article class="story-compact">
+            <div class="story-compact-head">
+              <div class="story-compact-author">
+                <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&h=100&fit=crop" alt="">
+                <div><div class="name">Carla Mendoza</div><div class="time">hace 3 horas</div></div>
+              </div>
+              <span style="color:#6B7280;">⋯</span>
+            </div>
+            <div class="story-badges">
+              <span class="story-badge badge-top">👑 Top gifted</span>
+              <span class="story-badge badge-series">▶ Series en progreso</span>
+            </div>
+            <h2>Las cartas que nunca le mandé a mi padre</h2>
+            <p class="preview">Guardé cartas durante ocho años. En cajas, en cajones, en archivos de Word. Nunca se las mandé. Este año decidí abrirlas todas y leerlas...</p>
+            <div class="img">
+              <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b40?w=1200&h=500&fit=crop" alt="">
+            </div>
+            <div class="story-compact-footer">
+              <div class="metrics-row">
+                <span>❤️ 2.8k</span>
+                <span>💬 97</span>
+                <span style="color:#EAB308;">🎁 147</span>
+              </div>
+              <button class="ep-read-btn" onclick="goToIndex('reader', 5)">Leer →</button>
+            </div>
+          </article>
+
+          <article class="story-compact">
+            <div class="story-compact-head">
+              <div class="story-compact-author">
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="">
+                <div><div class="name">María Santos</div><div class="time">ayer</div></div>
+              </div>
+              <span style="color:#6B7280;">⋯</span>
+            </div>
+            <div class="story-badges">
+              <span class="story-badge badge-exclusive">🔒 Exclusivo</span>
+            </div>
+            <h2>3 años sin papeles en Barcelona</h2>
+            <p class="preview">Vivir sin DNI en España es vivir con miedo permanente. Te cuento cómo sobreviví tres años escondiéndome en una ciudad que amé y que me hizo daño...</p>
+            <div class="story-compact-footer">
+              <div class="metrics-row">
+                <span>❤️ 1.9k</span>
+                <span>💬 88</span>
+                <span>🎁 54</span>
+              </div>
+              <button class="ep-read-btn" onclick="goToIndex('reader', 5)">Leer →</button>
+            </div>
+          </article>
+        </div>
+
+        <aside class="dash-right">
+          <div class="right-widget">
+            <div class="widget-title">📈 Historias en tendencia</div>
+            <div class="rw-item">
+              <div class="rw-avatar"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt=""></div>
+              <div class="rw-info">
+                <h5>Rommel Diaz <span class="rw-check">✓</span></h5>
+                <p>2,327 seguidores</p>
+                <div style="display:flex;gap:6px;margin-top:4px;align-items:center;">
+                  <span class="rw-earn">$3.3k+</span>
+                  <span class="rw-deng">Deng</span>
+                </div>
+              </div>
+            </div>
+            <div class="rw-item">
+              <div class="rw-avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop" alt=""></div>
+              <div class="rw-info">
+                <h5>Laura Castillo <span class="rw-check">✓</span></h5>
+                <p>3.2k seguidores</p>
+                <div style="display:flex;gap:6px;margin-top:4px;align-items:center;">
+                  <span class="rw-crown">👑 2.669k</span>
+                  <span class="rw-deng">Deng</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="right-widget">
+            <div class="widget-title" style="display:flex;justify-content:space-between;">Top Gifted <span style="color:#6B7280;font-size:11px;">›</span></div>
+            <div class="rw-item">
+              <div class="rw-avatar round"><img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&h=100&fit=crop" alt=""></div>
+              <div class="rw-info"><h5>Carla Mendoza</h5><p>14.8k lecturas</p></div>
+            </div>
+            <div class="rw-item">
+              <div class="rw-avatar round"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt=""></div>
+              <div class="rw-info"><h5>Javier Lopes</h5><p>118.4k lecturas</p></div>
+            </div>
+            <button class="rw-unlock-btn">Unlock story 🔒</button>
+          </div>
+
+          <div class="right-widget">
+            <div class="widget-title">✦ Escritores destacados</div>
+            <div class="rw-item">
+              <div class="rw-avatar round"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt=""></div>
+              <div class="rw-info">
+                <h5>Rommel Diaz</h5>
+                <div style="font-size:10px;color:#6B7280;display:flex;gap:6px;">
+                  <span>▶ videos</span><span>⚡ 2h</span>
+                </div>
+              </div>
+            </div>
+            <div class="rw-item">
+              <div class="rw-avatar round"><img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop" alt=""></div>
+              <div class="rw-info"><h5>Lorena Ruiz</h5><p style="font-size:10px;">↑ 24.8k suscripciones</p></div>
+            </div>
+          </div>
+
+          <div class="right-widget">
+            <div class="widget-title">🎬 Episodios recomendados</div>
+            <div class="rec-episode">
+              <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=500&fit=crop" alt="">
+              <div class="overlay">
+                <h5>Telina</h5>
+                <p>Cómo dejé todo para viajar por el mundo</p>
+                <div style="margin-top:6px;font-size:10px;color:rgba(255,255,255,0.7);">❤️ 27.5k lecturas</div>
+              </div>
+            </div>
+            <button class="rw-unlock-btn">Desbloquear historia 🔒</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ── R4: DISCOVER ── -->
+<section class="screen" id="reader-4">
+  <nav class="landing-nav">
+    <div class="logo">bio<span>.me</span></div>
+    <div class="nav-links">
+      <a class="nav-link" style="color:#fff;">Descubrir</a>
+      <a class="nav-link">Feed</a>
+    </div>
+    <div class="sb-avatar" style="width:34px;height:34px;font-size:12px;"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt=""></div>
+  </nav>
+
+  <div class="discover-hero">
+    <div class="badge"><span class="badge-dot"></span>Creadores verificados</div>
+    <h1>Descubre historias reales</h1>
+    <p>Personas reales. Vidas auténticas. Encuentra la historia que te hable.</p>
+  </div>
+
+  <div class="creator-grid-wrap">
+    <div class="discover-pills">
+      <div class="discover-pill active">Todos</div>
+      <div class="discover-pill">🔥 Trending</div>
+      <div class="discover-pill">✨ Nuevas voces</div>
+      <div class="discover-pill">✈ Migración</div>
+      <div class="discover-pill">❤️ Amor y Pérdida</div>
+      <div class="discover-pill">🔥 Supervivencia</div>
+      <div class="discover-pill">👶 Maternidad</div>
+      <div class="discover-pill">💼 Negocios</div>
+    </div>
+
+    <div class="creator-grid">
+      <div class="creator-card-d" onclick="next()">
+        <div class="creator-cover-d"><img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&h=200&fit=crop" alt=""><div class="creator-free-badge">Cap. 1 Gratis</div></div>
+        <div class="creator-ava-d"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt=""></div>
+        <div class="creator-body-d">
+          <h3>Rafael Sanz</h3>
+          <div class="handle">@rafael · 47 subs</div>
+          <p class="bio">Dejé Miami, mi empresa y todo lo conocido a los 34. Aquí cuento el precio real de empezar de nuevo.</p>
+          <div class="creator-footer-d">
+            <span class="creator-price-d">$5/mes</span>
+            <span class="creator-see-d">Leer →</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-card-d">
+        <div class="creator-cover-d"><img src="https://images.unsplash.com/photo-1583422409516-2895a77efded?w=600&h=200&fit=crop" alt=""><div class="creator-free-badge">Cap. 1 Gratis</div></div>
+        <div class="creator-ava-d"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop" alt=""></div>
+        <div class="creator-body-d">
+          <h3>María Santos</h3>
+          <div class="handle">@maria_santos · 89 subs</div>
+          <p class="bio">Venezolana en Barcelona. 3 años. Sin plan B. La historia que no cuentan los influencers de migración.</p>
+          <div class="creator-footer-d">
+            <span class="creator-price-d">$5/mes</span>
+            <span class="creator-see-d">Leer →</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-card-d">
+        <div class="creator-cover-d"><img src="https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=600&h=200&fit=crop" alt=""><div class="creator-free-badge">Cap. 1 Gratis</div></div>
+        <div class="creator-ava-d"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop" alt=""></div>
+        <div class="creator-body-d">
+          <h3>James Okafor</h3>
+          <div class="handle">@james_o · 203 subs</div>
+          <p class="bio">Me diagnosticaron cáncer a los 28. Hoy, 4 años después, te cuento cómo la quimio me enseñó a reírme.</p>
+          <div class="creator-footer-d">
+            <span class="creator-price-d">$4/mes</span>
+            <span class="creator-see-d">Leer →</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-card-d">
+        <div class="creator-cover-d"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=200&fit=crop" alt=""><div class="creator-free-badge">Cap. 1 Gratis</div></div>
+        <div class="creator-ava-d"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop" alt=""></div>
+        <div class="creator-body-d">
+          <h3>Ana Reyes</h3>
+          <div class="handle">@ana_reyes · 156 subs</div>
+          <p class="bio">Madre soltera de dos. Fundé mi empresa con $300. Hoy factura $50K al mes. Aquí cada paso sin filtro.</p>
+          <div class="creator-footer-d">
+            <span class="creator-price-d">$7/mes</span>
+            <span class="creator-see-d">Leer →</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-card-d">
+        <div class="creator-cover-d"><img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=200&fit=crop" alt=""><div class="creator-free-badge">Cap. 1 Gratis</div></div>
+        <div class="creator-ava-d"><img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop" alt=""></div>
+        <div class="creator-body-d">
+          <h3>Lena Kim</h3>
+          <div class="handle">@lena_kim · 74 subs</div>
+          <p class="bio">Coreana nacida en California. A los 32 me di cuenta de que no sabía quién era. Esta es mi búsqueda.</p>
+          <div class="creator-footer-d">
+            <span class="creator-price-d">$5/mes</span>
+            <span class="creator-see-d">Leer →</span>
+          </div>
+        </div>
+      </div>
+      <div class="creator-card-d">
+        <div class="creator-cover-d"><img src="https://images.unsplash.com/photo-1516627145497-ae6968895b40?w=600&h=200&fit=crop" alt=""><div class="creator-free-badge">Cap. 1 Gratis</div></div>
+        <div class="creator-ava-d"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop" alt=""></div>
+        <div class="creator-body-d">
+          <h3>Carlos Mendoza</h3>
+          <div class="handle">@carlos_m · 312 subs</div>
+          <p class="bio">Me divorcié a los 45. Tenía que reconstruir una vida de cero. Este es mi diario de volver a empezar.</p>
+          <div class="creator-footer-d">
+            <span class="creator-price-d">$4/mes</span>
+            <span class="creator-see-d">Leer →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── R5: PUBLIC PROFILE (Rafael's profile as Ana sees it) ── -->
+<section class="screen" id="reader-5">
+  <nav class="landing-nav">
+    <div class="logo">bio<span>.me</span></div>
+    <div class="nav-links"><a class="nav-link">← Volver a Discover</a></div>
+    <div class="sb-avatar" style="width:34px;height:34px;font-size:12px;"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt=""></div>
+  </nav>
+
+  <div class="profile-cover-bg">
+    <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600&h=500&fit=crop" alt="">
+    <div class="overlay"></div>
+  </div>
+
+  <div class="profile-wrap-reader">
+    <div class="profile-card">
+      <div class="profile-head">
+        <div class="profile-ava-big"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt=""></div>
+        <div class="profile-info">
+          <h1>Rafael Sanz <span class="verified">✓</span></h1>
+          <div class="handle">@rafael</div>
+          <div class="profile-stats">
+            <span><strong>47</strong> suscriptores</span>
+            <span>·</span>
+            <span><strong>128</strong> seguidores</span>
+            <span>·</span>
+            <span><strong>8</strong> episodios</span>
+          </div>
+          <p class="bio">Dejé Miami, mi empresa y todo lo conocido a los 34. Aquí cuento el precio real de empezar de nuevo a una edad donde se supone ya deberías estar "establecido".</p>
+          <div class="profile-actions">
+            <button class="btn-subscribe" onclick="next()">Suscribirme · $5/mes</button>
+            <button class="btn-follow">+ Seguir</button>
+            <div class="social-proof">Únete a <strong style="color:#D1D5DB;">47 lectores</strong> que ya lo apoyan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-list-title">📖 Historias · 8 episodios</div>
+
+    <div class="ep-item" onclick="next()">
+      <div class="ep-item-cover"><img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=300&h=400&fit=crop" alt=""></div>
+      <div class="ep-item-body">
+        <h3>Cuando dejé Miami</h3>
+        <p class="preview">Un lunes de octubre empaqué dos maletas, dejé mi apartamento y me subí a un avión sin boleto de regreso. Nadie me despidió en el aeropuerto.</p>
+        <div class="ep-item-footer">
+          <div class="ep-badges"><span class="ep-mini-badge free">Cap. 1 · Gratis</span></div>
+          <button class="ep-read-btn" onclick="next()">Leer →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-item">
+      <div class="ep-item-cover"><img src="https://images.unsplash.com/photo-1516627145497-ae6968895b40?w=300&h=400&fit=crop" alt=""></div>
+      <div class="ep-item-body">
+        <h3>El día que mi mamá dejó de hablarme</h3>
+        <p class="preview">Fue un sábado. Llevaba dos meses sin llamarla. Cuando finalmente marqué, el teléfono sonó ocho veces antes de que contestara...</p>
+        <div class="ep-item-footer">
+          <div class="ep-badges"><span class="ep-mini-badge sub">🔒 Exclusivo</span></div>
+          <button class="ep-read-btn">Leer →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-item">
+      <div class="ep-item-cover"><img src="https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=300&h=400&fit=crop" alt=""></div>
+      <div class="ep-item-body">
+        <h3>Buenos Aires: el primer mes</h3>
+        <p class="preview">Nadie me dijo que el otoño en Buenos Aires es una lección de humildad. Llegué con ropa de Miami a un país que se preparaba para el invierno...</p>
+        <div class="ep-item-footer">
+          <div class="ep-badges"><span class="ep-mini-badge sub">🔒 Exclusivo</span></div>
+          <button class="ep-read-btn">Leer →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep-item">
+      <div class="ep-item-cover"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&h=400&fit=crop" alt=""></div>
+      <div class="ep-item-body">
+        <h3>Cuando dormía en un sofá prestado</h3>
+        <p class="preview">Dos semanas en el hostel se convirtieron en un mes. Un mes en el sofá de Matías se convirtió en tres. Nunca pensé que viviría así a los 35...</p>
+        <div class="ep-item-footer">
+          <div class="ep-badges"><span class="ep-mini-badge sub">🔒 Exclusivo</span></div>
+          <button class="ep-read-btn">Leer →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── R6: READING EXPERIENCE (with all innovations) ── -->
+<section class="screen" id="reader-6">
+  <div class="reading-progress"><div class="reading-progress-bar"></div></div>
+  <nav class="landing-nav">
+    <div class="logo">bio<span>.me</span></div>
+    <div class="nav-links"><a class="nav-link">← Volver al perfil</a></div>
+    <div class="sb-avatar" style="width:34px;height:34px;font-size:12px;"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt=""></div>
+  </nav>
+
+  <div class="reading-hero">
+    <div class="reading-wrap">
+      <div class="reading-header-top">
+        <div class="back-link">
+          <div class="back-arrow">‹</div>
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="">
+          <div>
+            <p style="font-weight:700;font-size:13px;">Rafael Sanz</p>
+            <p style="font-size:11px;color:#6B7280;">@rafael</p>
+          </div>
+        </div>
+        <span style="font-size:10px;font-weight:800;letter-spacing:0.08em;color:#FACC15;background:rgba(234,179,8,0.1);padding:4px 10px;border-radius:999px;border:1px solid rgba(234,179,8,0.2);text-transform:uppercase;">GRATIS</span>
+      </div>
+
+      <div class="live-count">
+        <div class="live-dot"></div>
+        <span>3 personas leyendo ahora</span>
+      </div>
+
+      <div class="read-meta">
+        <span>12 de octubre 2026</span>
+        <div class="dot"></div>
+        <span>8 min de lectura</span>
+        <div class="dot"></div>
+        <span>1,847 palabras</span>
+      </div>
+
+      <h1>Cuando dejé Miami</h1>
+
+      <div class="read-cover">
+        <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200&h=600&fit=crop" alt="">
+      </div>
+
+      <!-- Chapter Soundtrack -->
+      <div class="soundtrack-player">
+        <div class="soundtrack-head">
+          <div class="soundtrack-head-left">
+            <div class="soundtrack-icon">🎵</div>
+            <div>
+              <p class="eyebrow">Banda sonora del capítulo</p>
+              <p class="track">Gian Marco — Si Me Tenías</p>
+            </div>
+          </div>
+          <span style="color:#4ADE80;">⌃</span>
+        </div>
+        <div class="soundtrack-player-embed">
+          <div class="spotify-mock">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop" alt="">
+            <div class="spotify-mock-info">
+              <div class="spotify-mock-title">Si Me Tenías</div>
+              <div class="spotify-mock-artist">Gian Marco · 3:42</div>
+              <div class="spotify-mock-bar"></div>
+            </div>
+            <div class="spotify-mock-play">▶</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reading content with highlight popup -->
+      <div class="read-content" style="position:relative;">
+        <p>Un lunes de octubre empaqué dos maletas, dejé mi apartamento y me subí a un avión sin boleto de regreso. Nadie me despidió en el aeropuerto.</p>
+
+        <p style="position:relative;">Mi mamá llamaba cada dos horas esa mañana. Yo no contestaba. <span class="highlighted">Sabía que si escuchaba su voz me iba a arrepentir.</span> Había vivido 34 años en Miami — mi carrera, mi apartamento, mi gente, mi ceviche de los viernes. Todo.
+
+          <div class="highlight-popup">
+            <button class="highlight-btn twitter">
+              <span style="font-size:12px;">𝕏</span> Compartir
+            </button>
+            <button class="highlight-btn">
+              📋 Copiar
+            </button>
+          </div>
+        </p>
+
+        <p>Pero algo dentro de mí se había muerto lento durante los últimos tres años. Ese algo que sabes que si no te mueves, se lleva contigo todo lo demás.</p>
+
+        <p>Buenos Aires no era un plan. Era una apuesta. Una que hice sin decirle a nadie hasta que las maletas estuvieron en la puerta. Ni a mi mejor amigo. Ni a mi hermana. Solo compré el boleto una noche a las 3 AM después de una discusión estúpida con alguien que ya ni recuerdo su cara.</p>
+
+        <p>El primer mes en Buenos Aires fue una derrota. Dormía en un hostel en San Telmo con seis desconocidos. No tenía trabajo. No tenía amigos. No hablaba con mi familia.</p>
+
+        <p>Y sin embargo — y esto es lo que cuesta explicar — fui más feliz que en los últimos cinco años en Miami. No porque todo estuviera bien. Sino porque por primera vez en mucho tiempo, algo era <em>mío</em>.</p>
+
+        <p style="text-align:center;color:#6B7280;font-style:italic;margin-top:40px;">— Fin del episodio 1 —</p>
+      </div>
+
+      <!-- Emotional Reactions -->
+      <div class="emotional-reactions">
+        <div class="emotional-header">
+          <div class="eyebrow">✦ Huella emocional</div>
+          <h3>¿Cómo te hizo sentir este capítulo?</h3>
+          <p>127 reacciones de los lectores</p>
+        </div>
+        <div class="emotion-grid">
+          <div class="emotion-btn selected"><span class="emoji">❤️</span><span class="label">Conmovedor</span><span class="count">52</span><div class="bar" style="width:41%;"></div></div>
+          <div class="emotion-btn"><span class="emoji">🔥</span><span class="label">Inspirador</span><span class="count">38</span><div class="bar" style="width:30%;"></div></div>
+          <div class="emotion-btn"><span class="emoji">😢</span><span class="label">Triste</span><span class="count">19</span><div class="bar" style="width:15%;"></div></div>
+          <div class="emotion-btn"><span class="emoji">😡</span><span class="label">Rabia</span><span class="count">3</span><div class="bar" style="width:2%;"></div></div>
+          <div class="emotion-btn"><span class="emoji">🤯</span><span class="label">Impactante</span><span class="count">12</span><div class="bar" style="width:9%;"></div></div>
+          <div class="emotion-btn"><span class="emoji">😂</span><span class="label">Divertido</span><span class="count">3</span><div class="bar" style="width:2%;"></div></div>
+        </div>
+        <p style="text-align:center;font-size:11px;color:#6B7280;margin-top:12px;">Reaccionaste con <span style="font-size:14px;">❤️</span> · Haz clic de nuevo para quitar</p>
+      </div>
+
+      <!-- Engagement bar -->
+      <div class="engagement-bar">
+        <div class="engagement-actions">
+          <button class="engagement-btn"><span style="color:#F87171;">❤️</span> 4.2k</button>
+          <button class="engagement-btn"><span>💬</span> Comentar</button>
+          <button class="engagement-btn"><span>🔗</span> Compartir</button>
+        </div>
+        <button class="engagement-btn tip">🎁 Enviar regalo</button>
+      </div>
+
+      <!-- Paywall CTA for next chapter -->
+      <div class="paywall">
+        <div class="paywall-icon">🔒</div>
+        <h3>El siguiente capítulo es exclusivo</h3>
+        <p>Suscríbete a <strong>@rafael</strong> para continuar leyendo "Buenos Aires: el primer mes" y los 6 episodios siguientes.</p>
+        <div class="paywall-benefits">
+          <span>✓ 8 episodios disponibles</span>
+          <span>✓ Nuevos cada semana</span>
+          <span>✓ Cancela cuando quieras</span>
+        </div>
+        <button class="btn-subscribe-big" onclick="next()">Suscribirme · $5/mes</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── R7: PAYMENT CHECKOUT ── -->
+<section class="screen" id="reader-7">
+  <nav class="landing-nav">
+    <div class="logo">bio<span>.me</span></div>
+    <div class="sb-avatar" style="width:34px;height:34px;font-size:12px;"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt=""></div>
+  </nav>
+
+  <div style="min-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:radial-gradient(ellipse at top,rgba(34,197,94,0.08),transparent 70%);">
+    <div style="max-width:440px;width:100%;">
+      <div class="auth-card" style="padding:28px;">
+        <div class="stripe-head">
+          <div>
+            <div class="stripe-brand">Stripe</div>
+            <div style="font-size:11px;color:#6B7280;margin-top:2px;">Pago seguro</div>
+          </div>
+          <div class="stripe-amount">
+            <div class="num">$5.00</div>
+            <div class="per">por mes · renovación automática</div>
+          </div>
+        </div>
+
+        <div style="background:#1A1C23;border-radius:10px;padding:12px;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+          <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" style="width:100%;height:100%;object-fit:cover;" alt=""></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;">Suscripción a Rafael Sanz</div>
+            <div style="font-size:11px;color:#9CA3AF;">bio.me · @rafael</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" value="ana.vega@gmail.com" readonly>
+        </div>
+        <div class="field">
+          <label>Número de tarjeta</label>
+          <input type="text" value="4242 4242 4242 4242" readonly>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+          <div class="field" style="margin-bottom:0;">
+            <label>MM / AA</label>
+            <input type="text" value="12 / 27" readonly>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>CVC</label>
+            <input type="text" value="123" readonly>
+          </div>
+        </div>
+
+        <button class="auth-submit" onclick="showSuccess()" style="background:#635BFF;color:#fff;box-shadow:0 0 20px -5px rgba(99,91,255,0.4);">Pagar $5.00 →</button>
+
+        <p style="font-size:10px;color:#4B5563;text-align:center;margin-top:14px;">
+          🔒 Pago procesado por Stripe Connect. Rafael recibe $4.50 (90%), plataforma $0.50.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔═══════════════════════════════════════════════╗ -->
+<!-- ║ SUCCESS MODAL                                  ║ -->
+<!-- ╚═══════════════════════════════════════════════╝ -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box success">
+    <div class="success-check">✓</div>
+    <h3>¡Estás suscrito a Rafael!</h3>
+    <p>Ya tienes acceso a los 8 episodios. Próximo cobro: 19 de mayo.</p>
+    <button class="btn-primary" onclick="document.getElementById('successModal').classList.remove('active')">Empezar a leer →</button>
+  </div>
+</div>
+
+<script>
+let flow = 'writer';
+const flows = {
+  writer: { count: 8, prefix: 'writer', labels: ['Intro · Escritor', 'Landing', 'Registro', 'Onboarding', 'Dashboard vacío', 'Publicar episodio', 'Dashboard activo', 'Monetización'] },
+  reader: { count: 8, prefix: 'reader', labels: ['Intro · Lector', 'Registro', 'Onboarding', 'Feed social', 'Discover', 'Perfil público', 'Leyendo episodio', 'Pago'] }
+};
+let indices = { writer: 0, reader: 0 };
+
+function hideAll() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+}
+
+function showCurrent() {
+  hideAll();
+  const i = indices[flow];
+  const el = document.getElementById(`${flow}-${i}`);
+  if (el) el.classList.add('active');
+  updateUI();
+  window.scrollTo(0, 0);
+  document.getElementById('successModal').classList.remove('active');
+}
+
+function switchFlow(f) {
+  flow = f;
+  document.getElementById('tab-writer').classList.toggle('active', flow === 'writer');
+  document.getElementById('tab-reader').classList.toggle('active', flow === 'reader');
+  showCurrent();
+}
+
+function goToIndex(f, i) {
+  flow = f;
+  indices[f] = i;
+  document.getElementById('tab-writer').classList.toggle('active', flow === 'writer');
+  document.getElementById('tab-reader').classList.toggle('active', flow === 'reader');
+  showCurrent();
+}
+
+function next() {
+  const f = flows[flow];
+  if (indices[flow] < f.count - 1) {
+    indices[flow]++;
+    showCurrent();
+  } else {
+    // Jump to other flow intro
+    switchFlow(flow === 'writer' ? 'reader' : 'writer');
+    indices[flow] = 0;
+    showCurrent();
+  }
+}
+
+function prev() {
+  if (indices[flow] > 0) {
+    indices[flow]--;
+    showCurrent();
+  }
+}
+
+function updateUI() {
+  const i = indices[flow];
+  const total = flows[flow].count;
+  const label = flows[flow].labels[i];
+  document.getElementById('screenLabel').textContent = `${i}/${total - 1} · ${label}`;
+  document.getElementById('prevBtn').disabled = i === 0;
+}
+
+function showSuccess() {
+  document.getElementById('successModal').classList.add('active');
+}
+
+// Earnings calculator
+function updateEarnings() {
+  const price = parseInt(document.getElementById('priceSlider').value);
+  document.getElementById('priceDisplay').innerHTML = `$${price}<span style="color:#6B7280;font-size:16px;font-weight:500;">/mes</span>`;
+  [20, 100, 500].forEach(subs => {
+    const net = subs * price * 0.9;
+    const formatted = net >= 1000 ? `$${net.toLocaleString('en-US', { maximumFractionDigits: 0 })}` : `$${net.toFixed(0)}`;
+    document.getElementById(`amount-${subs}`).textContent = `${formatted}/mes`;
+    document.getElementById(`formula-${subs}`).textContent = `${subs} × $${price} × 90%`;
+  });
+}
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') next();
+  if (e.key === 'ArrowLeft') prev();
+  if (e.key === 'Escape') document.getElementById('successModal').classList.remove('active');
+});
+
+updateUI();
+</script>
+
+</body>
+</html>

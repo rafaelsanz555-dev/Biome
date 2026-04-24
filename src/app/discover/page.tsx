@@ -12,38 +12,27 @@ export default async function DiscoverPage() {
         .limit(100)
 
     return (
-        <div className="min-h-screen" style={{ backgroundColor: 'var(--cream)' }}>
+        <div className="min-h-screen bg-[#0A0B0E]">
             <Navbar />
 
             {/* Header */}
-            <div
-                className="py-16 px-6"
-                style={{ borderBottom: '1px solid var(--cream-mid)' }}
-            >
-                <div className="max-w-6xl mx-auto text-center">
-                    <p
-                        className="text-xs font-bold tracking-widest uppercase mb-3"
-                        style={{ color: 'var(--gold)' }}
-                    >
-                        Historias que valen la pena
+            <div className="bg-[#15171C] border-b border-gray-800/80 py-16 px-6 text-center relative overflow-hidden">
+                <div className="absolute top-0 right-1/4 w-64 h-64 bg-green-600/10 blur-[80px] rounded-full pointer-events-none" />
+                <div className="max-w-3xl mx-auto relative z-10">
+                    <p className="text-green-500 font-bold tracking-widest text-xs uppercase mb-3 drop-shadow-sm">
+                        Creadores Premium
                     </p>
-                    <h1
-                        className="font-serif font-bold text-4xl md:text-5xl mb-4"
-                        style={{ color: 'var(--ink)' }}
-                    >
-                        Descubre escritores
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+                        Descubre historias reales
                     </h1>
-                    <p
-                        className="text-lg max-w-xl mx-auto leading-relaxed"
-                        style={{ color: 'var(--ink-light)' }}
-                    >
-                        Personas reales compartiendo historias auténticas de vida. Encuentra las que te hablan.
+                    <p className="text-gray-400 text-lg max-w-md mx-auto font-medium">
+                        Encuentra escritores y sumérgete en sus mundos.
                     </p>
                 </div>
             </div>
 
-            {/* Filter pills + grid — client component handles interactivity */}
-            <main className="max-w-6xl mx-auto px-6 pb-28">
+            {/* Grid */}
+            <main className="max-w-6xl mx-auto px-6 py-12 pb-28 relative">
                 <DiscoverGrid creators={creators || []} />
             </main>
         </div>

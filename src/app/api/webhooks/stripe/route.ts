@@ -73,6 +73,13 @@ export async function POST(req: Request) {
                     stripe_payment_intent: session.subscription as string,
                     status: 'completed'
                 })
+                
+                await supabaseAdmin.from('notifications').insert({
+                    user_id: metadata.creatorId,
+                    actor_id: userId,
+                    type: 'subscription',
+                    message: '¡Tienes un nuevo suscriptor!'
+                })
             }
 
             if (type === 'tip' && metadata.creatorId) {
@@ -101,6 +108,13 @@ export async function POST(req: Request) {
                     emoji: metadata.emoji || '🎁',
                     stripe_payment_intent: session.payment_intent as string,
                     status: 'completed'
+                })
+
+                await supabaseAdmin.from('notifications').insert({
+                    user_id: metadata.recipientId,
+                    actor_id: userId,
+                    type: 'gift',
+                    message: `¡Has recibido un regalo (${metadata.emoji || '🎁'}) de $${totalAmount.toFixed(2)}!`
                 })
             }
         }

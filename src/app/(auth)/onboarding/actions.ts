@@ -34,7 +34,7 @@ export async function completeOnboarding(prevState: { error: string }, formData:
         if (existing.role === 'creator') {
             redirect('/dashboard')
         } else {
-            redirect('/discover')
+            redirect('/dashboard')
         }
     }
 
@@ -61,5 +61,5 @@ export async function completeOnboarding(prevState: { error: string }, formData:
         redirect('/dashboard')
     }
 
-    redirect('/discover')
+    redirect('/dashboard')
 }

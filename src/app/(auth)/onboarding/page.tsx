@@ -1,79 +1,64 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState, useActionState, useEffect, useRef } from 'react'
 import { completeOnboarding } from './actions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import Link from 'next/link'
+import { PenLine, BookOpen, Check } from 'lucide-react'
+import { track } from '@/lib/analytics'
 
 const initialState = { error: '' }
 
 export default function OnboardingPage() {
     const [state, formAction, pending] = useActionState(completeOnboarding, initialState)
+    const [selectedRole, setSelectedRole] = useState<'creator' | 'reader'>('creator')
+    const trackedStart = useRef(false)
+
+    useEffect(() => {
+        if (trackedStart.current) return
+        track('onboarding_started')
+        trackedStart.current = true
+    }, [])
+
+    function handleSubmit(formData: FormData) {
+        track('onboarding_completed', { role: selectedRole })
+        formAction(formData)
+    }
 
     return (
-        <div
-            className="min-h-screen flex flex-col items-center justify-center p-4"
-            style={{
-                backgroundColor: 'var(--cream)',
-                background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.12) 0%, var(--cream) 65%)',
-            }}
-        >
-            <div className="w-full max-w-sm flex flex-col items-center space-y-8">
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0A0B0E] text-white">
+            <div className="w-full max-w-md flex flex-col items-center space-y-8 relative z-10">
 
-                {/* Logo */}
                 <div className="text-center">
-                    <p className="font-serif text-3xl font-bold" style={{ color: 'var(--ink)' }}>
-                        bio<span style={{ color: 'var(--gold)' }}>.me</span>
-                    </p>
-                    <p className="text-xs mt-1 font-medium" style={{ color: 'var(--ink-light)' }}>
+                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-green-500">
+                        bio<span className="text-white">.me</span>
+                    </Link>
+                    <p className="text-gray-500 font-medium tracking-wide text-sm mt-1">
                         Tu historia. Tu ingreso.
                     </p>
                 </div>
 
-                {/* Card */}
-                <div
-                    className="w-full rounded-2xl p-7"
-                    style={{
-                        backgroundColor: 'white',
-                        border: '1px solid var(--cream-mid)',
-                        boxShadow: '0 4px 24px rgba(20,16,10,0.07)',
-                    }}
-                >
+                <div className="w-full rounded-2xl p-8 bg-[#15171C] border border-gray-800 shadow-2xl">
                     <div className="mb-6">
-                        <h1
-                            className="font-serif text-xl font-bold mb-1"
-                            style={{ color: 'var(--ink)' }}
-                        >
+                        <h1 className="font-bold text-xl text-white tracking-tight mb-1">
                             Completa tu perfil
                         </h1>
-                        <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                        <p className="text-sm text-gray-400">
                             Elige tu nombre de usuario y cómo quieres usar bio.me.
                         </p>
                     </div>
 
-                    <form action={formAction} className="space-y-5">
+                    <form action={handleSubmit} className="space-y-5">
 
                         {/* Username */}
-                        <div className="space-y-1.5">
-                            <label
-                                htmlFor="username"
-                                className="text-sm font-semibold"
-                                style={{ color: 'var(--ink)' }}
-                            >
+                        <div className="space-y-2">
+                            <label htmlFor="username" className="text-sm font-bold text-gray-300">
                                 Nombre de usuario
                             </label>
-                            <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--cream-mid)' }}>
-                                <span
-                                    className="inline-flex items-center px-3 text-sm font-medium"
-                                    style={{
-                                        backgroundColor: 'var(--cream-dark)',
-                                        color: 'var(--ink-light)',
-                                        borderRight: '1px solid var(--cream-mid)',
-                                    }}
-                                >
+                            <div className="flex rounded-xl overflow-hidden bg-[#1A1C23] border border-gray-700 focus-within:border-green-500/50 transition">
+                                <span className="inline-flex items-center px-3 text-xs font-medium shrink-0 text-gray-500 bg-[#0A0B0E] border-r border-gray-700">
                                     bio.me/@
                                 </span>
-                                <Input
+                                <input
                                     id="username"
                                     name="username"
                                     type="text"
@@ -83,122 +68,101 @@ export default function OnboardingPage() {
                                     maxLength={20}
                                     pattern="[a-zA-Z0-9_]+"
                                     autoFocus
-                                    className="rounded-none border-0 h-11 text-sm font-medium focus-visible:ring-1 focus-visible:ring-offset-0 flex-1"
-                                    style={{
-                                        backgroundColor: 'var(--cream-dark)',
-                                        color: 'var(--ink)',
-                                        // @ts-expect-error CSS custom property
-                                        '--tw-ring-color': 'var(--gold)',
-                                    }}
+                                    className="flex-1 h-11 text-sm font-medium px-3 bg-transparent text-white placeholder:text-gray-600 focus:outline-none"
                                 />
                             </div>
-                            <p className="text-xs" style={{ color: 'var(--ink-light)', opacity: 0.7 }}>
+                            <p className="text-xs text-gray-600">
                                 3–20 caracteres. Solo letras, números y guiones bajos.
                             </p>
                         </div>
 
                         {/* Role */}
                         <div className="space-y-2">
-                            <p className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>
-                                Quiero...
-                            </p>
+                            <label className="text-sm font-bold text-gray-300 block">
+                                ¿Qué vienes a hacer en bio.me?
+                            </label>
+                            <input type="hidden" name="role" value={selectedRole} />
                             <div className="grid grid-cols-2 gap-3">
 
-                                {/* Creator */}
-                                <label
-                                    className="relative flex cursor-pointer rounded-xl p-4 transition-all"
-                                    style={{ border: '2px solid var(--cream-mid)', backgroundColor: 'var(--cream-dark)' }}
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedRole('creator')}
+                                    className={`relative flex flex-col gap-2 p-4 rounded-xl transition-all text-left ${
+                                        selectedRole === 'creator'
+                                            ? 'border-2 border-green-500 bg-green-500/10 shadow-lg shadow-green-500/20 scale-[1.02]'
+                                            : 'border-2 border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
+                                    }`}
                                 >
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value="creator"
-                                        className="sr-only"
-                                        defaultChecked
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                e.target.closest('label')!.style.borderColor = 'var(--ink)'
-                                                e.target.closest('label')!.style.backgroundColor = 'var(--ink)'
-                                            }
-                                        }}
-                                    />
-                                    <span className="flex flex-col gap-0.5">
-                                        <span
-                                            className="text-sm font-bold"
-                                            style={{ color: 'var(--ink)' }}
-                                        >
-                                            ✦ Escribir
-                                        </span>
-                                        <span
-                                            className="text-xs"
-                                            style={{ color: 'var(--ink-light)' }}
-                                        >
-                                            Publicar y ganar dinero
-                                        </span>
-                                    </span>
-                                </label>
+                                    {selectedRole === 'creator' && (
+                                        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                            <Check size={12} className="text-black stroke-[3]" />
+                                        </div>
+                                    )}
+                                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                                        selectedRole === 'creator' ? 'bg-green-500/20' : 'bg-gray-800/50'
+                                    }`}>
+                                        <PenLine size={17} className={selectedRole === 'creator' ? 'text-green-400' : 'text-gray-400'} />
+                                    </div>
+                                    <div>
+                                        <div className={`text-sm font-bold ${selectedRole === 'creator' ? 'text-white' : 'text-gray-300'}`}>
+                                            Escribir
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-0.5 leading-snug">
+                                            Publicar mi historia y ganar dinero
+                                        </div>
+                                    </div>
+                                </button>
 
-                                {/* Reader */}
-                                <label
-                                    className="relative flex cursor-pointer rounded-xl p-4 transition-all"
-                                    style={{ border: '2px solid var(--cream-mid)', backgroundColor: 'var(--cream-dark)' }}
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedRole('reader')}
+                                    className={`relative flex flex-col gap-2 p-4 rounded-xl transition-all text-left ${
+                                        selectedRole === 'reader'
+                                            ? 'border-2 border-green-500 bg-green-500/10 shadow-lg shadow-green-500/20 scale-[1.02]'
+                                            : 'border-2 border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
+                                    }`}
                                 >
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value="reader"
-                                        className="sr-only"
-                                    />
-                                    <span className="flex flex-col gap-0.5">
-                                        <span
-                                            className="text-sm font-bold"
-                                            style={{ color: 'var(--ink)' }}
-                                        >
-                                            ◉ Leer
-                                        </span>
-                                        <span
-                                            className="text-xs"
-                                            style={{ color: 'var(--ink-light)' }}
-                                        >
-                                            Seguir escritores
-                                        </span>
-                                    </span>
-                                </label>
+                                    {selectedRole === 'reader' && (
+                                        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                            <Check size={12} className="text-black stroke-[3]" />
+                                        </div>
+                                    )}
+                                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                                        selectedRole === 'reader' ? 'bg-green-500/20' : 'bg-gray-800/50'
+                                    }`}>
+                                        <BookOpen size={17} className={selectedRole === 'reader' ? 'text-green-400' : 'text-gray-400'} />
+                                    </div>
+                                    <div>
+                                        <div className={`text-sm font-bold ${selectedRole === 'reader' ? 'text-white' : 'text-gray-300'}`}>
+                                            Leer
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-0.5 leading-snug">
+                                            Seguir y leer a mis escritores favoritos
+                                        </div>
+                                    </div>
+                                </button>
 
                             </div>
                         </div>
 
-                        {/* Error */}
                         {state?.error && (
-                            <div
-                                className="text-sm p-3 rounded-xl"
-                                style={{
-                                    color: '#7A1A1A',
-                                    backgroundColor: '#FDF0F0',
-                                    border: '1px solid #E8CCCC',
-                                }}
-                            >
+                            <div className="text-sm p-3 rounded-xl text-red-400 bg-red-500/10 border border-red-500/20">
                                 {state.error}
                             </div>
                         )}
 
-                        <Button
+                        <button
                             type="submit"
                             disabled={pending}
-                            className="w-full h-11 font-bold text-sm tracking-wide transition-opacity hover:opacity-90"
-                            style={{
-                                backgroundColor: 'var(--ink)',
-                                color: 'var(--cream)',
-                                border: 'none',
-                            }}
+                            className="w-full h-12 font-bold text-sm tracking-wide bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-lg shadow-green-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {pending ? 'Guardando...' : 'Empezar en bio.me →'}
-                        </Button>
+                        </button>
                     </form>
                 </div>
 
-                <p className="text-xs text-center" style={{ color: 'var(--ink-light)', opacity: 0.5 }}>
-                    Al continuar aceptas nuestros términos de uso.
+                <p className="text-center text-xs text-gray-600">
+                    Al continuar aceptas los términos de uso.
                 </p>
             </div>
         </div>

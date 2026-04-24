@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
-import { logout } from '@/app/auth/actions'
+import { UserMenu } from '@/components/UserMenu'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export async function Navbar() {
     const supabase = await createClient()
@@ -9,118 +10,63 @@ export async function Navbar() {
 
     let profile = null
     if (user) {
-        const { data } = await supabase.from('profiles').select('role, username, avatar_url').eq('id', user.id).single()
+        const { data } = await supabase
+            .from('profiles')
+            .select('role, username, avatar_url, full_name')
+            .eq('id', user.id)
+            .maybeSingle()
         profile = data
     }
 
     return (
-        <header
-            className="sticky top-0 z-50"
-            style={{
-                backgroundColor: 'var(--cream)',
-                borderBottom: '1px solid var(--cream-mid)',
-                backdropFilter: 'blur(8px)',
-            }}
-        >
-            <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="flex items-center gap-0 group">
-                    <span
-                        className="font-serif text-2xl font-bold tracking-tight transition-opacity group-hover:opacity-75"
-                        style={{ color: 'var(--ink)' }}
-                    >
-                        bio
-                    </span>
-                    <span
-                        className="font-serif text-2xl font-bold transition-opacity group-hover:opacity-75"
-                        style={{ color: 'var(--gold)' }}
-                    >
-                        .me
-                    </span>
-                </Link>
+        <header className="border-b border-gray-800 bg-[#0A0B0E]/80 backdrop-blur-xl sticky top-0 z-50">
+            <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
-                {/* Nav links */}
-                <nav className="hidden md:flex items-center gap-1">
-                    <Link
-                        href="/discover"
-                        className="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-                    >
-                        Descubrir
+                <div className="flex items-center gap-8">
+                    <Link href="/" className="font-bold text-2xl text-white hover:opacity-80 transition-opacity tracking-tight">
+                        bio<span className="text-green-500">.me</span>
                     </Link>
-                    <Link
-                        href="/login"
-                        className="nav-link text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-                    >
-                        Para escritores
-                    </Link>
-                </nav>
+                    <nav className="hidden md:flex items-center gap-2">
+                        <Link href="/discover" className="text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-all">
+                            Descubrir
+                        </Link>
+                        <Link href="/dashboard" className="text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-all">
+                            Feed
+                        </Link>
+                    </nav>
+                </div>
 
-                {/* Auth Actions */}
-                {user ? (
+                {user && profile?.username ? (
                     <div className="flex items-center gap-3">
-                        {profile?.role === 'creator' ? (
-                            <Link href="/dashboard">
-                                <Button
-                                    size="sm"
-                                    className="font-semibold px-5 h-9 rounded-lg transition-all"
-                                    style={{
-                                        backgroundColor: 'var(--ink)',
-                                        color: 'var(--cream)',
-                                        border: 'none',
-                                    }}
-                                >
-                                    Dashboard
-                                </Button>
-                            </Link>
-                        ) : profile?.username ? (
-                            <Link href={`/${profile.username}`}>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-9 rounded-lg"
-                                    style={{
-                                        borderColor: 'var(--cream-mid)',
-                                        color: 'var(--ink)',
-                                        backgroundColor: 'transparent',
-                                    }}
-                                >
-                                    Mi perfil
-                                </Button>
-                            </Link>
-                        ) : null}
-
-                        <form action={logout}>
-                            <Button
-                                type="submit"
-                                variant="ghost"
-                                size="sm"
-                                className="h-9 text-sm"
-                                style={{ color: 'var(--ink-light)' }}
-                            >
-                                Cerrar sesión
+                        <Link href="/dashboard" className="hidden sm:block">
+                            <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white font-bold h-9">
+                                {profile.role === 'creator' ? 'Dashboard' : 'Feed'}
                             </Button>
-                        </form>
+                        </Link>
+                        <UserMenu
+                            email={user.email || ''}
+                            username={profile.username}
+                            role={profile.role}
+                            avatarUrl={profile.avatar_url}
+                        />
+                    </div>
+                ) : user ? (
+                    <div className="flex items-center gap-3">
+                        <Link href="/onboarding">
+                            <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white font-bold h-9">
+                                Completar perfil
+                            </Button>
+                        </Link>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href="/login"
-                            className="text-sm font-medium transition-colors hidden sm:block"
-                            style={{ color: 'var(--ink-light)' }}
-                        >
+                    <div className="flex items-center gap-2">
+                        <LanguageSwitcher compact />
+                        <Link href="/login" className="text-sm font-semibold text-gray-400 hover:text-white transition-colors hidden sm:block">
                             Iniciar sesión
                         </Link>
-                        <Link href="/login">
-                            <Button
-                                size="sm"
-                                className="font-semibold px-6 h-9 rounded-lg transition-all hover:opacity-85"
-                                style={{
-                                    backgroundColor: 'var(--ink)',
-                                    color: 'var(--cream)',
-                                    border: 'none',
-                                }}
-                            >
-                                Empieza a escribir
+                        <Link href="/login?mode=registro">
+                            <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white font-bold px-5 h-9">
+                                Empieza gratis
                             </Button>
                         </Link>
                     </div>

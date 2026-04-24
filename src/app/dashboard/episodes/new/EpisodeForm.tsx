@@ -3,9 +3,15 @@
 import { useState, useRef } from 'react'
 import { createEpisode } from '../actions'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { ImagePlus, X, Lock, DollarSign, Eye, Upload, Music, Monitor } from 'lucide-react'
+import { track } from '@/lib/analytics'
+import { RichEditor, RichEditorHandle } from '@/components/editor/RichEditor'
+import { PreviewToggle } from '@/components/editor/PreviewToggle'
+import { generateHTML } from '@tiptap/html'
+import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import { PullQuote } from '@/components/editor/PullQuote'
 
 interface EpisodeFormProps {
     seasons: any[]
@@ -20,20 +26,21 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
     const [postImages, setPostImages] = useState<File[]>([])
     const [postImagePreviews, setPostImagePreviews] = useState<string[]>([])
     const postImagesRef = useRef<HTMLInputElement>(null)
+    const editorRef = useRef<RichEditorHandle>(null)
+    const [showPreview, setShowPreview] = useState(false)
+    const [titleValue, setTitleValue] = useState('')
+    const [previewTextValue, setPreviewTextValue] = useState('')
+    const [editorState, setEditorState] = useState<{ json: any; text: string; wordCount: number; readingTimeMin: number }>({ json: null, text: '', wordCount: 0, readingTimeMin: 1 })
 
     function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0] || null
         setCoverFile(file)
-        if (file) {
-            setCoverPreview(URL.createObjectURL(file))
-        } else {
-            setCoverPreview(null)
-        }
+        setCoverPreview(file ? URL.createObjectURL(file) : null)
     }
 
     function handlePostImagesChange(e: React.ChangeEvent<HTMLInputElement>) {
         const files = Array.from(e.target.files || [])
-        const combined = [...postImages, ...files].slice(0, 10) // max 10 images
+        const combined = [...postImages, ...files].slice(0, 10)
         setPostImages(combined)
         setPostImagePreviews(combined.map(f => URL.createObjectURL(f)))
     }
@@ -49,46 +56,65 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
         setErrorMsg('')
         const supabase = createClient()
 
-        // Upload cover image
+        // Pull data from rich editor
+        const editorJson = editorRef.current?.getJSON() || editorState.json
+        const editorText = editorRef.current?.getText() || editorState.text
+        const wordCount = editorRef.current?.getWordCount() || editorState.wordCount
+        const readingTime = editorRef.current?.getReadingTime() || editorState.readingTimeMin
+
+        if (!editorText || editorText.trim().length < 10) {
+            setErrorMsg('Escribe al menos algunos párrafos de tu historia antes de publicar.')
+            setIsPending(false)
+            return
+        }
+
+        formData.set('full_text', editorText)
+        formData.set('content_json', JSON.stringify(editorJson))
+        formData.set('word_count', String(wordCount))
+        formData.set('reading_time_min', String(readingTime))
+
         if (coverFile) {
             const ext = coverFile.name.split('.').pop()
             const fileName = `cover_${Date.now()}_${Math.random().toString(36).substring(2)}.${ext}`
-            const { error: uploadError } = await supabase.storage
-                .from('post-images')
-                .upload(fileName, coverFile)
-
+            const { error: uploadError } = await supabase.storage.from('post-images').upload(fileName, coverFile)
             if (uploadError) {
-                setErrorMsg('Error al subir la imagen de portada: ' + uploadError.message)
+                setErrorMsg('Error al subir la portada: ' + uploadError.message)
                 setIsPending(false)
                 return
             }
-
             const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
             formData.append('cover_image_url', urlData.publicUrl)
         }
 
-        // Upload inline post images
         if (postImages.length > 0) {
             const imageUrls: string[] = []
             for (const file of postImages) {
                 const ext = file.name.split('.').pop()
                 const fileName = `post_${Date.now()}_${Math.random().toString(36).substring(2)}.${ext}`
-                const { error: uploadError } = await supabase.storage
-                    .from('post-images')
-                    .upload(fileName, file)
-
+                const { error: uploadError } = await supabase.storage.from('post-images').upload(fileName, file)
                 if (uploadError) {
-                    setErrorMsg('Error al subir la imagen: ' + uploadError.message)
+                    setErrorMsg('Error al subir imagen: ' + uploadError.message)
                     setIsPending(false)
                     return
                 }
-
                 const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
                 imageUrls.push(urlData.publicUrl)
             }
-            // Pass as JSON string since we can't do arrays in FormData easily
             formData.append('images', JSON.stringify(imageUrls))
         }
+
+        // Track antes del server action (el action puede redirect)
+        const title = formData.get('title') as string
+        const monetization = formData.get('monetization') as string
+        track('episode_published', {
+            title_length: title?.length || 0,
+            word_count: wordCount,
+            reading_time_min: readingTime,
+            monetization,
+            has_cover: !!coverFile,
+            has_soundtrack: !!formData.get('soundtrack_url'),
+            post_images_count: postImages.length,
+        })
 
         const res = await createEpisode(formData)
         if (res?.error) {
@@ -97,183 +123,143 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
         }
     }
 
+    const inputCls = "w-full rounded-xl border border-gray-800 bg-[#15171C] text-white placeholder-gray-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500 focus:outline-none transition"
+
     return (
         <form action={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-                {/* ── Contenido principal ── */}
-                <div className="md:col-span-2 space-y-5">
-                    <div
-                        className="rounded-2xl border overflow-hidden"
-                        style={{ background: '#ffffff', borderColor: 'var(--cream-mid)' }}
-                    >
+                {/* ── Main Content ── */}
+                <div className="lg:col-span-2 space-y-5">
+                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] overflow-hidden">
                         <div className="p-6 space-y-6">
 
-                            {/* Título */}
-                            <div className="space-y-1.5">
-                                <Label
-                                    htmlFor="title"
-                                    className="text-base font-bold"
-                                    style={{ color: 'var(--ink)' }}
-                                >
+                            {/* Title */}
+                            <div className="space-y-2">
+                                <label htmlFor="title" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
                                     Título del episodio
-                                </Label>
-                                <Input
+                                </label>
+                                <input
                                     id="title"
                                     name="title"
                                     required
+                                    value={titleValue}
+                                    onChange={(e) => setTitleValue(e.target.value)}
                                     placeholder="ej. La noche que todo cambió..."
-                                    className="text-xl h-14 border font-serif placeholder:font-sans focus-visible:ring-2"
-                                    style={{
-                                        background: 'var(--cream)',
-                                        borderColor: 'var(--cream-mid)',
-                                        color: 'var(--ink)',
-                                        // @ts-ignore
-                                        '--tw-ring-color': 'var(--gold)',
-                                    }}
+                                    className={`${inputCls} text-2xl font-bold px-4 py-4`}
                                 />
                             </div>
 
-                            {/* Imagen de portada */}
+                            {/* Cover */}
                             <div className="space-y-2">
-                                <Label
-                                    htmlFor="cover_image"
-                                    className="font-medium"
-                                    style={{ color: 'var(--ink-mid)' }}
-                                >
-                                    Imagen de portada{' '}
-                                    <span className="text-xs font-normal" style={{ color: 'var(--ink-light)' }}>
-                                        (opcional — se muestra como miniatura)
-                                    </span>
-                                </Label>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    Imagen de portada <span className="normal-case font-medium text-gray-600 ml-1">· opcional</span>
+                                </label>
                                 {coverPreview ? (
-                                    <div
-                                        className="relative w-full h-44 rounded-xl overflow-hidden border mb-2"
-                                        style={{ borderColor: 'var(--cream-mid)' }}
-                                    >
-                                        <img src={coverPreview} alt="Vista previa de portada" className="w-full h-full object-cover" />
+                                    <div className="relative w-full h-52 rounded-xl overflow-hidden border border-gray-800">
+                                        <img src={coverPreview} alt="" className="w-full h-full object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => { setCoverFile(null); setCoverPreview(null) }}
-                                            className="absolute top-2 right-2 rounded-full w-7 h-7 flex items-center justify-center text-sm shadow-sm transition-colors"
-                                            style={{ background: '#ffffff', border: '1px solid var(--cream-mid)', color: 'var(--ink-light)' }}
+                                            className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-black/80 transition"
                                         >
-                                            ✕
+                                            <X size={16} />
                                         </button>
                                     </div>
                                 ) : (
                                     <label
                                         htmlFor="cover_image"
-                                        className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed cursor-pointer transition-colors"
-                                        style={{ background: 'var(--cream-dark)', borderColor: 'var(--cream-mid)' }}
+                                        className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 hover:bg-[#101217] cursor-pointer transition group"
                                     >
-                                        <span className="text-2xl mb-1" style={{ color: 'var(--ink-light)' }}>◫</span>
-                                        <span className="text-xs font-medium" style={{ color: 'var(--ink-light)' }}>
-                                            Haz clic para agregar una imagen de portada
-                                        </span>
+                                        <ImagePlus size={24} className="text-gray-500 group-hover:text-green-500 transition mb-1.5" />
+                                        <span className="text-sm font-semibold text-gray-400 group-hover:text-white transition">Haz clic para agregar portada</span>
+                                        <span className="text-xs text-gray-600 mt-0.5">JPG, PNG — hasta 5MB</span>
                                     </label>
                                 )}
-                                <Input
-                                    id="cover_image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleCoverChange}
-                                    className={`border h-auto py-2 cursor-pointer ${coverPreview ? '' : 'hidden'}`}
-                                    style={{
-                                        background: 'var(--cream)',
-                                        borderColor: 'var(--cream-mid)',
-                                        color: 'var(--ink-light)',
-                                    }}
-                                />
+                                <input id="cover_image" type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
                             </div>
 
-                            {/* Texto de vista previa */}
-                            <div className="space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                    <Label
-                                        htmlFor="preview_text"
-                                        className="font-medium"
-                                        style={{ color: 'var(--ink-mid)' }}
-                                    >
-                                        Texto de vista previa{' '}
-                                        <span className="text-xs font-normal" style={{ color: 'var(--ink-light)' }}>
-                                            (gratis para todos)
-                                        </span>
-                                    </Label>
-                                </div>
+                            {/* Preview */}
+                            <div className="space-y-2">
+                                <label htmlFor="preview_text" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    Adelanto gratis <span className="normal-case font-medium text-green-500 ml-1">· visible para todos</span>
+                                </label>
                                 <textarea
                                     id="preview_text"
                                     name="preview_text"
                                     rows={3}
-                                    className="w-full rounded-lg border p-3 text-sm resize-none transition-shadow focus:outline-none focus:ring-2"
-                                    style={{
-                                        background: 'var(--cream)',
-                                        borderColor: 'var(--cream-mid)',
-                                        color: 'var(--ink)',
-                                        // @ts-ignore
-                                        '--tw-ring-color': 'var(--gold)',
-                                    }}
-                                    placeholder="Un adelanto para enganchar a tus lectores — mantenlo emocionante..."
+                                    value={previewTextValue}
+                                    onChange={(e) => setPreviewTextValue(e.target.value)}
+                                    className={`${inputCls} px-4 py-3 text-base resize-none`}
+                                    placeholder="El gancho. Algo que los enganche para que paguen por seguir leyendo..."
                                 />
                             </div>
 
-                            {/* Historia completa */}
-                            <div className="space-y-1.5">
+                            {/* Full text — Rich Editor */}
+                            <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <Label
-                                        htmlFor="full_text"
-                                        className="text-base font-bold"
-                                        style={{ color: 'var(--ink)' }}
-                                    >
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
                                         Tu historia
-                                    </Label>
-                                    <span
-                                        className="text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1"
-                                        style={{ background: 'var(--ink)', color: 'var(--cream)' }}
-                                    >
-                                        &#9679; Solo suscriptores
-                                    </span>
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPreview(true)}
+                                            className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-md bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition uppercase tracking-wider"
+                                        >
+                                            <Monitor size={11} /> Vista previa
+                                        </button>
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20 uppercase tracking-wider">
+                                            <Lock size={10} /> {monetization === 'free' ? 'Pública' : monetization === 'subscription' ? 'Solo suscriptores' : 'Pago único'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <textarea
-                                    id="full_text"
-                                    name="full_text"
-                                    required
-                                    rows={16}
-                                    className="w-full rounded-lg border p-4 text-sm leading-relaxed resize-y transition-shadow focus:outline-none focus:ring-2"
-                                    style={{
-                                        background: 'var(--cream)',
-                                        borderColor: 'var(--cream-mid)',
-                                        color: 'var(--ink)',
-                                        // @ts-ignore
-                                        '--tw-ring-color': 'var(--gold)',
-                                    }}
-                                    placeholder="Escribe tu historia aquí... Vacíate por completo. Tus lectores están esperando."
+                                <RichEditor
+                                    ref={editorRef}
+                                    onChange={(data) => setEditorState(data)}
                                 />
                             </div>
 
-                            {/* Fotos del post (imágenes en línea) */}
-                            <div
-                                className="space-y-3 border-t pt-5"
-                                style={{ borderColor: 'var(--cream-mid)' }}
-                            >
+                            {/* Chapter Soundtrack */}
+                            <div className="space-y-2 border-t border-gray-800 pt-5">
+                                <label htmlFor="soundtrack_url" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    <Music size={12} className="text-green-500" />
+                                    Banda sonora <span className="normal-case font-medium text-green-500 ml-1">· nuevo en bio.me</span>
+                                </label>
+                                <p className="text-xs text-gray-500 -mt-1">
+                                    Agrega la canción que acompaña este capítulo. Los lectores la escuchan mientras te leen.
+                                </p>
+                                <input
+                                    id="soundtrack_url"
+                                    name="soundtrack_url"
+                                    type="url"
+                                    placeholder="Pega un link de Spotify o YouTube..."
+                                    className={`${inputCls} px-4 py-3 text-sm`}
+                                />
+                                <input
+                                    id="soundtrack_title"
+                                    name="soundtrack_title"
+                                    type="text"
+                                    placeholder="Nombre de la canción (opcional)"
+                                    className={`${inputCls} px-4 py-2.5 text-sm`}
+                                />
+                            </div>
+
+                            {/* Post images */}
+                            <div className="space-y-3 border-t border-gray-800 pt-5">
                                 <div className="flex items-center justify-between">
-                                    <Label
-                                        className="font-medium"
-                                        style={{ color: 'var(--ink-mid)' }}
-                                    >
-                                        Fotos del post{' '}
-                                        <span className="text-xs font-normal" style={{ color: 'var(--ink-light)' }}>
-                                            (hasta 10 imágenes mostradas en tu post)
-                                        </span>
-                                    </Label>
-                                    <button
-                                        type="button"
-                                        onClick={() => postImagesRef.current?.click()}
-                                        className="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
-                                        style={{ background: 'var(--gold-bg)', color: 'var(--gold-dark)' }}
-                                    >
-                                        ◫ Agregar fotos
-                                    </button>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                        Fotos del post <span className="normal-case font-medium text-gray-600 ml-1">· hasta 10</span>
+                                    </label>
+                                    {postImagePreviews.length > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => postImagesRef.current?.click()}
+                                            className="text-xs font-bold text-green-500 hover:text-green-400 transition flex items-center gap-1"
+                                        >
+                                            <Upload size={12} /> Agregar más
+                                        </button>
+                                    )}
                                 </div>
 
                                 <input
@@ -288,19 +274,14 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                 {postImagePreviews.length > 0 ? (
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                                         {postImagePreviews.map((src, i) => (
-                                            <div
-                                                key={i}
-                                                className="relative aspect-square rounded-lg overflow-hidden border group"
-                                                style={{ borderColor: 'var(--cream-mid)', background: 'var(--cream-dark)' }}
-                                            >
+                                            <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-gray-800 group">
                                                 <img src={src} alt="" className="w-full h-full object-cover" />
                                                 <button
                                                     type="button"
                                                     onClick={() => removePostImage(i)}
-                                                    className="absolute top-1 right-1 rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                                                    style={{ background: '#ffffff', border: '1px solid var(--cream-mid)', color: 'var(--ink-light)' }}
+                                                    className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
                                                 >
-                                                    ✕
+                                                    <X size={12} />
                                                 </button>
                                             </div>
                                         ))}
@@ -308,10 +289,9 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                             <button
                                                 type="button"
                                                 onClick={() => postImagesRef.current?.click()}
-                                                className="aspect-square rounded-lg border-2 border-dashed flex items-center justify-center text-2xl transition-colors"
-                                                style={{ borderColor: 'var(--cream-mid)', color: 'var(--ink-light)' }}
+                                                className="aspect-square rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 flex items-center justify-center text-gray-500 hover:text-green-500 transition"
                                             >
-                                                +
+                                                <ImagePlus size={20} />
                                             </button>
                                         )}
                                     </div>
@@ -319,231 +299,146 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                     <button
                                         type="button"
                                         onClick={() => postImagesRef.current?.click()}
-                                        className="w-full h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors"
-                                        style={{ borderColor: 'var(--cream-mid)', color: 'var(--ink-light)' }}
+                                        className="w-full h-24 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:text-green-500 transition"
                                     >
-                                        <span className="text-2xl">◫</span>
-                                        <span className="text-xs font-medium">Haz clic para agregar fotos</span>
+                                        <ImagePlus size={20} />
+                                        <span className="text-xs font-semibold">Agregar fotos</span>
                                     </button>
                                 )}
                             </div>
-
                         </div>
                     </div>
                 </div>
 
-                {/* ── Panel lateral ── */}
-                <div className="md:col-span-1 space-y-4">
-                    <div
-                        className="rounded-2xl border shadow-sm sticky top-24"
-                        style={{ background: '#ffffff', borderColor: 'var(--cream-mid)' }}
-                    >
-                        <div className="p-5 space-y-5">
+                {/* ── Sidebar ── */}
+                <div className="space-y-4">
+                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-5 sticky top-4 space-y-5">
 
-                            {/* Serie */}
-                            <div className="space-y-1.5">
-                                <Label
-                                    htmlFor="season_id"
-                                    className="text-sm font-bold"
-                                    style={{ color: 'var(--ink-mid)' }}
-                                >
-                                    Temporada / Serie
-                                </Label>
-                                <select
-                                    id="season_id"
-                                    name="season_id"
-                                    className="w-full h-10 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-shadow"
-                                    style={{
-                                        background: 'var(--cream)',
-                                        borderColor: 'var(--cream-mid)',
-                                        color: 'var(--ink)',
-                                        // @ts-ignore
-                                        '--tw-ring-color': 'var(--gold)',
-                                    }}
-                                >
-                                    <option value="">Sin serie — episodio independiente</option>
-                                    {seasons?.map(s => (
-                                        <option key={s.id} value={s.id}>{s.title}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Monetización */}
-                            <div
-                                className="border-t pt-4 space-y-3"
-                                style={{ borderColor: 'var(--cream-mid)' }}
+                        {/* Season */}
+                        <div className="space-y-2">
+                            <label htmlFor="season_id" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                Serie / Temporada
+                            </label>
+                            <select
+                                id="season_id"
+                                name="season_id"
+                                className={`${inputCls} px-3 py-2.5 text-sm`}
                             >
-                                <Label
-                                    className="text-sm font-bold"
-                                    style={{ color: 'var(--ink)' }}
-                                >
-                                    Acceso y precio
-                                </Label>
+                                <option value="" className="bg-[#15171C]">Sin serie — episodio independiente</option>
+                                {seasons?.map(s => (
+                                    <option key={s.id} value={s.id} className="bg-[#15171C]">{s.title}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                                <div className="space-y-2">
+                        {/* Monetization */}
+                        <div className="space-y-2 border-t border-gray-800 pt-5">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
+                                Acceso y precio
+                            </label>
 
-                                    {/* Gratis */}
-                                    <label
-                                        className="flex items-start gap-3 cursor-pointer rounded-xl border p-3.5 transition-all"
-                                        style={
-                                            monetization === 'free'
-                                                ? { background: 'var(--gold-bg)', borderColor: 'var(--gold)' }
-                                                : { background: '#ffffff', borderColor: 'var(--cream-mid)' }
-                                        }
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="monetization"
-                                            value="free"
-                                            checked={monetization === 'free'}
-                                            onChange={() => setMonetization('free')}
-                                            className="mt-0.5"
-                                            style={{ accentColor: 'var(--gold-dark)' }}
-                                        />
-                                        <div>
-                                            <span
-                                                className="font-bold text-sm block"
-                                                style={{ color: 'var(--ink)' }}
-                                            >
-                                                Gratis para todos
-                                            </span>
-                                            <span className="text-xs" style={{ color: 'var(--ink-light)' }}>
-                                                Cualquiera puede leer este post
-                                            </span>
-                                        </div>
-                                    </label>
-
-                                    {/* Solo suscriptores */}
-                                    <label
-                                        className="flex items-start gap-3 cursor-pointer rounded-xl border p-3.5 transition-all"
-                                        style={
-                                            monetization === 'subscription'
-                                                ? { background: 'var(--ink)', borderColor: 'var(--ink)' }
-                                                : { background: '#ffffff', borderColor: 'var(--cream-mid)' }
-                                        }
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="monetization"
-                                            value="subscription"
-                                            checked={monetization === 'subscription'}
-                                            onChange={() => setMonetization('subscription')}
-                                            className="mt-0.5"
-                                            style={{ accentColor: 'var(--gold)' }}
-                                        />
-                                        <div>
-                                            <span
-                                                className="font-bold text-sm block"
-                                                style={{ color: monetization === 'subscription' ? 'var(--cream)' : 'var(--ink)' }}
-                                            >
-                                                &#9679; Solo suscriptores
-                                            </span>
-                                            <span
-                                                className="text-xs"
-                                                style={{ color: monetization === 'subscription' ? 'var(--gold-warm)' : 'var(--ink-light)' }}
-                                            >
-                                                Debe estar suscrito para leer
-                                            </span>
-                                        </div>
-                                    </label>
-
-                                    {/* Pago único */}
-                                    <label
-                                        className="flex items-start gap-3 cursor-pointer rounded-xl border p-3.5 transition-all"
-                                        style={
-                                            monetization === 'ppv'
-                                                ? { background: 'var(--gold-bg)', borderColor: 'var(--gold)' }
-                                                : { background: '#ffffff', borderColor: 'var(--cream-mid)' }
-                                        }
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="monetization"
-                                            value="ppv"
-                                            checked={monetization === 'ppv'}
-                                            onChange={() => setMonetization('ppv')}
-                                            className="mt-0.5"
-                                            style={{ accentColor: 'var(--gold-dark)' }}
-                                        />
-                                        <div className="flex-1">
-                                            <span
-                                                className="font-bold text-sm block"
-                                                style={{ color: 'var(--ink)' }}
-                                            >
-                                                ◈ Pago único
-                                            </span>
-                                            <span className="text-xs" style={{ color: 'var(--ink-light)' }}>
-                                                Precio de desbloqueo único
-                                            </span>
-                                            {monetization === 'ppv' && (
-                                                <div className="mt-2 relative">
-                                                    <span
-                                                        className="absolute left-3 top-2.5 font-bold text-sm"
-                                                        style={{ color: 'var(--ink-mid)' }}
-                                                    >
-                                                        $
-                                                    </span>
-                                                    <Input
-                                                        type="number"
-                                                        name="ppv_price"
-                                                        step="0.01"
-                                                        min="0.99"
-                                                        max="99.99"
-                                                        defaultValue="1.99"
-                                                        className="pl-6 h-9 border focus-visible:ring-2"
-                                                        style={{
-                                                            background: '#ffffff',
-                                                            borderColor: 'var(--gold)',
-                                                            color: 'var(--ink)',
-                                                            // @ts-ignore
-                                                            '--tw-ring-color': 'var(--gold)',
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    </label>
+                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'free' ? 'border-green-500/60 bg-green-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                                <input type="radio" name="monetization" value="free" checked={monetization === 'free'} onChange={() => setMonetization('free')} className="mt-0.5 accent-green-500" />
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 font-bold text-sm text-white">
+                                        <Eye size={13} /> Gratis para todos
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-0.5">Cualquiera puede leer</p>
                                 </div>
-                            </div>
+                            </label>
 
-                            {/* Error */}
-                            {errorMsg && (
-                                <div
-                                    className="text-sm font-medium p-3 rounded-lg border"
-                                    style={{ color: '#92271F', background: '#FDF3F2', borderColor: '#F5C5C1' }}
-                                >
-                                    {errorMsg}
+                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'subscription' ? 'border-green-500/60 bg-green-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                                <input type="radio" name="monetization" value="subscription" checked={monetization === 'subscription'} onChange={() => setMonetization('subscription')} className="mt-0.5 accent-green-500" />
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 font-bold text-sm text-white">
+                                        <Lock size={13} /> Solo suscriptores
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-0.5">Debe estar suscrito para leer</p>
                                 </div>
-                            )}
+                            </label>
 
-                            {/* Publicar */}
-                            <div
-                                className="pt-3 border-t"
-                                style={{ borderColor: 'var(--cream-mid)' }}
-                            >
-                                <input type="hidden" name="is_published" value="true" />
-                                <Button
-                                    type="submit"
-                                    disabled={isPending}
-                                    className="w-full font-bold h-12 text-base disabled:opacity-50"
-                                    style={{ background: 'var(--ink)', color: 'var(--cream)' }}
-                                >
-                                    {isPending ? (
-                                        <span className="flex items-center gap-2">
-                                            <span
-                                                className="w-4 h-4 border-2 rounded-full animate-spin"
-                                                style={{ borderColor: 'rgba(250,247,240,0.3)', borderTopColor: 'var(--cream)' }}
+                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'ppv' ? 'border-green-500/60 bg-green-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                                <input type="radio" name="monetization" value="ppv" checked={monetization === 'ppv'} onChange={() => setMonetization('ppv')} className="mt-0.5 accent-green-500" />
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 font-bold text-sm text-white">
+                                        <DollarSign size={13} /> Pago único
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-0.5">Desbloqueo por un precio</p>
+                                    {monetization === 'ppv' && (
+                                        <div className="mt-2.5 relative">
+                                            <span className="absolute left-3 top-2.5 font-bold text-sm text-gray-400">$</span>
+                                            <input
+                                                type="number"
+                                                name="ppv_price"
+                                                step="0.01"
+                                                min="0.99"
+                                                max="99.99"
+                                                defaultValue="1.99"
+                                                className={`${inputCls} pl-7 pr-3 py-2 text-sm font-bold`}
                                             />
-                                            Publicando...
-                                        </span>
-                                    ) : 'Publicar episodio →'}
-                                </Button>
-                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </label>
+                        </div>
 
+                        {/* Error */}
+                        {errorMsg && (
+                            <div className="text-sm font-medium p-3 rounded-xl text-red-400 bg-red-500/10 border border-red-500/20">
+                                {errorMsg}
+                            </div>
+                        )}
+
+                        {/* Submit */}
+                        <div className="border-t border-gray-800 pt-4">
+                            <input type="hidden" name="is_published" value="true" />
+                            <button
+                                type="submit"
+                                disabled={isPending}
+                                className="w-full font-bold h-12 rounded-xl bg-green-600 hover:bg-green-500 text-white transition-all shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {isPending ? (
+                                    <>
+                                        <span className="w-4 h-4 border-2 rounded-full animate-spin border-white/30 border-t-white" />
+                                        Publicando...
+                                    </>
+                                ) : 'Publicar episodio →'}
+                            </button>
+                            <p className="text-[10px] text-gray-600 text-center mt-2">
+                                Tu primer capítulo siempre es gratis para todos
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Preview modal */}
+            {showPreview && (
+                <PreviewToggle
+                    title={titleValue}
+                    previewText={previewTextValue}
+                    coverUrl={coverPreview}
+                    contentHtml={renderPreviewHtml(editorRef.current?.getJSON() || editorState.json)}
+                    readMinutes={editorState.readingTimeMin}
+                    wordCount={editorState.wordCount}
+                    onClose={() => setShowPreview(false)}
+                />
+            )}
         </form>
     )
+}
+
+// Helper to render TipTap JSON → HTML for the preview modal
+function renderPreviewHtml(json: any): string {
+    if (!json) return ''
+    try {
+        return generateHTML(json, [
+            StarterKit.configure({ heading: { levels: [2, 3] }, codeBlock: false, code: false }),
+            Image,
+            Link,
+            PullQuote,
+        ])
+    } catch {
+        return ''
+    }
 }
