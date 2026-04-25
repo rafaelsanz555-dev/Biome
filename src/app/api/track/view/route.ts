@@ -23,7 +23,15 @@ export async function POST(req: Request) {
         .select('id')
         .single()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    // Soft-fail when DB tables aren't migrated yet (PGRST205 / "schema cache")
+    if (error) {
+        const isMigrationMissing = /schema cache|does not exist|relation .* does not exist/i.test(error.message)
+        if (isMigrationMissing) {
+            // Return 200 so client tracker doesn't spam console — feature simply disabled.
+            return NextResponse.json({ view_id: null, disabled: true })
+        }
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 
     // Create an initial reading_sessions row
     await supabase.from('reading_sessions').insert({ view_id: data.id, reached_percent: 0, time_spent_seconds: 0 })

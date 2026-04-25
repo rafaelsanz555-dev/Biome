@@ -7,8 +7,8 @@ import { track } from '@/lib/analytics'
 import { Globe, Check } from 'lucide-react'
 
 const LANGS = [
-    { code: 'es', label: 'Español', flag: '🇪🇸' },
-    { code: 'en', label: 'English', flag: '🇺🇸' },
+    { code: 'es', label: 'Español' },
+    { code: 'en', label: 'English' },
 ]
 
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
@@ -41,14 +41,13 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
             <button
                 onClick={() => setOpen(!open)}
                 disabled={isPending}
-                className={`flex items-center gap-2 rounded-lg transition hover:bg-white/5 ${
+                className={`flex items-center gap-1.5 rounded-lg transition hover:bg-white/5 ${
                     compact ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'
                 } font-medium text-gray-400 hover:text-white`}
                 aria-label="Change language"
             >
                 <Globe size={compact ? 14 : 16} />
-                <span>{current.flag}</span>
-                <span className="hidden sm:inline uppercase tracking-wider text-[11px] font-bold">
+                <span className="uppercase tracking-wider text-[11px] font-bold">
                     {current.code}
                 </span>
             </button>
@@ -67,7 +66,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
                                         : 'text-gray-300 hover:bg-white/5 hover:text-white'
                                 }`}
                             >
-                                <span className="text-base">{lang.flag}</span>
+                                <span className="font-mono text-[11px] tracking-wider uppercase w-6">{lang.code}</span>
                                 <span className="flex-1">{lang.label}</span>
                                 {isActive && <Check size={14} className="text-green-500" />}
                             </button>

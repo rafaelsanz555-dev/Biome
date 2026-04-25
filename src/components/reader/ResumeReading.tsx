@@ -11,7 +11,7 @@ export async function ResumeReading() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
-    const { data: bookmarks } = await supabase
+    const { data: bookmarks, error } = await supabase
         .from('reading_bookmarks')
         .select('episode_id, reached_percent, updated_at, episodes(id, title, cover_image_url, profiles:creator_id(username, full_name, avatar_url))')
         .eq('user_id', user.id)
@@ -20,6 +20,8 @@ export async function ResumeReading() {
         .order('updated_at', { ascending: false })
         .limit(4)
 
+    // Si la migración no ha corrido, simplemente no renderizamos nada
+    if (error) return null
     if (!bookmarks || bookmarks.length === 0) return null
 
     return (

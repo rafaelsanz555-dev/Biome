@@ -54,8 +54,7 @@ export function CreatorBioCard({
             {(countryCode || pronouns || (languages && languages.length > 0)) && (
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                     {countryCode && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-gray-800 text-gray-300">
-                            <span className="text-base leading-none">{FLAG_FROM_CC[countryCode] || '🌍'}</span>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-gray-800 text-gray-300 font-mono">
                             {countryCode}
                         </span>
                     )}

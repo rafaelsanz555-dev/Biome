@@ -25,6 +25,10 @@ export async function POST(req: Request) {
         description: typeof description === 'string' ? description.slice(0, 1000) : null,
     })
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) {
+        const isMigrationMissing = /schema cache|does not exist|relation .* does not exist/i.test(error.message)
+        if (isMigrationMissing) return NextResponse.json({ ok: true, disabled: true })
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
     return NextResponse.json({ ok: true })
 }
