@@ -13,7 +13,11 @@ import { LiveReaderCount } from '@/components/LiveReaderCount'
 import { ReaderRenderer } from '@/components/editor/ReaderRenderer'
 import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
 import ReadTracker from '@/components/ReadTracker'
+import BookmarkTracker from '@/components/reader/BookmarkTracker'
 import { ReportButton } from '@/components/ReportButton'
+import { NextEpisode } from '@/components/reader/NextEpisode'
+import { EpisodeRecap } from '@/components/reader/EpisodeRecap'
+import { HonestPaywall } from '@/components/reader/HonestPaywall'
 
 interface EpisodePageProps {
     params: Promise<{
@@ -28,7 +32,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
     const { data: creatorProfile } = await supabase
         .from('profiles')
-        .select('*, creators(profile_id, subscription_price, accent_color, font_family, card_style, brand_tagline)')
+        .select('*, creators(profile_id, subscription_price, accent_color, font_family, card_style, brand_tagline, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write)')
         .eq('username', username.toLowerCase())
         .single()
 
@@ -82,6 +86,24 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     const subPrice = creatorProfile.creators?.subscription_price || 5
     const creatorIdForSub = creatorProfile.creators?.profile_id || creatorProfile.id
 
+    // Continuity context: previous + next episodes, total count, last activity
+    const { data: siblings } = await supabase
+        .from('episodes')
+        .select('id, title, preview_text, cover_image_url, created_at, chapter_number, auto_recap, is_subscription_only, ppv_price')
+        .eq('creator_id', creatorProfile.id)
+        .eq('is_published', true)
+        .order('created_at', { ascending: true })
+
+    const totalPublished = siblings?.length ?? 0
+    const myIndex = siblings?.findIndex((e) => e.id === episode.id) ?? -1
+    const prevEp = myIndex > 0 ? siblings![myIndex - 1] : null
+    const nextEp = myIndex >= 0 && myIndex < (siblings?.length ?? 0) - 1 ? siblings![myIndex + 1] : null
+
+    const lastEpisodeAt = siblings && siblings.length > 0 ? siblings[siblings.length - 1].created_at : null
+    const daysSinceLastEpisode = lastEpisodeAt
+        ? Math.floor((Date.now() - new Date(lastEpisodeAt).getTime()) / 86400000)
+        : null
+
     // Word count for reading time
     const words = (episode.full_text || '').trim().split(/\s+/).filter(Boolean).length
     const readMin = Math.max(1, Math.round(words / 220))
@@ -104,6 +126,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     return (
         <CreatorBrandProvider branding={branding} className="min-h-screen pb-24 bg-[#0A0B0E] text-gray-100">
             {hasAccess && <ReadTracker episodeId={episode.id} />}
+            {hasAccess && !!user && <BookmarkTracker episodeId={episode.id} enabled={hasAccess} />}
             {hasAccess && <ReadingProgress />}
             <Navbar />
 
@@ -227,6 +250,11 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                     </div>
                 )}
 
+                {/* Recap del anterior */}
+                {hasAccess && prevEp?.auto_recap && (
+                    <EpisodeRecap previousTitle={prevEp.title} recap={prevEp.auto_recap} />
+                )}
+
                 {/* Full text — immersive reading */}
                 {hasAccess && episode.full_text && (
                     <article className="prose prose-invert max-w-none">
@@ -280,22 +308,23 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                     </div>
                 )}
 
-                {/* Reading paywall (when no cover) */}
-                {!hasAccess && !episode.cover_image_url && (
-                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-10 text-center my-12">
-                        <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto mb-5">
-                            <Lock className="w-7 h-7 text-green-400" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Continúa la historia</h2>
-                        <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto leading-relaxed">
-                            Este episodio es solo para suscriptores de <strong>@{creatorProfile.username}</strong>.
-                        </p>
-                        <Link href={`/api/checkout?type=subscription&creatorId=${creatorIdForSub}`}>
-                            <Button className="bg-green-600 hover:bg-green-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-green-500/20">
-                                Suscribirme — ${subPrice}/mes
-                            </Button>
-                        </Link>
-                    </div>
+                {/* Honest paywall (with continuity + trust signals) */}
+                {!hasAccess && (
+                    <HonestPaywall
+                        creatorUsername={creatorProfile.username}
+                        creatorName={creatorProfile.full_name || creatorProfile.username}
+                        subPrice={subPrice}
+                        creatorIdForSub={creatorIdForSub}
+                        episodeId={episode.id}
+                        ppvPrice={episode.ppv_price}
+                        isSubscriptionOnly={episode.is_subscription_only}
+                        seriesStatus={creatorProfile.creators?.series_status}
+                        postingFrequency={creatorProfile.creators?.posting_frequency}
+                        frequencyPromise={creatorProfile.creators?.frequency_promise}
+                        totalEpisodes={totalPublished}
+                        isVerified={creatorProfile.creators?.is_verified_storyteller}
+                        daysSinceLastEpisode={daysSinceLastEpisode}
+                    />
                 )}
 
                 {/* Engagement bar (sticky footer-like) */}
@@ -372,6 +401,23 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                             )}
                         </div>
                     </>
+                )}
+
+                {/* Next episode (continuity) */}
+                {hasAccess && (
+                    <NextEpisode
+                        creatorUsername={creatorProfile.username}
+                        episode={nextEp ? {
+                            id: nextEp.id,
+                            title: nextEp.title,
+                            preview_text: nextEp.preview_text,
+                            cover_image_url: nextEp.cover_image_url,
+                            is_subscription_only: nextEp.is_subscription_only,
+                            ppv_price: nextEp.ppv_price,
+                            chapter_number: nextEp.chapter_number,
+                        } : null}
+                        seriesProgress={totalPublished > 1 ? { current: myIndex + 1, total: totalPublished } : null}
+                    />
                 )}
 
                 {/* Report button */}

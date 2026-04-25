@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { GiftPanel } from '@/components/GiftPanel'
 import { Navbar } from '@/components/Navbar'
 import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
+import { CreatorBioCard } from '@/components/trust/CreatorBioCard'
 import Link from 'next/link'
 import { Lock, Heart, Gift, MessageCircle } from 'lucide-react'
 
@@ -17,7 +18,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*, creators(subscription_price, accent_color, font_family, card_style, brand_tagline, cover_pattern)')
+        .select('*, creators(subscription_price, accent_color, font_family, card_style, brand_tagline, cover_pattern, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write)')
         .eq('username', username.toLowerCase())
         .single()
 
@@ -162,6 +163,29 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                         <GiftPanel recipientId={profile.id} recipientUsername={profile.username} />
                     </div>
                 )}
+
+                {/* Bio + Trust signals (Loop refinement Round 1) */}
+                <div className="mb-10">
+                    <CreatorBioCard
+                        bio={profile.bio}
+                        whyIWrite={profile.creators?.why_i_write}
+                        storyThemes={profile.story_themes}
+                        languages={profile.languages}
+                        countryCode={profile.country_code}
+                        pronouns={profile.pronouns}
+                        isVerified={profile.creators?.is_verified_storyteller}
+                        verificationMethod={profile.creators?.verification_method}
+                        seriesStatus={profile.creators?.series_status}
+                        postingFrequency={profile.creators?.posting_frequency}
+                        frequencyPromise={profile.creators?.frequency_promise}
+                        totalEpisodes={episodes?.length || 0}
+                        daysSinceLastEpisode={
+                            episodes && episodes.length > 0
+                                ? Math.floor((Date.now() - new Date(episodes[0].created_at).getTime()) / 86400000)
+                                : null
+                        }
+                    />
+                </div>
 
                 {/* Feed */}
                 <div className="space-y-6">

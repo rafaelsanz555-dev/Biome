@@ -12,6 +12,8 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { PullQuote } from '@/components/editor/PullQuote'
+import { WritingCoach } from '@/components/writer/WritingCoach'
+import { AIAssistant } from '@/components/writer/AIAssistant'
 
 interface EpisodeFormProps {
     seasons: any[]
@@ -424,6 +426,17 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                     onClose={() => setShowPreview(false)}
                 />
             )}
+
+            {/* Writer studio sidekicks (Round 3 + 4) */}
+            <WritingCoach
+                title={titleValue}
+                previewText={previewTextValue}
+                wordCount={editorState.wordCount}
+            />
+            <AIAssistant
+                getText={() => editorRef.current?.getText() || editorState.text}
+                onChooseTitle={(t) => setTitleValue(t)}
+            />
         </form>
     )
 }

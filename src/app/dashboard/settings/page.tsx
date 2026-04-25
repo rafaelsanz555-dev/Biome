@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import SettingsForm from './SettingsForm'
 import { BrandingForm } from './BrandingForm'
 import { IdentityForm } from './IdentityForm'
+import { TrustSettingsForm } from './TrustSettingsForm'
 
 export default async function SettingsPage() {
     const supabase = await createClient()
@@ -53,14 +54,26 @@ export default async function SettingsPage() {
             />
 
             {isCreator && (
-                <BrandingForm
-                    initial={{
-                        accent_color: creatorInfo?.accent_color,
-                        font_family: creatorInfo?.font_family,
-                        card_style: creatorInfo?.card_style,
-                        brand_tagline: creatorInfo?.brand_tagline,
-                    }}
-                />
+                <>
+                    <TrustSettingsForm
+                        initial={{
+                            posting_frequency: creatorInfo?.posting_frequency,
+                            frequency_promise: creatorInfo?.frequency_promise,
+                            series_status: creatorInfo?.series_status,
+                            why_i_write: creatorInfo?.why_i_write,
+                            expected_episodes_per_month: creatorInfo?.expected_episodes_per_month,
+                        }}
+                    />
+
+                    <BrandingForm
+                        initial={{
+                            accent_color: creatorInfo?.accent_color,
+                            font_family: creatorInfo?.font_family,
+                            card_style: creatorInfo?.card_style,
+                            brand_tagline: creatorInfo?.brand_tagline,
+                        }}
+                    />
+                </>
             )}
         </div>
     )

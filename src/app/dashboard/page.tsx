@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Heart, MessageCircle, Gift, Lock, MoreHorizontal, Crown, Play } from 'lucide-react'
+import { ResumeReading } from '@/components/reader/ResumeReading'
 
 function timeAgo(date: string): string {
     const diff = Date.now() - new Date(date).getTime()
@@ -176,6 +177,11 @@ export default async function DashboardHome() {
                     <button className="px-4 py-1.5 bg-[#1E1E1E] hover:bg-[#2D2D2D] border border-[#333] rounded-full text-xs text-gray-300 transition">Top gifted</button>
                     <button className="px-4 py-1.5 bg-[#1E1E1E] hover:bg-[#2D2D2D] border border-[#333] rounded-full text-xs text-gray-300 transition">Top episodios</button>
                 </div>
+            </div>
+
+            <div className="max-w-3xl mx-auto px-6">
+                {/* Continúa donde lo dejaste */}
+                <ResumeReading />
             </div>
 
             <div className="max-w-3xl mx-auto space-y-6 px-6 pb-20">
