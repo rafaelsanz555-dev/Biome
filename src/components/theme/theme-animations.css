@@ -1,0 +1,90 @@
+/* ─────────────────────────────────────────────────────────
+ * Animaciones de themes — bio.me
+ * Cargado desde src/app/globals.css (NO importar desde Server Components)
+ * ───────────────────────────────────────────────────────── */
+
+/* Aurora: gradiente que se mueve lentamente con leve rotación de matiz */
+@keyframes aurora-shift {
+    0% {
+        background-position: 0% 0%;
+        filter: hue-rotate(0deg) brightness(1);
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: hue-rotate(15deg) brightness(1.05);
+    }
+    100% {
+        background-position: 0% 100%;
+        filter: hue-rotate(-10deg) brightness(0.95);
+    }
+}
+
+/* Cyberpunk: pulse de brillo y saturación */
+@keyframes cyberpunk-pulse {
+    0%, 100% {
+        filter: brightness(1) saturate(1);
+    }
+    50% {
+        filter: brightness(1.18) saturate(1.35);
+    }
+}
+
+/* Akatsuki: las "nubes" se respiran (filter en vez de bg-position que era confuso) */
+@keyframes akatsuki-float {
+    0%, 100% {
+        filter: brightness(1) saturate(0.95);
+    }
+    50% {
+        filter: brightness(1.1) saturate(1.1);
+    }
+}
+
+/* Océano: oleaje sutil con cambio de brillo */
+@keyframes ocean-wave {
+    0% {
+        background-position: 0% 0%;
+        filter: brightness(0.95);
+    }
+    50% {
+        background-position: 0% 50%;
+        filter: brightness(1.05);
+    }
+    100% {
+        background-position: 0% 100%;
+        filter: brightness(0.95);
+    }
+}
+
+/* Capa de animación opcional (efecto sutil de luz/brillo encima del bg) */
+.bio-theme-animation-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.04) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 40%);
+    mix-blend-mode: overlay;
+}
+
+/* Theme container base */
+.bio-themed {
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Themes light: ajusta color de texto */
+.bio-themed[data-theme-light='true'] {
+    color: var(--brand-text, #0F172A);
+}
+
+/* Reduce motion: respeta preferencia del usuario */
+@media (prefers-reduced-motion: reduce) {
+    .bio-themed {
+        animation: none !important;
+    }
+    .bio-themed * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

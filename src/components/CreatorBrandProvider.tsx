@@ -25,15 +25,15 @@ interface CreatorBrandProviderProps {
     className?: string
 }
 
-// Mapea font_family enum → CSS var / font-stack
+// Mapea font_family enum → CSS var / font-stack reales (cargadas en layout.tsx via next/font)
 function fontVarFor(family?: string | null): string {
     switch (family) {
         case 'playfair':
             return 'var(--font-playfair), Georgia, serif'
         case 'crimson':
-            return '"Crimson Pro", Georgia, serif'
+            return 'var(--font-crimson), Georgia, serif'
         case 'ibm-plex':
-            return '"IBM Plex Serif", Georgia, serif'
+            return 'var(--font-ibm-plex), Georgia, serif'
         case 'inter':
         default:
             return 'var(--font-inter), system-ui, sans-serif'

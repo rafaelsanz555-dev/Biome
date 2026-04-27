@@ -52,13 +52,18 @@ export async function completeOnboarding(prevState: { error: string }, formData:
     }
 
     if (role === 'creator') {
-        await supabase.from('creators').insert({
+        const { error: creatorError } = await supabase.from('creators').insert({
             profile_id: user.id,
             subscription_price: 5.00,
             is_active: true,
         })
 
-        redirect('/dashboard')
+        if (creatorError) {
+            // Si falla, hacer rollback del profile recién creado para evitar estados inconsistentes
+            await supabase.from('profiles').delete().eq('id', user.id)
+            console.error('[onboarding] creators.insert failed:', creatorError.message)
+            return { error: 'No pudimos crear tu perfil de escritor. Intenta de nuevo en unos segundos.' }
+        }
     }
 
     redirect('/dashboard')

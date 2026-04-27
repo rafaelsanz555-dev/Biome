@@ -12,6 +12,7 @@ import { EmotionalReactions } from '@/components/EmotionalReactions'
 import { LiveReaderCount } from '@/components/LiveReaderCount'
 import { ReaderRenderer } from '@/components/editor/ReaderRenderer'
 import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
+import { ThemeProvider, extractTheme } from '@/components/theme/ThemeProvider'
 import ReadTracker from '@/components/ReadTracker'
 import BookmarkTracker from '@/components/reader/BookmarkTracker'
 import { ReportButton } from '@/components/ReportButton'
@@ -30,36 +31,60 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     const { username, episodeId } = await params
     const supabase = await createClient()
 
-    const { data: creatorProfile } = await supabase
+    // ── Query 1: profile + creators + theme (la query principal) ──
+    const { data: creatorProfile, error: profileError } = await supabase
         .from('profiles')
-        .select('*, creators(profile_id, subscription_price, accent_color, font_family, card_style, brand_tagline, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write)')
+        .select('*, creators!profile_id(profile_id, subscription_price, accent_color, font_family, card_style, brand_tagline, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write, theme_id, themes(id, slug, name, description, type, style, config, is_animated))')
         .eq('username', username.toLowerCase())
-        .single()
+        .maybeSingle()
 
+    if (profileError) console.error('[episode page] profile query failed:', profileError.message)
     if (!creatorProfile) notFound()
 
-    const { data: episode } = await supabase
+    // ── Query 2: episode SEPARADO de seasons (evita FK ambigua) ──
+    const { data: episode, error: epError } = await supabase
         .from('episodes')
-        .select('*, seasons(title)')
+        .select('*')
         .eq('id', episodeId)
-        .single()
+        .maybeSingle()
 
-    if (!episode || (!episode.is_published && episode.creator_id !== creatorProfile.id)) {
+    if (epError) console.error('[episode page] episode query failed:', epError.message)
+    if (!episode) notFound()
+
+    // Cargar season aparte si existe
+    let seasonTitle: string | null = null
+    if (episode.season_id) {
+        const { data: season } = await supabase
+            .from('seasons')
+            .select('title')
+            .eq('id', episode.season_id)
+            .maybeSingle()
+        seasonTitle = season?.title ?? null
+    }
+    ;(episode as any).seasons = seasonTitle ? { title: seasonTitle } : null
+
+    // ── Validación de acceso al draft ──
+    // Si el episode no está publicado Y no es del creador logueado → 404
+    // (la simplificación: si el page llegó hasta acá, el episode existe, solo
+    // necesitamos validar que terceros no vean drafts)
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
+    if (!episode.is_published && episode.creator_id !== currentUser?.id) {
         notFound()
     }
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = currentUser
     let hasAccess = false
 
     if (user) {
         if (user.id === episode.creator_id) {
             hasAccess = true
         } else {
+            // El creator_id usa creatorProfile.id (que es profiles.id = creators.profile_id, todos iguales)
             const { data: entitlement } = await supabase
                 .from('entitlements')
                 .select('id')
                 .eq('user_id', user.id)
-                .or(`episode_id.eq.${episode.id},and(creator_id.eq.${creatorProfile.creators?.profile_id},entitlement_type.eq.subscription)`)
+                .or(`episode_id.eq.${episode.id},and(creator_id.eq.${creatorProfile.id},entitlement_type.eq.subscription)`)
                 .limit(1)
                 .maybeSingle()
 
@@ -122,9 +147,10 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     })
 
     const branding = extractBranding(creatorProfile.creators)
+    const { theme, fallback } = extractTheme(creatorProfile.creators)
 
     return (
-        <CreatorBrandProvider branding={branding} className="min-h-screen pb-24 bg-[#0A0B0E] text-gray-100">
+        <ThemeProvider theme={theme} fallbackBranding={fallback} className="min-h-screen pb-24 text-gray-100">
             {hasAccess && <ReadTracker episodeId={episode.id} />}
             {hasAccess && !!user && <BookmarkTracker episodeId={episode.id} enabled={hasAccess} />}
             {hasAccess && <ReadingProgress />}
@@ -427,6 +453,6 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                     </div>
                 )}
             </main>
-        </CreatorBrandProvider>
+        </ThemeProvider>
     )
 }

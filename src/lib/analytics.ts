@@ -111,3 +111,5 @@ export type AnalyticsEvent =
     | 'settings_updated'
     | 'branding_updated'
     | 'language_changed'
+    | 'theme_changed'
+    | 'custom_theme_created'

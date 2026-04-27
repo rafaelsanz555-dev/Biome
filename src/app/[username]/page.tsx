@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { GiftPanel } from '@/components/GiftPanel'
 import { Navbar } from '@/components/Navbar'
 import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
+import { ThemeProvider, extractTheme } from '@/components/theme/ThemeProvider'
 import { CreatorBioCard } from '@/components/trust/CreatorBioCard'
 import Link from 'next/link'
 import { Lock, Heart, Gift, MessageCircle } from 'lucide-react'
@@ -18,7 +19,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*, creators(subscription_price, accent_color, font_family, card_style, brand_tagline, cover_pattern, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write)')
+        .select('*, creators!profile_id(subscription_price, accent_color, font_family, card_style, brand_tagline, cover_pattern, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write, theme_id, themes(id, slug, name, description, type, style, config, is_animated))')
         .eq('username', username.toLowerCase())
         .single()
 
@@ -26,7 +27,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const { data: episodes } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, content, cover_image_url, is_subscription_only, ppv_price, created_at')
+        .select('id, title, preview_text, full_text, cover_image_url, is_subscription_only, ppv_price, created_at')
         .eq('creator_id', profile.id)
         .eq('is_published', true)
         .order('created_at', { ascending: false })
@@ -70,9 +71,10 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
         .map(e => e.id))
 
     const branding = extractBranding(profile.creators)
+    const { theme, fallback } = extractTheme(profile.creators)
 
     return (
-        <CreatorBrandProvider branding={branding} className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans pb-20">
+        <ThemeProvider theme={theme} fallbackBranding={fallback} className="min-h-screen text-gray-100 font-sans pb-20">
             <Navbar />
 
             {/* Premium Header / Cover */}
@@ -285,6 +287,6 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                     )}
                 </div>
             </main>
-        </CreatorBrandProvider>
+        </ThemeProvider>
     )
 }

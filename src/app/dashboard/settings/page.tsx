@@ -4,6 +4,7 @@ import SettingsForm from './SettingsForm'
 import { BrandingForm } from './BrandingForm'
 import { IdentityForm } from './IdentityForm'
 import { TrustSettingsForm } from './TrustSettingsForm'
+import { ThemeSelector } from './ThemeSelector'
 
 export default async function SettingsPage() {
     const supabase = await createClient()
@@ -17,13 +18,31 @@ export default async function SettingsPage() {
         .eq('id', user.id)
         .maybeSingle()
 
-    const { data: creatorInfo } = await supabase
+    let { data: creatorInfo } = await supabase
         .from('creators')
         .select('*')
         .eq('profile_id', user.id)
         .maybeSingle()
 
     const isCreator = profile?.role === 'creator'
+
+    // Hardening: si role=creator pero no hay row, créala on-the-fly
+    // (esto repara cuentas viejas donde el insert original falló silenciosamente)
+    if (isCreator && !creatorInfo) {
+        const { data: created } = await supabase
+            .from('creators')
+            .insert({ profile_id: user.id, subscription_price: 5.00, is_active: true })
+            .select('*')
+            .single()
+        creatorInfo = created
+    }
+
+    // Cargar themes para el ThemeSelector (oficiales + custom del creador actual)
+    const { data: themes } = await supabase
+        .from('themes')
+        .select('id, slug, name, description, type, style, config, is_animated')
+        .or(`type.eq.official,creator_id.eq.${user.id}`)
+        .order('type', { ascending: true })
 
     return (
         <div className="space-y-6 max-w-2xl">
@@ -63,6 +82,13 @@ export default async function SettingsPage() {
                             why_i_write: creatorInfo?.why_i_write,
                             expected_episodes_per_month: creatorInfo?.expected_episodes_per_month,
                         }}
+                    />
+
+                    <ThemeSelector
+                        initialThemeId={creatorInfo?.theme_id}
+                        initialAccent={creatorInfo?.accent_color}
+                        initialFont={creatorInfo?.font_family}
+                        themes={(themes || []) as any}
                     />
 
                     <BrandingForm

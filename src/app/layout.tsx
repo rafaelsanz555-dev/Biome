@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
+import { Inter, Playfair_Display, Crimson_Pro, IBM_Plex_Serif } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -17,6 +17,22 @@ const playfair = Playfair_Display({
     variable: '--font-playfair',
     display: 'swap',
     weight: ['600', '700', '800', '900'],
+    style: ['normal', 'italic'],
+})
+
+const crimson = Crimson_Pro({
+    subsets: ['latin'],
+    variable: '--font-crimson',
+    display: 'swap',
+    weight: ['400', '500', '600', '700', '800'],
+    style: ['normal', 'italic'],
+})
+
+const ibmPlex = IBM_Plex_Serif({
+    subsets: ['latin'],
+    variable: '--font-ibm-plex',
+    display: 'swap',
+    weight: ['400', '500', '600', '700'],
     style: ['normal', 'italic'],
 })
 
@@ -67,7 +83,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
     return (
         <html lang={locale}>
-            <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
+            <body className={`${inter.variable} ${playfair.variable} ${crimson.variable} ${ibmPlex.variable} font-sans antialiased`}>
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <PostHogProvider user={userForAnalytics}>
                         {children}

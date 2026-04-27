@@ -21,11 +21,36 @@ const ACCENTS = [
     { code: '#64748B', name: 'Slate' },
 ]
 
+// Las CSS vars vienen de next/font/google en layout.tsx
 const FONTS = [
-    { code: 'inter', name: 'Inter', preview: 'Tu historia se lee así', cssFamily: 'Inter, system-ui, sans-serif' },
-    { code: 'playfair', name: 'Playfair Display', preview: 'Tu historia se lee así', cssFamily: 'Georgia, "Playfair Display", serif' },
-    { code: 'crimson', name: 'Crimson Pro', preview: 'Tu historia se lee así', cssFamily: '"Crimson Pro", Georgia, serif' },
-    { code: 'ibm-plex', name: 'IBM Plex Serif', preview: 'Tu historia se lee así', cssFamily: '"IBM Plex Serif", Georgia, serif' },
+    {
+        code: 'inter',
+        name: 'Inter',
+        desc: 'Limpia, contemporánea — perfecta para periodismo digital',
+        preview: 'La nostalgia llega sin avisar',
+        cssFamily: 'var(--font-inter), system-ui, sans-serif',
+    },
+    {
+        code: 'playfair',
+        name: 'Playfair Display',
+        desc: 'Editorial elegante — para historias literarias',
+        preview: 'La nostalgia llega sin avisar',
+        cssFamily: 'var(--font-playfair), Georgia, serif',
+    },
+    {
+        code: 'crimson',
+        name: 'Crimson Pro',
+        desc: 'Cálida y humana — para memorias íntimas',
+        preview: 'La nostalgia llega sin avisar',
+        cssFamily: 'var(--font-crimson), Georgia, serif',
+    },
+    {
+        code: 'ibm-plex',
+        name: 'IBM Plex Serif',
+        desc: 'Moderna con carácter — para ensayos y crónicas',
+        preview: 'La nostalgia llega sin avisar',
+        cssFamily: 'var(--font-ibm-plex), Georgia, serif',
+    },
 ]
 
 const CARD_STYLES = [
@@ -121,18 +146,24 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                             key={f.code}
                             type="button"
                             onClick={() => setFont(f.code)}
-                            className={`text-left p-4 rounded-xl border-2 transition-all ${
+                            className={`text-left p-5 rounded-xl border-2 transition-all ${
                                 font === f.code
                                     ? 'border-green-500 bg-green-500/5 shadow-lg shadow-green-500/10'
                                     : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
                             }`}
                         >
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{f.name}</span>
-                                {font === f.code && <Check size={14} className="text-green-500" />}
+                            <div className="flex items-center justify-between mb-3">
+                                <div>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-0.5">{f.name}</span>
+                                    <span className="text-[11px] text-gray-600">{f.desc}</span>
+                                </div>
+                                {font === f.code && <Check size={14} className="text-green-500 shrink-0" />}
                             </div>
-                            <p className="text-xl text-white" style={{ fontFamily: f.cssFamily }}>
+                            <p className="text-2xl text-white leading-tight mb-1" style={{ fontFamily: f.cssFamily, fontWeight: 600 }}>
                                 {f.preview}
+                            </p>
+                            <p className="text-base text-gray-400 italic" style={{ fontFamily: f.cssFamily }}>
+                                Y a veces, en un perfume olvidado.
                             </p>
                         </button>
                     ))}
