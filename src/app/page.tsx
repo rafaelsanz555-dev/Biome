@@ -21,22 +21,22 @@ const GIFTS = [
 
 export default function LandingPage() {
     return (
-        <div className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans selection:bg-green-500/30">
+        <div className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans selection:bg-blue-500/30">
             <Navbar />
 
             {/* ── HERO ──────────────────────────────────────────── */}
             <section className="relative overflow-hidden border-b border-gray-800/60 pb-20 pt-24 md:pb-32 md:pt-36">
                 {/* Background ambient glow */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[400px] bg-green-600/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[400px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
 
                 <div className="relative max-w-4xl mx-auto px-6 text-center">
-                    <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase mb-8 px-4 py-2 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase mb-8 px-4 py-2 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                         La red social premium para creadores
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 tracking-tight">
-                        Tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">historia.</span><br />
+                        Tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-400">historia.</span><br />
                         Tus ingresos.
                     </h1>
 
@@ -47,7 +47,7 @@ export default function LandingPage() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         <Link href="/login" className="w-full sm:w-auto">
-                            <Button size="lg" className="bg-green-600 hover:bg-green-500 text-white font-bold px-10 h-14 text-base rounded-xl shadow-[0_0_40px_-10px_rgba(34,197,94,0.5)] transition-all hover:scale-105 w-full">
+                            <Button size="lg" className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 h-14 text-base rounded-xl shadow-[0_0_40px_-10px_rgba(37, 99, 235,0.5)] transition-all hover:scale-105 w-full">
                                 Crear mi perfil — $5/mes
                             </Button>
                         </Link>
@@ -71,7 +71,7 @@ export default function LandingPage() {
                     {/* Fake Post Card */}
                     <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-5 shadow-2xl">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-green-500 to-emerald-400 p-0.5">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-blue-400 p-0.5">
                                 <div className="w-full h-full bg-[#15171C] rounded-full flex items-center justify-center font-bold text-lg">M</div>
                             </div>
                             <div>
@@ -84,8 +84,8 @@ export default function LandingPage() {
                         </p>
                         <div className="w-full h-48 bg-[#0A0B0E] rounded-xl flex items-center justify-center border border-gray-800 mb-4 overflow-hidden relative">
                             {/* Blur mockup */}
-                            <div className="absolute inset-0 bg-green-500/5 backdrop-blur-xl"></div>
-                            <span className="relative text-green-400 font-bold flex items-center gap-2">
+                            <div className="absolute inset-0 bg-blue-500/5 backdrop-blur-xl"></div>
+                            <span className="relative text-blue-400 font-bold flex items-center gap-2">
                                 🔒 Contenido bloqueado
                             </span>
                         </div>
@@ -93,7 +93,7 @@ export default function LandingPage() {
                             <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-white/5 font-bold">
                                 ❤️ Me gusta
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300 hover:bg-green-500/10 font-bold ml-auto">
+                            <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 font-bold ml-auto">
                                 🎁 Enviar propina
                             </Button>
                         </div>
@@ -106,10 +106,10 @@ export default function LandingPage() {
 
             {/* ── GIFTS ─────────────────────────────────────────── */}
             <section className="py-24 px-6 border-b border-gray-800/60 bg-[#0A0B0E] relative overflow-hidden">
-                <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-green-600/10 blur-[100px] rounded-full pointer-events-none" />
+                <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
                 
                 <div className="max-w-4xl mx-auto text-center relative z-10">
-                    <p className="text-xs font-bold tracking-widest uppercase text-green-500 mb-3">
+                    <p className="text-xs font-bold tracking-widest uppercase text-blue-500 mb-3">
                         Monetización Directa
                     </p>
                     <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
@@ -124,7 +124,7 @@ export default function LandingPage() {
                         {GIFTS.map((g) => (
                             <div
                                 key={g.label}
-                                className="flex flex-col items-center gap-2 px-6 py-5 rounded-2xl bg-[#15171C] border border-gray-800 hover:border-green-500/50 hover:bg-[#1A1C23] transition-all cursor-default w-32"
+                                className="flex flex-col items-center gap-2 px-6 py-5 rounded-2xl bg-[#15171C] border border-gray-800 hover:border-blue-500/50 hover:bg-[#1A1C23] transition-all cursor-default w-32"
                             >
                                 <span className="text-4xl drop-shadow-lg mb-2">{g.emoji}</span>
                                 <span className="text-xs font-bold text-gray-500 tracking-wide uppercase">{g.label}</span>
@@ -142,7 +142,7 @@ export default function LandingPage() {
                     <p className="text-gray-400 mb-10 text-lg">Eres dueño de tu contenido y de tus ganancias.</p>
 
                     <div className="bg-[#0A0B0E] border border-gray-800 rounded-[2rem] p-8 text-left shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full pointer-events-none"></div>
                         
                         <div className="flex items-end gap-2 mb-2">
                             <span className="text-6xl font-black text-white">$5</span>
@@ -160,7 +160,7 @@ export default function LandingPage() {
                                 'Panel de control y ganancias',
                             ].map(item => (
                                 <li key={item} className="flex items-start gap-4 text-gray-300 font-medium">
-                                    <span className="w-6 h-6 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✓</span>
+                                    <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✓</span>
                                     {item}
                                 </li>
                             ))}
@@ -177,7 +177,7 @@ export default function LandingPage() {
 
             <footer className="bg-[#0A0B0E] py-12 px-6 border-t border-gray-800/60">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-2xl font-bold text-white tracking-tight">bio<span className="text-green-500">.me</span></p>
+                    <p className="text-2xl font-bold text-white tracking-tight">bio<span className="text-blue-500">.me</span></p>
                     <p className="text-sm font-medium text-gray-600">© 2026 bio.me · Premium Social Feed</p>
                 </div>
             </footer>

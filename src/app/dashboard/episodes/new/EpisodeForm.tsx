@@ -125,7 +125,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
         }
     }
 
-    const inputCls = "w-full rounded-xl border border-gray-800 bg-[#15171C] text-white placeholder-gray-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500 focus:outline-none transition"
+    const inputCls = "w-full rounded-xl border border-gray-800 bg-[#15171C] text-white placeholder-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500 focus:outline-none transition"
 
     return (
         <form action={handleSubmit} className="space-y-6">
@@ -171,9 +171,9 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                 ) : (
                                     <label
                                         htmlFor="cover_image"
-                                        className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 hover:bg-[#101217] cursor-pointer transition group"
+                                        className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-blue-500/50 hover:bg-[#101217] cursor-pointer transition group"
                                     >
-                                        <ImagePlus size={24} className="text-gray-500 group-hover:text-green-500 transition mb-1.5" />
+                                        <ImagePlus size={24} className="text-gray-500 group-hover:text-blue-500 transition mb-1.5" />
                                         <span className="text-sm font-semibold text-gray-400 group-hover:text-white transition">Haz clic para agregar portada</span>
                                         <span className="text-xs text-gray-600 mt-0.5">JPG, PNG — hasta 5MB</span>
                                     </label>
@@ -184,7 +184,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                             {/* Preview */}
                             <div className="space-y-2">
                                 <label htmlFor="preview_text" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
-                                    Adelanto gratis <span className="normal-case font-medium text-green-500 ml-1">· visible para todos</span>
+                                    Adelanto gratis <span className="normal-case font-medium text-blue-500 ml-1">· visible para todos</span>
                                 </label>
                                 <textarea
                                     id="preview_text"
@@ -211,7 +211,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                         >
                                             <Monitor size={11} /> Vista previa
                                         </button>
-                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20 uppercase tracking-wider">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-wider">
                                             <Lock size={10} /> {monetization === 'free' ? 'Pública' : monetization === 'subscription' ? 'Solo suscriptores' : 'Pago único'}
                                         </span>
                                     </div>
@@ -225,8 +225,8 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                             {/* Chapter Soundtrack */}
                             <div className="space-y-2 border-t border-gray-800 pt-5">
                                 <label htmlFor="soundtrack_url" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
-                                    <Music size={12} className="text-green-500" />
-                                    Banda sonora <span className="normal-case font-medium text-green-500 ml-1">· nuevo en bio.me</span>
+                                    <Music size={12} className="text-blue-500" />
+                                    Banda sonora <span className="normal-case font-medium text-blue-500 ml-1">· nuevo en bio.me</span>
                                 </label>
                                 <p className="text-xs text-gray-500 -mt-1">
                                     Agrega la canción que acompaña este capítulo. Los lectores la escuchan mientras te leen.
@@ -257,7 +257,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                         <button
                                             type="button"
                                             onClick={() => postImagesRef.current?.click()}
-                                            className="text-xs font-bold text-green-500 hover:text-green-400 transition flex items-center gap-1"
+                                            className="text-xs font-bold text-blue-500 hover:text-blue-400 transition flex items-center gap-1"
                                         >
                                             <Upload size={12} /> Agregar más
                                         </button>
@@ -291,7 +291,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                             <button
                                                 type="button"
                                                 onClick={() => postImagesRef.current?.click()}
-                                                className="aspect-square rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 flex items-center justify-center text-gray-500 hover:text-green-500 transition"
+                                                className="aspect-square rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-blue-500/50 flex items-center justify-center text-gray-500 hover:text-blue-500 transition"
                                             >
                                                 <ImagePlus size={20} />
                                             </button>
@@ -301,7 +301,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                     <button
                                         type="button"
                                         onClick={() => postImagesRef.current?.click()}
-                                        className="w-full h-24 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:text-green-500 transition"
+                                        className="w-full h-24 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-blue-500/50 flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:text-blue-500 transition"
                                     >
                                         <ImagePlus size={20} />
                                         <span className="text-xs font-semibold">Agregar fotos</span>
@@ -339,8 +339,8 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                 Acceso y precio
                             </label>
 
-                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'free' ? 'border-green-500/60 bg-green-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
-                                <input type="radio" name="monetization" value="free" checked={monetization === 'free'} onChange={() => setMonetization('free')} className="mt-0.5 accent-green-500" />
+                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'free' ? 'border-blue-500/60 bg-blue-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                                <input type="radio" name="monetization" value="free" checked={monetization === 'free'} onChange={() => setMonetization('free')} className="mt-0.5 accent-blue-500" />
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 font-bold text-sm text-white">
                                         <Eye size={13} /> Gratis para todos
@@ -349,8 +349,8 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                 </div>
                             </label>
 
-                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'subscription' ? 'border-green-500/60 bg-green-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
-                                <input type="radio" name="monetization" value="subscription" checked={monetization === 'subscription'} onChange={() => setMonetization('subscription')} className="mt-0.5 accent-green-500" />
+                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'subscription' ? 'border-blue-500/60 bg-blue-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                                <input type="radio" name="monetization" value="subscription" checked={monetization === 'subscription'} onChange={() => setMonetization('subscription')} className="mt-0.5 accent-blue-500" />
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 font-bold text-sm text-white">
                                         <Lock size={13} /> Solo suscriptores
@@ -359,8 +359,8 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                 </div>
                             </label>
 
-                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'ppv' ? 'border-green-500/60 bg-green-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
-                                <input type="radio" name="monetization" value="ppv" checked={monetization === 'ppv'} onChange={() => setMonetization('ppv')} className="mt-0.5 accent-green-500" />
+                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'ppv' ? 'border-blue-500/60 bg-blue-500/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                                <input type="radio" name="monetization" value="ppv" checked={monetization === 'ppv'} onChange={() => setMonetization('ppv')} className="mt-0.5 accent-blue-500" />
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 font-bold text-sm text-white">
                                         <DollarSign size={13} /> Pago único
@@ -397,7 +397,7 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className="w-full font-bold h-12 rounded-xl bg-green-600 hover:bg-green-500 text-white transition-all shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full font-bold h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isPending ? (
                                     <>

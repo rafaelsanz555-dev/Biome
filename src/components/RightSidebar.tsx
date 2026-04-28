@@ -8,7 +8,7 @@ export function RightSidebar() {
             <section>
                 <div className="flex items-center justify-between mb-4">
                     <h4 className="font-bold text-sm text-gray-200 tracking-wide flex items-center gap-2">
-                        <TrendingUp size={16} className="text-green-500" />
+                        <TrendingUp size={16} className="text-blue-500" />
                         Historias en tendencia
                     </h4>
                 </div>
@@ -22,10 +22,10 @@ export function RightSidebar() {
                         />
                         <div className="flex-1">
                             <h5 className="text-sm font-semibold truncate text-white">Rommel Diaz</h5>
-                            <p className="text-[11px] text-gray-500 flex items-center gap-1">2,327 seguidores <CheckCircle size={10} className="text-green-500" /></p>
+                            <p className="text-[11px] text-gray-500 flex items-center gap-1">2,327 seguidores <CheckCircle size={10} className="text-blue-500" /></p>
                             <div className="flex items-center space-x-2 mt-1">
-                                <span className="text-green-500 font-bold text-xs">$3.3k+</span>
-                                <span className="px-1.5 py-0.5 bg-green-900/40 text-green-500 text-[8px] rounded uppercase font-bold">Deng</span>
+                                <span className="text-blue-500 font-bold text-xs">$3.3k+</span>
+                                <span className="px-1.5 py-0.5 bg-blue-900/40 text-blue-500 text-[8px] rounded uppercase font-bold">Deng</span>
                             </div>
                         </div>
                     </div>
@@ -38,10 +38,10 @@ export function RightSidebar() {
                         />
                         <div className="flex-1">
                             <h5 className="text-sm font-semibold truncate text-white">Laura Castillo</h5>
-                            <p className="text-[11px] text-gray-500 flex items-center gap-1">3,2k seguidores <CheckCircle size={10} className="text-green-500" /></p>
+                            <p className="text-[11px] text-gray-500 flex items-center gap-1">3,2k seguidores <CheckCircle size={10} className="text-blue-500" /></p>
                             <div className="flex items-center space-x-2 mt-1">
                                 <span className="text-yellow-500 font-bold text-xs flex items-center"><Crown size={10} className="mr-1" /> 2.669k</span>
-                                <span className="px-1.5 py-0.5 bg-green-900/40 text-green-500 text-[8px] rounded uppercase font-bold">Deng</span>
+                                <span className="px-1.5 py-0.5 bg-blue-900/40 text-blue-500 text-[8px] rounded uppercase font-bold">Deng</span>
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,7 @@ export function RightSidebar() {
                         </div>
                     </div>
                 </div>
-                <button className="w-full bg-[#1a4d3a] hover:bg-[#24634c] text-green-400 font-bold py-2 rounded-lg text-xs flex items-center justify-center space-x-2 transition">
+                <button className="w-full bg-[#1e40af] hover:bg-[#24634c] text-blue-400 font-bold py-2 rounded-lg text-xs flex items-center justify-center space-x-2 transition">
                     <span>Unlock story</span>
                     <Lock size={12} />
                 </button>
@@ -134,7 +134,7 @@ export function RightSidebar() {
                         </div>
                     </div>
                 </div>
-                <button className="w-full mt-3 bg-[#1a4d3a] hover:bg-[#24634c] py-2 rounded-lg text-xs font-bold text-green-400 transition">
+                <button className="w-full mt-3 bg-[#1e40af] hover:bg-[#24634c] py-2 rounded-lg text-xs font-bold text-blue-400 transition">
                     Desbloquear historia
                 </button>
             </section>

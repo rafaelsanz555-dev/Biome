@@ -64,7 +64,7 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
                     </h2>
                     <p className="text-sm text-gray-500">El theme cambia color, tipografía Y fondo. Los animados se mueven sutilmente mientras tu lector lee.</p>
                 </div>
-                {saved && <span className="text-sm text-green-400 font-bold flex items-center gap-1.5"><Check size={14} /> Aplicado</span>}
+                {saved && <span className="text-sm text-blue-400 font-bold flex items-center gap-1.5"><Check size={14} /> Aplicado</span>}
             </div>
 
             {/* Grid de themes oficiales */}
@@ -179,7 +179,7 @@ function ThemeCard({
             suppressHydrationWarning
             className={`group relative aspect-[4/5] rounded-xl overflow-hidden border-2 transition-all text-left ${
                 isSelected
-                    ? 'border-green-500 shadow-lg shadow-green-500/20 scale-[1.02]'
+                    ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[1.02]'
                     : 'border-transparent hover:border-gray-600 hover:scale-[1.02]'
             }`}
         >
@@ -188,7 +188,7 @@ function ThemeCard({
             {/* Mini composition de preview: título + accent */}
             <div className="absolute inset-0 p-3 flex flex-col justify-end">
                 <div className="space-y-1.5">
-                    <div className="h-1.5 w-12 rounded-full" style={{ backgroundColor: cfg.accent_color || '#22C55E' }} />
+                    <div className="h-1.5 w-12 rounded-full" style={{ backgroundColor: cfg.accent_color || '#2563EB' }} />
                     <p
                         className="text-white text-sm font-bold leading-tight line-clamp-2"
                         style={{ fontFamily, color: cfg.is_light ? '#0F172A' : '#fff' }}
@@ -212,7 +212,7 @@ function ThemeCard({
 
             {/* Selected indicator */}
             {isSelected && (
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
+                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
                     <Check size={14} className="text-white stroke-[3]" />
                 </div>
             )}
@@ -239,7 +239,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
 
     // Common state
     const [name, setName] = useState('Mi theme')
-    const [accent, setAccent] = useState('#22C55E')
+    const [accent, setAccent] = useState('#2563EB')
     const [font, setFont] = useState('playfair')
     const [overlay, setOverlay] = useState<'dark' | 'medium' | 'light'>('dark')
     const [uploading, setUploading] = useState(false)
@@ -423,7 +423,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             </div>
                             {urlValid === 'ok' && urlPreview && (
                                 <div>
-                                    <p className="text-[11px] text-green-400 mb-2 flex items-center gap-1.5"><Check size={12} /> Imagen cargada correctamente</p>
+                                    <p className="text-[11px] text-blue-400 mb-2 flex items-center gap-1.5"><Check size={12} /> Imagen cargada correctamente</p>
                                     <div className="aspect-video rounded-xl overflow-hidden bg-[#0A0B0E] border border-gray-800">
                                         <img src={urlPreview} alt="" className="w-full h-full object-cover" />
                                     </div>

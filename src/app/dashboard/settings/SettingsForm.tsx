@@ -76,7 +76,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                         {previewUrl ? (
                             <img src={previewUrl} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center font-bold text-2xl text-green-500 bg-green-500/10">
+                            <div className="w-full h-full flex items-center justify-center font-bold text-2xl text-blue-500 bg-blue-500/10">
                                 {initial}
                             </div>
                         )}
@@ -92,7 +92,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                         />
                     </div>
                     <div>
-                        <Label htmlFor="avatar" className="font-bold text-green-500 hover:text-green-400 cursor-pointer text-sm mb-1 inline-block">
+                        <Label htmlFor="avatar" className="font-bold text-blue-500 hover:text-blue-400 cursor-pointer text-sm mb-1 inline-block">
                             Cambiar imagen
                         </Label>
                         <p className="text-xs text-gray-500">JPG, GIF o PNG. Max 2MB.</p>
@@ -112,7 +112,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                             name="full_name"
                             defaultValue={profile?.full_name || ''}
                             placeholder="Tu Nombre o Seudónimo"
-                            className="bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-green-500 h-12"
+                            className="bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-blue-500 h-12"
                         />
                     </div>
 
@@ -123,7 +123,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                             name="bio"
                             rows={4}
                             defaultValue={profile?.bio || ''}
-                            className="w-full rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder:text-gray-600 outline-none focus-visible:ring-1 focus-visible:ring-green-500 p-4 resize-none transition-all"
+                            className="w-full rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder:text-gray-600 outline-none focus-visible:ring-1 focus-visible:ring-blue-500 p-4 resize-none transition-all"
                             placeholder="Cuéntale a tus fans sobre ti..."
                         />
                         <p className="text-xs text-gray-600 text-right">Visible en tu perfil público.</p>
@@ -147,7 +147,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                             min="0.99"
                             max="999.99"
                             defaultValue={creatorInfo?.subscription_price || "4.99"}
-                            className="pl-8 bg-[#0A0B0E] border-gray-800 text-white font-bold h-12 focus-visible:ring-green-500"
+                            className="pl-8 bg-[#0A0B0E] border-gray-800 text-white font-bold h-12 focus-visible:ring-blue-500"
                         />
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
@@ -164,7 +164,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
             )}
 
             {successMsg && (
-                <div className="flex items-center gap-3 text-sm font-bold text-green-400 bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                <div className="flex items-center gap-3 text-sm font-bold text-blue-400 bg-blue-500/10 p-4 rounded-xl border border-blue-500/20">
                     <CheckCircle2 size={18} /> {successMsg}
                 </div>
             )}
@@ -174,7 +174,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                 <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-green-600 hover:bg-green-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-green-500/20 transition-all flex items-center gap-2"
+                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"
                 >
                     <Save size={18} />
                     {isPending ? 'Guardando...' : 'Guardar Cambios'}

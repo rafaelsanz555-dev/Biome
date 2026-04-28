@@ -72,7 +72,7 @@ export default async function ModerationPage() {
                                     {r.description && <p className="text-sm text-gray-300 mb-3">{r.description}</p>}
                                     <div className="flex gap-2">
                                         <form action={resolveReport.bind(null, r.id)}>
-                                            <button className="px-3 py-1.5 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/25 text-xs font-semibold transition">Resolver</button>
+                                            <button className="px-3 py-1.5 rounded-lg bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 text-xs font-semibold transition">Resolver</button>
                                         </form>
                                         <form action={dismissReport.bind(null, r.id)}>
                                             <button className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition">Descartar</button>
@@ -100,13 +100,13 @@ export default async function ModerationPage() {
                                         <span className="text-[10px] text-gray-600">{new Date(f.created_at).toLocaleDateString('es-ES')}</span>
                                     </div>
                                     {f.episodes && (
-                                        <Link href={`/${f.episodes.profiles?.username}/${f.episode_id}`} className="text-sm text-white hover:text-green-400 font-semibold block mb-2">
+                                        <Link href={`/${f.episodes.profiles?.username}/${f.episode_id}`} className="text-sm text-white hover:text-blue-400 font-semibold block mb-2">
                                             {f.episodes.title}
                                         </Link>
                                     )}
                                     <pre className="text-[10px] text-gray-500 bg-black/30 p-2 rounded overflow-x-auto mb-3">{JSON.stringify(f.evidence, null, 2).slice(0, 300)}</pre>
                                     <form action={resolveFlag.bind(null, f.id)}>
-                                        <button className="px-3 py-1.5 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/25 text-xs font-semibold transition">Marcar revisado</button>
+                                        <button className="px-3 py-1.5 rounded-lg bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 text-xs font-semibold transition">Marcar revisado</button>
                                     </form>
                                 </div>
                             ))}

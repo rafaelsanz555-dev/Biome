@@ -42,7 +42,7 @@ export function AutosaveIndicator({ triggerKey, onSave, debounceMs = 4000 }: Pro
         <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium">
             {status === 'idle' && lastSavedAt && (
                 <>
-                    <Check size={12} className="text-green-500" />
+                    <Check size={12} className="text-blue-500" />
                     <span>Guardado · {lastSavedAt.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
                 </>
             )}
@@ -60,7 +60,7 @@ export function AutosaveIndicator({ triggerKey, onSave, debounceMs = 4000 }: Pro
             )}
             {status === 'saved' && (
                 <>
-                    <Check size={12} className="text-green-500" />
+                    <Check size={12} className="text-blue-500" />
                     <span>Guardado</span>
                 </>
             )}

@@ -47,22 +47,22 @@ export default async function AudiencePage() {
                     <p className="text-xs text-gray-500">Total gratis</p>
                 </div>
 
-                <div className="rounded-2xl p-5 bg-gradient-to-br from-green-900/40 to-[#15171C] border border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
+                <div className="rounded-2xl p-5 bg-gradient-to-br from-blue-900/40 to-[#15171C] border border-blue-500/30 shadow-[0_0_20px_rgba(37, 99, 235,0.1)]">
                     <div className="flex items-start justify-between mb-3">
-                        <p className="text-xs font-bold uppercase tracking-wider text-green-400">Suscriptores</p>
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-500/20">
-                            <Star size={14} className="text-green-400" />
+                        <p className="text-xs font-bold uppercase tracking-wider text-blue-400">Suscriptores</p>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/20">
+                            <Star size={14} className="text-blue-400" />
                         </div>
                     </div>
                     <div className="text-3xl font-bold text-white mb-1">{subsCount || 0}</div>
-                    <p className="text-xs text-green-500/80">Pagando activamente</p>
+                    <p className="text-xs text-blue-500/80">Pagando activamente</p>
                 </div>
 
                 <div className="rounded-2xl p-5 bg-[#15171C] border border-gray-800">
                     <div className="flex items-start justify-between mb-3">
                         <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Conversión</p>
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-500/10">
-                            <TrendingUp size={14} className="text-green-500" />
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10">
+                            <TrendingUp size={14} className="text-blue-500" />
                         </div>
                     </div>
                     <div className="text-3xl font-bold text-white mb-1">
@@ -78,7 +78,7 @@ export default async function AudiencePage() {
                 <div className="rounded-2xl overflow-hidden bg-[#15171C] border border-gray-800">
                     <div className="px-5 pt-5 pb-4 border-b border-gray-800">
                         <h2 className="font-bold text-white text-base mb-0.5 flex items-center gap-2">
-                            <Star size={16} className="text-green-500" />
+                            <Star size={16} className="text-blue-500" />
                             Suscriptores activos
                         </h2>
                         <p className="text-xs text-gray-500">Los que pagan por tu contenido</p>
@@ -92,7 +92,7 @@ export default async function AudiencePage() {
                             <div className="space-y-2">
                                 {subs.map((s: any) => (
                                     <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#0A0B0E] border border-gray-800/80">
-                                        <div className="w-9 h-9 rounded-full bg-green-500/10 flex items-center justify-center text-sm font-bold text-green-400 shrink-0 overflow-hidden">
+                                        <div className="w-9 h-9 rounded-full bg-blue-500/10 flex items-center justify-center text-sm font-bold text-blue-400 shrink-0 overflow-hidden">
                                             {s.profiles?.avatar_url ? (
                                                 <img src={s.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
                                             ) : (
@@ -105,7 +105,7 @@ export default async function AudiencePage() {
                                             </p>
                                             <p className="text-xs text-gray-500 truncate">@{s.profiles?.username || 'anónimo'}</p>
                                         </div>
-                                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-green-500/10 text-green-400 font-bold uppercase tracking-wider">
+                                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 font-bold uppercase tracking-wider">
                                             Suscrito
                                         </span>
                                     </div>

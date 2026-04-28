@@ -102,7 +102,7 @@ const FEATURED = [
 function Badge({ type }: { type: string }) {
     const styles: Record<string, string> = {
         free: 'bg-yellow-600/30 text-yellow-500 border-yellow-500/20',
-        series: 'bg-green-600/30 text-green-400 border-green-500/20',
+        series: 'bg-blue-600/30 text-blue-400 border-blue-500/20',
         top: 'bg-red-900/30 text-red-400 border-red-500/20',
         exclusive: 'bg-purple-600/30 text-purple-400 border-purple-500/20',
     }
@@ -164,7 +164,7 @@ export default async function DashboardHome() {
         <div className="w-full">
             <div className="px-8 pt-6">
                 <div className="flex items-center space-x-8 mb-6 border-b border-[#262626] overflow-x-auto whitespace-nowrap">
-                    <button className="pb-4 text-green-500 border-b-2 border-green-500 font-medium text-sm">Para ti</button>
+                    <button className="pb-4 text-blue-500 border-b-2 border-blue-500 font-medium text-sm">Para ti</button>
                     <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Trending</button>
                     <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Nuevas voces</button>
                     <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Historias reales</button>
@@ -188,7 +188,7 @@ export default async function DashboardHome() {
                 {feed.map((ep: any, idx: number) => {
                     const href = ep.realUrl || `/${ep.handle}`
                     const AvatarFallback = () => (
-                        <div className="w-full h-full flex items-center justify-center bg-green-900/40 text-green-400 font-bold text-sm">
+                        <div className="w-full h-full flex items-center justify-center bg-blue-900/40 text-blue-400 font-bold text-sm">
                             {(ep.author || '?').charAt(0).toUpperCase()}
                         </div>
                     )
@@ -231,7 +231,7 @@ export default async function DashboardHome() {
                                 </Link>
                                 <div className="p-5 bg-[#242424] border-t border-[#333]">
                                     <Link href={href}>
-                                        <button className="w-full bg-[#1a4d3a] hover:bg-[#24634c] text-green-400 font-bold py-3.5 rounded-xl transition text-base tracking-wide shadow-lg border border-green-500/20">
+                                        <button className="w-full bg-[#1e40af] hover:bg-[#24634c] text-blue-400 font-bold py-3.5 rounded-xl transition text-base tracking-wide shadow-lg border border-blue-500/20">
                                             Leer episodio
                                         </button>
                                     </Link>
@@ -245,11 +245,11 @@ export default async function DashboardHome() {
                         <article key={ep.id} className="bg-[#1E1E1E] border border-[#2D2D2D] rounded-2xl overflow-hidden shadow-2xl p-6 hover:border-[#3D3D3D] transition">
                             <div className="flex items-center justify-between mb-4">
                                 <Link href={`/${ep.handle}`} className="flex items-center space-x-3 group">
-                                    <div className="w-12 h-12 rounded-full border border-gray-600 overflow-hidden bg-[#15171C] group-hover:border-green-500 transition">
+                                    <div className="w-12 h-12 rounded-full border border-gray-600 overflow-hidden bg-[#15171C] group-hover:border-blue-500 transition">
                                         {ep.avatar ? <img className="w-full h-full object-cover" src={ep.avatar} alt="" /> : <AvatarFallback />}
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-white group-hover:text-green-400 transition">{ep.author}</h3>
+                                        <h3 className="font-bold text-white group-hover:text-blue-400 transition">{ep.author}</h3>
                                         <p className="text-xs text-gray-500">{ep.time} · @{ep.handle}</p>
                                     </div>
                                 </Link>
@@ -261,7 +261,7 @@ export default async function DashboardHome() {
                             </div>
 
                             <Link href={href}>
-                                <h2 className="text-xl font-bold text-white mb-2 leading-snug hover:text-green-400 transition">{ep.title}</h2>
+                                <h2 className="text-xl font-bold text-white mb-2 leading-snug hover:text-blue-400 transition">{ep.title}</h2>
                             </Link>
                             {ep.preview && (
                                 <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">{ep.preview}</p>
@@ -274,8 +274,8 @@ export default async function DashboardHome() {
                                         {ep.badges.includes('exclusive') && !ep.badges.includes('free') && (
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2">
-                                                    <Lock size={16} className="text-green-400" />
-                                                    <span className="text-green-400 font-bold text-sm">Solo suscriptores</span>
+                                                    <Lock size={16} className="text-blue-400" />
+                                                    <span className="text-blue-400 font-bold text-sm">Solo suscriptores</span>
                                                 </div>
                                             </div>
                                         )}
@@ -295,7 +295,7 @@ export default async function DashboardHome() {
                                         <Gift size={14} /> {ep.gifts}
                                     </span>
                                 </div>
-                                <Link href={href} className="text-xs font-bold text-green-500 hover:text-green-400 transition">
+                                <Link href={href} className="text-xs font-bold text-blue-500 hover:text-blue-400 transition">
                                     Leer →
                                 </Link>
                             </div>

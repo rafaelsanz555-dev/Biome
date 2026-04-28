@@ -34,7 +34,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
     return (
         <Link href={`/${creator.username}`} className="group block">
-            <div className="bg-[#15171C] rounded-2xl overflow-hidden border border-gray-800 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(34,197,94,0.15)] group-hover:border-green-500/30">
+            <div className="bg-[#15171C] rounded-2xl overflow-hidden border border-gray-800 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(37, 99, 235,0.15)] group-hover:border-blue-500/30">
                 {/* Cover Header */}
                 <div
                     className="relative h-28 flex flex-col justify-end p-4"
@@ -42,7 +42,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                 >
                     {/* Badge */}
                     <div className="absolute top-3 right-3">
-                        <div className="text-[10px] font-bold px-3 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/20 backdrop-blur-sm shadow-sm">
+                        <div className="text-[10px] font-bold px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/20 backdrop-blur-sm shadow-sm">
                             Primer post Gratis
                         </div>
                     </div>
@@ -54,7 +54,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                         {creator.avatar_url ? (
                             <img src={creator.avatar_url} alt={creator.username} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center font-bold text-xl bg-green-600/20 text-green-500">
+                            <div className="w-full h-full flex items-center justify-center font-bold text-xl bg-blue-600/20 text-blue-500">
                                 {initial}
                             </div>
                         )}
@@ -64,7 +64,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                 {/* Card Body */}
                 <div className="p-5 pt-3">
                     <div className="mb-3">
-                        <p className="font-bold text-white leading-tight truncate text-lg group-hover:text-green-400 transition-colors">
+                        <p className="font-bold text-white leading-tight truncate text-lg group-hover:text-blue-400 transition-colors">
                             {creator.full_name || creator.username}
                         </p>
                         <p className="text-xs font-medium text-gray-500">
@@ -80,7 +80,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                         <span className="text-xs font-bold px-3 py-1.5 rounded-lg bg-white/5 text-gray-300">
                             ${price}/mes
                         </span>
-                        <span className="text-xs font-bold text-green-500 transition-all group-hover:translate-x-1">
+                        <span className="text-xs font-bold text-blue-500 transition-all group-hover:translate-x-1">
                             Ver Feed →
                         </span>
                     </div>

@@ -38,7 +38,7 @@ export default async function BillingPage({
         <div className="space-y-6">
 
             {success && (
-                <div className="p-4 rounded-xl flex items-center gap-3 bg-green-500/10 border border-green-500/20 text-green-400">
+                <div className="p-4 rounded-xl flex items-center gap-3 bg-blue-500/10 border border-blue-500/20 text-blue-400">
                     <Lock size={18} />
                     <span className="font-bold text-sm">¡Pago exitoso! El acceso ha sido concedido.</span>
                 </div>
@@ -62,15 +62,15 @@ export default async function BillingPage({
                     <p className="text-xs text-gray-500">Antes de comisiones de plataforma</p>
                 </div>
 
-                <div className="rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-green-900/40 to-[#15171C] border border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
+                <div className="rounded-2xl p-5 relative overflow-hidden bg-gradient-to-br from-blue-900/40 to-[#15171C] border border-blue-500/30 shadow-[0_0_20px_rgba(37, 99, 235,0.1)]">
                     <div className="flex items-start justify-between mb-3 relative z-10">
-                        <p className="text-xs font-bold uppercase tracking-wider text-green-400">Ganancias Netas</p>
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-500/20">
-                            <CreditCard size={14} className="text-green-400" />
+                        <p className="text-xs font-bold uppercase tracking-wider text-blue-400">Ganancias Netas</p>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/20">
+                            <CreditCard size={14} className="text-blue-400" />
                         </div>
                     </div>
                     <div className="text-3xl font-bold mb-1 text-white relative z-10">${totalNet.toFixed(2)}</div>
-                    <p className="text-xs text-green-500/80 relative z-10">Lo que te llevas a casa</p>
+                    <p className="text-xs text-blue-500/80 relative z-10">Lo que te llevas a casa</p>
                 </div>
 
                 <div className="rounded-2xl p-5 bg-[#15171C] border border-gray-800 shadow-md">
@@ -112,7 +112,7 @@ export default async function BillingPage({
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-sm font-bold text-green-400">+${Number(g.writer_earnings).toFixed(2)}</p>
+                                            <p className="text-sm font-bold text-blue-400">+${Number(g.writer_earnings).toFixed(2)}</p>
                                             <p className="text-[10px] text-gray-600">Enviado: ${Number(g.amount).toFixed(2)}</p>
                                         </div>
                                     </div>
@@ -125,7 +125,7 @@ export default async function BillingPage({
                 <div className="rounded-2xl overflow-hidden bg-[#15171C] border border-gray-800 shadow-md">
                     <div className="px-5 pt-5 pb-4 border-b border-gray-800">
                         <h2 className="font-bold text-white text-base mb-0.5 flex items-center gap-2">
-                            <CreditCard size={16} className="text-green-500" /> 
+                            <CreditCard size={16} className="text-blue-500" /> 
                             Suscripciones y PPV
                         </h2>
                         <p className="text-xs text-gray-500">Últimas 20 transacciones</p>
@@ -141,14 +141,14 @@ export default async function BillingPage({
                                     <div key={tx.id} className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800/80">
                                         <div>
                                             <p className="text-sm font-bold text-white capitalize flex items-center gap-2">
-                                                {tx.transaction_type === 'subscription' && <Lock size={12} className="text-green-500" />}
+                                                {tx.transaction_type === 'subscription' && <Lock size={12} className="text-blue-500" />}
                                                 {tx.transaction_type === 'subscription' ? 'Suscripción Mensual' : tx.transaction_type === 'gift' ? 'Regalo' : 'Post Exclusivo (PPV)'}
                                             </p>
                                             <p className="text-xs text-gray-500">
                                                 de @{tx.profiles?.username || 'Fan'} · {new Date(tx.created_at).toLocaleDateString('es-ES')}
                                             </p>
                                         </div>
-                                        <span className="text-sm font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20">
+                                        <span className="text-sm font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md border border-blue-500/20">
                                             +${Number(tx.amount).toFixed(2)}
                                         </span>
                                     </div>

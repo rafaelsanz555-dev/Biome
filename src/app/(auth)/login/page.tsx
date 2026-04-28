@@ -29,7 +29,7 @@ export default async function LoginPage({
 
                 {/* Logo */}
                 <div className="text-center space-y-2">
-                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-green-500">
+                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-blue-500">
                         b<span className="text-white">.</span>me
                     </Link>
                     <p className="text-gray-500 font-medium tracking-wide text-sm">
@@ -39,7 +39,7 @@ export default async function LoginPage({
 
                 {/* Card */}
                 <div className="w-full rounded-2xl p-8 bg-[#15171C] border border-gray-800 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 blur-3xl rounded-full pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full pointer-events-none"></div>
 
                     <div className="mb-8 space-y-2 text-center relative z-10">
                         <h1 className="text-2xl font-bold text-white tracking-tight">
@@ -64,7 +64,7 @@ export default async function LoginPage({
                                 placeholder="tu@correo.com"
                                 required
                                 autoFocus
-                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-green-500"
+                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-blue-500"
                             />
                         </div>
 
@@ -79,7 +79,7 @@ export default async function LoginPage({
                                 placeholder={isRegistro ? 'Mínimo 6 caracteres' : '••••••••'}
                                 required
                                 minLength={6}
-                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-green-500"
+                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-blue-500"
                             />
                         </div>
 
@@ -91,7 +91,7 @@ export default async function LoginPage({
 
                         <Button
                             type="submit"
-                            className="w-full h-12 font-bold text-base transition-all bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-[0_0_20px_-5px_rgba(34,197,94,0.4)]"
+                            className="w-full h-12 font-bold text-base transition-all bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-[0_0_20px_-5px_rgba(37, 99, 235,0.4)]"
                         >
                             {isRegistro ? 'Crear cuenta' : 'Entrar'}
                         </Button>
@@ -101,14 +101,14 @@ export default async function LoginPage({
                         {isRegistro ? (
                             <p className="text-sm text-gray-500">
                                 ¿Ya tienes cuenta?{' '}
-                                <Link href="/login" className="font-bold text-green-500 hover:text-green-400 hover:underline">
+                                <Link href="/login" className="font-bold text-blue-500 hover:text-blue-400 hover:underline">
                                     Inicia sesión
                                 </Link>
                             </p>
                         ) : (
                             <p className="text-sm text-gray-500">
                                 ¿No tienes cuenta?{' '}
-                                <Link href="/login?mode=registro" className="font-bold text-green-500 hover:text-green-400 hover:underline">
+                                <Link href="/login?mode=registro" className="font-bold text-blue-500 hover:text-blue-400 hover:underline">
                                     Regístrate gratis
                                 </Link>
                             </p>

@@ -28,7 +28,7 @@ export async function ResumeReading() {
         <div className="rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#0A0B0E] p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <BookOpen size={16} className="text-green-400" />
+                    <BookOpen size={16} className="text-blue-400" />
                     <h3 className="text-sm font-bold text-white">Continúa donde lo dejaste</h3>
                 </div>
                 <span className="text-[10px] text-gray-500">{bookmarks.length} {bookmarks.length === 1 ? 'historia' : 'historias'}</span>
@@ -49,25 +49,25 @@ export async function ResumeReading() {
                                 {ep.cover_image_url ? (
                                     <img src={ep.cover_image_url} alt="" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-green-900/40 to-[#0F1114]" />
+                                    <div className="w-full h-full bg-gradient-to-br from-blue-900/40 to-[#0F1114]" />
                                 )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-white line-clamp-2 group-hover:text-green-400 transition">
+                                <p className="text-sm font-bold text-white line-clamp-2 group-hover:text-blue-400 transition">
                                     {ep.title}
                                 </p>
                                 <p className="text-[11px] text-gray-500 mt-0.5">{author}</p>
                                 <div className="mt-2 flex items-center gap-2">
                                     <div className="flex-1 h-1 rounded-full bg-gray-800 overflow-hidden">
                                         <div
-                                            className="h-full bg-green-500 transition-all"
+                                            className="h-full bg-blue-500 transition-all"
                                             style={{ width: `${b.reached_percent}%` }}
                                         />
                                     </div>
                                     <span className="text-[10px] text-gray-400 font-mono">{Math.round(b.reached_percent)}%</span>
                                 </div>
                             </div>
-                            <ArrowRight size={14} className="text-gray-600 group-hover:text-green-400 transition self-center shrink-0" />
+                            <ArrowRight size={14} className="text-gray-600 group-hover:text-blue-400 transition self-center shrink-0" />
                         </Link>
                     )
                 })}

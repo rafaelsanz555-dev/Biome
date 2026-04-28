@@ -24,7 +24,7 @@ export default async function NewEpisodePage() {
     return (
         <div className="space-y-6 p-6 md:p-8">
             <div>
-                <Link href="/dashboard/episodes" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-green-400 mb-4 transition">
+                <Link href="/dashboard/episodes" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-blue-400 mb-4 transition">
                     <ChevronLeft size={14} /> Volver a mis publicaciones
                 </Link>
                 <h1 className="text-3xl font-bold text-white mb-1">Nuevo Episodio</h1>

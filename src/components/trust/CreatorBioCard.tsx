@@ -80,11 +80,11 @@ export function CreatorBioCard({
 
             {/* Why I write — manifesto del autor */}
             {whyIWrite && (
-                <div className="rounded-xl border border-green-500/15 bg-gradient-to-br from-green-500/5 to-transparent p-5">
+                <div className="rounded-xl border border-blue-500/15 bg-gradient-to-br from-blue-500/5 to-transparent p-5">
                     <div className="flex items-start gap-3">
-                        <Quote className="text-green-400/60 shrink-0 mt-0.5" size={18} />
+                        <Quote className="text-blue-400/60 shrink-0 mt-0.5" size={18} />
                         <div>
-                            <p className="text-[10px] uppercase tracking-wider font-bold text-green-400 mb-1.5">Por qué cuento mi historia</p>
+                            <p className="text-[10px] uppercase tracking-wider font-bold text-blue-400 mb-1.5">Por qué cuento mi historia</p>
                             <p className="text-base text-gray-200 leading-relaxed italic" style={{ fontFamily: 'Georgia, serif' }}>
                                 {whyIWrite}
                             </p>

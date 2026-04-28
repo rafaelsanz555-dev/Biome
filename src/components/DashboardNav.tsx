@@ -67,7 +67,7 @@ export function DashboardNav({ isCreator, username }: DashboardNavProps) {
                 title={link.label}
                 className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
                     isActive
-                        ? 'bg-white/5 border-l-4 border-green-500 text-white'
+                        ? 'bg-white/5 border-l-4 border-blue-500 text-white'
                         : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
                 }`}
             >
@@ -94,18 +94,18 @@ export function DashboardNav({ isCreator, username }: DashboardNavProps) {
                         href={`/${username}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-gradient-to-br from-green-500/15 to-emerald-700/10 border border-green-500/20 text-white hover:from-green-500/25 hover:to-emerald-700/15 transition group"
+                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-gradient-to-br from-blue-500/15 to-blue-700/10 border border-blue-500/20 text-white hover:from-blue-500/25 hover:to-blue-700/15 transition group"
                     >
                         <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
-                                <UserCircle size={16} className="text-green-400" />
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+                                <UserCircle size={16} className="text-blue-400" />
                             </div>
                             <div className="min-w-0">
                                 <p className="text-xs font-bold leading-tight">Ver mi perfil</p>
                                 <p className="text-[10px] text-gray-400 truncate">bio.me/{username}</p>
                             </div>
                         </div>
-                        <ExternalLink size={12} className="text-gray-500 group-hover:text-green-400 transition shrink-0" />
+                        <ExternalLink size={12} className="text-gray-500 group-hover:text-blue-400 transition shrink-0" />
                     </Link>
                 </div>
             )}

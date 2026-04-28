@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-    publishing: 'bg-green-400',
+    publishing: 'bg-blue-400',
     paused: 'bg-amber-400',
     completed: 'bg-blue-400',
     planning: 'bg-violet-400',

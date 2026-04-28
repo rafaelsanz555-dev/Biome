@@ -36,7 +36,7 @@ export function ReaderRenderer({ content }: ReaderRendererProps) {
 
     return (
         <div
-            className="bio-reader-content selection:bg-green-500/40 selection:text-white"
+            className="bio-reader-content selection:bg-blue-500/40 selection:text-white"
             data-reader-content
             dangerouslySetInnerHTML={{ __html: html }}
         />

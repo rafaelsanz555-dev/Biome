@@ -29,7 +29,7 @@ export default function OnboardingPage() {
             <div className="w-full max-w-md flex flex-col items-center space-y-8 relative z-10">
 
                 <div className="text-center">
-                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-green-500">
+                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-blue-500">
                         bio<span className="text-white">.me</span>
                     </Link>
                     <p className="text-gray-500 font-medium tracking-wide text-sm mt-1">
@@ -54,7 +54,7 @@ export default function OnboardingPage() {
                             <label htmlFor="username" className="text-sm font-bold text-gray-300">
                                 Nombre de usuario
                             </label>
-                            <div className="flex rounded-xl overflow-hidden bg-[#1A1C23] border border-gray-700 focus-within:border-green-500/50 transition">
+                            <div className="flex rounded-xl overflow-hidden bg-[#1A1C23] border border-gray-700 focus-within:border-blue-500/50 transition">
                                 <span className="inline-flex items-center px-3 text-xs font-medium shrink-0 text-gray-500 bg-[#0A0B0E] border-r border-gray-700">
                                     bio.me/@
                                 </span>
@@ -89,19 +89,19 @@ export default function OnboardingPage() {
                                     onClick={() => setSelectedRole('creator')}
                                     className={`relative flex flex-col gap-2 p-4 rounded-xl transition-all text-left ${
                                         selectedRole === 'creator'
-                                            ? 'border-2 border-green-500 bg-green-500/10 shadow-lg shadow-green-500/20 scale-[1.02]'
+                                            ? 'border-2 border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/20 scale-[1.02]'
                                             : 'border-2 border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
                                     }`}
                                 >
                                     {selectedRole === 'creator' && (
-                                        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
                                             <Check size={12} className="text-black stroke-[3]" />
                                         </div>
                                     )}
                                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                                        selectedRole === 'creator' ? 'bg-green-500/20' : 'bg-gray-800/50'
+                                        selectedRole === 'creator' ? 'bg-blue-500/20' : 'bg-gray-800/50'
                                     }`}>
-                                        <PenLine size={17} className={selectedRole === 'creator' ? 'text-green-400' : 'text-gray-400'} />
+                                        <PenLine size={17} className={selectedRole === 'creator' ? 'text-blue-400' : 'text-gray-400'} />
                                     </div>
                                     <div>
                                         <div className={`text-sm font-bold ${selectedRole === 'creator' ? 'text-white' : 'text-gray-300'}`}>
@@ -118,19 +118,19 @@ export default function OnboardingPage() {
                                     onClick={() => setSelectedRole('reader')}
                                     className={`relative flex flex-col gap-2 p-4 rounded-xl transition-all text-left ${
                                         selectedRole === 'reader'
-                                            ? 'border-2 border-green-500 bg-green-500/10 shadow-lg shadow-green-500/20 scale-[1.02]'
+                                            ? 'border-2 border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/20 scale-[1.02]'
                                             : 'border-2 border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
                                     }`}
                                 >
                                     {selectedRole === 'reader' && (
-                                        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                        <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
                                             <Check size={12} className="text-black stroke-[3]" />
                                         </div>
                                     )}
                                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                                        selectedRole === 'reader' ? 'bg-green-500/20' : 'bg-gray-800/50'
+                                        selectedRole === 'reader' ? 'bg-blue-500/20' : 'bg-gray-800/50'
                                     }`}>
-                                        <BookOpen size={17} className={selectedRole === 'reader' ? 'text-green-400' : 'text-gray-400'} />
+                                        <BookOpen size={17} className={selectedRole === 'reader' ? 'text-blue-400' : 'text-gray-400'} />
                                     </div>
                                     <div>
                                         <div className={`text-sm font-bold ${selectedRole === 'reader' ? 'text-white' : 'text-gray-300'}`}>
@@ -154,7 +154,7 @@ export default function OnboardingPage() {
                         <button
                             type="submit"
                             disabled={pending}
-                            className="w-full h-12 font-bold text-sm tracking-wide bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-lg shadow-green-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full h-12 font-bold text-sm tracking-wide bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {pending ? 'Guardando...' : 'Empezar en bio.me →'}
                         </button>

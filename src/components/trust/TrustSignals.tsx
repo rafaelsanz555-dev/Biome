@@ -20,7 +20,7 @@ const FREQUENCY_LABEL: Record<string, string> = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-    active: { label: 'Serie activa', color: 'text-green-400 bg-green-500/10 border-green-500/20', icon: BookOpen },
+    active: { label: 'Serie activa', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: BookOpen },
     paused: { label: 'En pausa', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20', icon: Pause },
     completed: { label: 'Completa', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: ShieldCheck },
     planning: { label: 'En preparación', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20', icon: Sparkles },
@@ -39,7 +39,7 @@ export function TrustSignals({
         return (
             <div className="flex items-center gap-2 flex-wrap text-[11px]">
                 {isVerified && (
-                    <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                    <span className="inline-flex items-center gap-1 text-blue-400 font-semibold">
                         <ShieldCheck size={12} /> Verificado
                     </span>
                 )}
@@ -64,8 +64,8 @@ export function TrustSignals({
             {/* Verified */}
             {isVerified && (
                 <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                        <ShieldCheck className="text-emerald-400" size={16} />
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="text-blue-400" size={16} />
                     </div>
                     <div className="flex-1">
                         <p className="text-sm font-semibold text-white">Storyteller verificado</p>

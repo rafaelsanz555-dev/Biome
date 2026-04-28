@@ -40,13 +40,13 @@ export default async function EpisodesPage() {
 
             {!episodes || episodes.length === 0 ? (
                 <div className="p-14 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-green-500/10">
-                        <PenLine size={22} className="text-green-500" />
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-blue-500/10">
+                        <PenLine size={22} className="text-blue-500" />
                     </div>
                     <p className="text-xl font-bold mb-2 text-white">Sin publicaciones todavía</p>
                     <p className="text-sm mb-6 text-gray-400">Sube post y conecta con tus fans.</p>
                     <Link href="/dashboard/episodes/new">
-                        <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-green-600 text-white hover:bg-green-500 transition-colors shadow-lg shadow-green-500/20">
+                        <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
                             <PlusCircle size={15} />
                             Crear primer post
                         </button>
@@ -63,7 +63,7 @@ export default async function EpisodesPage() {
                                 <div className="flex flex-wrap items-center gap-2 mb-1">
                                     <h2 className="font-bold text-white text-base truncate">{episode.title}</h2>
                                     {episode.is_published ? (
-                                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-md bg-green-500/10 text-green-400 border border-green-500/20">Publicado</span>
+                                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">Publicado</span>
                                     ) : (
                                         <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-md bg-gray-800 text-gray-400">Borrador</span>
                                     )}
@@ -75,7 +75,7 @@ export default async function EpisodesPage() {
                             </div>
                             <div className="pb-4 sm:pb-0 px-5 sm:px-6 flex items-center gap-4 shrink-0">
                                 {episode.is_subscription_only ? (
-                                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-xs bg-green-500/10 text-green-400 border border-green-500/20">
+                                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-bold text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20">
                                         <Lock size={10} />Exclusivo
                                     </span>
                                 ) : episode.ppv_price ? (
@@ -88,7 +88,7 @@ export default async function EpisodesPage() {
                                     </span>
                                 )}
                                 {profile?.username && episode.is_published ? (
-                                    <Link href={`/${profile.username}/${episode.id}`} className="text-sm font-bold text-green-500 hover:text-green-400">Ver</Link>
+                                    <Link href={`/${profile.username}/${episode.id}`} className="text-sm font-bold text-blue-500 hover:text-blue-400">Ver</Link>
                                 ) : (
                                     <span className="text-sm font-bold text-gray-600 cursor-not-allowed">Editar</span>
                                 )}

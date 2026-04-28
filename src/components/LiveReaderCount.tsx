@@ -44,10 +44,10 @@ export function LiveReaderCount({ episodeId }: LiveReaderCountProps) {
     }
 
     return (
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-bold text-green-400">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400">
             <span className="relative flex w-2 h-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
-                <span className="relative inline-flex w-2 h-2 rounded-full bg-green-500"></span>
+                <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping"></span>
+                <span className="relative inline-flex w-2 h-2 rounded-full bg-blue-500"></span>
             </span>
             <span>{count} {count === 2 ? 'persona leyendo' : 'personas leyendo'} ahora</span>
         </div>

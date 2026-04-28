@@ -19,11 +19,11 @@ export function EarningsCalculator() {
 
     return (
         <section className="py-20 px-6 border-b border-gray-800/60 bg-[#0A0B0E] relative overflow-hidden">
-            <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[300px] bg-green-600/10 blur-[100px] rounded-full pointer-events-none" />
+            <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="max-w-4xl mx-auto relative z-10">
                 <div className="text-center mb-10">
-                    <div className="inline-block px-4 py-1.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 text-[11px] font-bold tracking-wider uppercase mb-4">
+                    <div className="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold tracking-wider uppercase mb-4">
                         💡 Tú decides tu precio
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
@@ -31,7 +31,7 @@ export function EarningsCalculator() {
                     </h2>
                     <p className="text-gray-400 max-w-lg mx-auto leading-relaxed">
                         Tú pones el precio de tu suscripción. Sugerimos entre $3 y $15 al mes. Recibes el{' '}
-                        <strong className="text-green-400">90%</strong> — bio.me retiene solo 10%.
+                        <strong className="text-blue-400">90%</strong> — bio.me retiene solo 10%.
                     </p>
                 </div>
 
@@ -41,7 +41,7 @@ export function EarningsCalculator() {
                         <span className="text-sm text-gray-400 font-semibold">
                             Precio de tu suscripción mensual:
                         </span>
-                        <span className="text-3xl font-black text-green-400 tracking-tight">
+                        <span className="text-3xl font-black text-blue-400 tracking-tight">
                             ${price}
                             <span className="text-gray-600 text-base font-medium">/mes</span>
                         </span>
@@ -69,17 +69,17 @@ export function EarningsCalculator() {
                                 key={tier.subs}
                                 className={`text-center p-6 rounded-2xl border transition-all ${
                                     tier.featured
-                                        ? 'bg-gradient-to-br from-green-900/30 to-[#15171C] border-green-500/30 shadow-[0_10px_40px_-10px_rgba(34,197,94,0.3)] md:scale-105'
+                                        ? 'bg-gradient-to-br from-blue-900/30 to-[#15171C] border-blue-500/30 shadow-[0_10px_40px_-10px_rgba(37, 99, 235,0.3)] md:scale-105'
                                         : 'bg-white/[0.03] border-gray-800'
                                 }`}
                             >
-                                <p className={`text-[11px] font-bold uppercase tracking-widest mb-2 ${tier.featured ? 'text-green-400' : 'text-gray-500'}`}>
+                                <p className={`text-[11px] font-bold uppercase tracking-widest mb-2 ${tier.featured ? 'text-blue-400' : 'text-gray-500'}`}>
                                     {tier.subs} suscriptores
                                 </p>
                                 <p className="text-[11px] text-gray-600 font-mono mb-3">
                                     {tier.subs} × ${price} × 90%
                                 </p>
-                                <p className={`text-4xl font-black tracking-tight mb-2 ${tier.featured ? 'text-green-300' : 'text-white'}`}>
+                                <p className={`text-4xl font-black tracking-tight mb-2 ${tier.featured ? 'text-blue-300' : 'text-white'}`}>
                                     {formatMoney(net)}
                                     <span className="text-sm font-medium text-gray-500">/mes</span>
                                 </p>
@@ -100,18 +100,18 @@ export function EarningsCalculator() {
                     width: 24px;
                     height: 24px;
                     border-radius: 50%;
-                    background: linear-gradient(135deg, #4ADE80, #16A34A);
+                    background: linear-gradient(135deg, #60A5FA, #1D4ED8);
                     cursor: grab;
-                    box-shadow: 0 0 20px rgba(34,197,94,0.5), 0 0 0 4px rgba(34,197,94,0.15);
+                    box-shadow: 0 0 20px rgba(37, 99, 235,0.5), 0 0 0 4px rgba(37, 99, 235,0.15);
                     border: 2px solid #0A0A0A;
                 }
                 .slider-blue::-moz-range-thumb {
                     width: 24px;
                     height: 24px;
                     border-radius: 50%;
-                    background: linear-gradient(135deg, #4ADE80, #16A34A);
+                    background: linear-gradient(135deg, #60A5FA, #1D4ED8);
                     cursor: grab;
-                    box-shadow: 0 0 20px rgba(34,197,94,0.5);
+                    box-shadow: 0 0 20px rgba(37, 99, 235,0.5);
                     border: 2px solid #0A0A0A;
                 }
             `}</style>

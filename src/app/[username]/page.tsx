@@ -80,7 +80,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
             {/* Premium Header / Cover */}
             <div className="relative h-48 md:h-64 bg-[#15171C]">
                 {/* Minimal gradient background instead of old cinematic cover */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-green-900/40 via-[#15171C] to-[#15171C]"></div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/40 via-[#15171C] to-[#15171C]"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0B0E]"></div>
             </div>
 
@@ -95,7 +95,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                             {profile.avatar_url ? (
                                 <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center font-bold text-3xl bg-green-600/10 text-green-500">
+                                <div className="w-full h-full flex items-center justify-center font-bold text-3xl bg-blue-600/10 text-blue-500">
                                     {initial}
                                 </div>
                             )}
@@ -106,7 +106,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                             <div className="mb-2">
                                 <h1 className="font-bold text-2xl text-white flex items-center justify-center md:justify-start gap-2">
                                     {profile.full_name || profile.username}
-                                    <span className="text-green-500 text-sm bg-green-500/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+                                    <span className="text-blue-500 text-sm bg-blue-500/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
                                 </h1>
                                 <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
                                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 font-medium justify-center md:justify-start">
@@ -128,7 +128,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                         {!isSubscribed ? (
                                             <div className="w-full sm:w-auto flex flex-col items-center sm:items-start gap-1">
                                                 <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`} className="w-full sm:w-auto">
-                                                    <Button className="w-full sm:w-auto font-bold px-8 h-11 rounded-xl bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-600/20">
+                                                    <Button className="w-full sm:w-auto font-bold px-8 h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20">
                                                         Suscribirse · ${subscriptionPrice}/mes
                                                     </Button>
                                                 </Link>
@@ -139,7 +139,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                 )}
                                             </div>
                                         ) : (
-                                            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-green-500/10 text-green-400 border border-green-500/20 w-full sm:w-auto justify-center">
+                                            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 w-full sm:w-auto justify-center">
                                                 ✓ Suscrito
                                             </span>
                                         )}
@@ -214,7 +214,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                 {profile.avatar_url ? (
                                                     <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-green-900 text-green-400">{initial}</div>
+                                                    <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-blue-900 text-blue-400">{initial}</div>
                                                 )}
                                             </div>
                                             <div>
@@ -226,7 +226,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                         </div>
                                         <div className="shrink-0">
                                             {!canRead && (
-                                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-bold text-green-400">
+                                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400">
                                                     <Lock size={12} /> Exclusivo
                                                 </span>
                                             )}
@@ -259,7 +259,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                     <p className="text-white font-bold text-lg mb-2">Contenido Exclusivo</p>
                                                     <p className="text-sm text-gray-400 mb-4">Suscríbete a {profile.username} para desbloquear este post y más.</p>
                                                     <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`}>
-                                                        <Button className="bg-green-600 hover:bg-green-500 text-white font-bold shadow-lg shadow-green-600/20">
+                                                        <Button className="bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/20">
                                                             Suscribirse por ${subscriptionPrice}/mes
                                                         </Button>
                                                     </Link>
@@ -276,7 +276,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                         <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
                                             <MessageCircle size={18} /> Comentar
                                         </Link>
-                                        <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-green-500 hover:text-green-400 font-medium text-sm transition-colors ml-auto">
+                                        <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors ml-auto">
                                             <Gift size={18} /> Dar regalo
                                         </Link>
                                     </div>

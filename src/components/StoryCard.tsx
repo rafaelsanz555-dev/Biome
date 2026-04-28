@@ -53,14 +53,14 @@ export function StoryCard({
                         <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-700">
                                 {authorAvatar ? <img src={authorAvatar} alt="" className="w-full h-full object-cover" />
-                                 : <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-green-900/40 text-green-400">{initial}</div>}
+                                 : <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-blue-900/40 text-blue-400">{initial}</div>}
                             </div>
                             <span className="text-white font-semibold">{authorName || authorUsername}</span>
                         </div>
                         {dateLabel && <><span className="w-1 h-1 bg-gray-700 rounded-full"></span><span>{dateLabel}</span></>}
                         {readMin && <><span className="w-1 h-1 bg-gray-700 rounded-full"></span><span>{readMin} min</span></>}
                         {reactionsTotal > 0 && <><span className="w-1 h-1 bg-gray-700 rounded-full"></span><span className="flex items-center gap-1"><Heart size={11} />{reactionsTotal}</span></>}
-                        {giftsTotal > 0 && <span className="flex items-center gap-1 ml-auto text-green-400 font-semibold"><Gift size={11} />{giftsTotal}</span>}
+                        {giftsTotal > 0 && <span className="flex items-center gap-1 ml-auto text-blue-400 font-semibold"><Gift size={11} />{giftsTotal}</span>}
                     </div>
                 </div>
             </Link>

@@ -73,7 +73,7 @@ export function ReportButton({ targetType, targetId, compact = false }: Props) {
 
                         {done ? (
                             <div className="py-8 text-center">
-                                <div className="text-green-400 text-4xl mb-2">✓</div>
+                                <div className="text-blue-400 text-4xl mb-2">✓</div>
                                 <p className="text-white font-semibold">Reporte enviado</p>
                                 <p className="text-gray-400 text-sm mt-1">Nuestro equipo lo revisará pronto.</p>
                             </div>
@@ -82,7 +82,7 @@ export function ReportButton({ targetType, targetId, compact = false }: Props) {
                                 <p className="text-sm text-gray-400 mb-4">Ayúdanos a mantener bio.me un espacio seguro. Cuéntanos qué pasó.</p>
                                 <div className="space-y-2 mb-4">
                                     {REASONS.map((r) => (
-                                        <label key={r.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reason === r.value ? 'border-green-500/50 bg-green-500/5' : 'border-gray-800 hover:border-gray-700'}`}>
+                                        <label key={r.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reason === r.value ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-800 hover:border-gray-700'}`}>
                                             <input type="radio" name="reason" value={r.value} checked={reason === r.value} onChange={() => setReason(r.value)} className="mt-0.5" />
                                             <div>
                                                 <div className="text-sm font-semibold text-white">{r.label}</div>

@@ -16,7 +16,7 @@ export default async function DashboardDiscoveryPage() {
         <div className="space-y-6">
             <div>
                 <h1 className="text-2xl font-bold mb-1 text-white flex items-center gap-2">
-                    <Compass size={22} className="text-green-500" />
+                    <Compass size={22} className="text-blue-500" />
                     Discovery
                 </h1>
                 <p className="text-sm text-gray-500">Descubre escritores nuevos y voces destacadas.</p>
@@ -24,7 +24,7 @@ export default async function DashboardDiscoveryPage() {
 
             {/* Filter tabs */}
             <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-2">
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20 flex items-center gap-1.5">
+                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1.5">
                     <Flame size={12} />
                     Trending
                 </button>
@@ -52,8 +52,8 @@ export default async function DashboardDiscoveryPage() {
             {/* Grid */}
             {!creators || creators.length === 0 ? (
                 <div className="p-14 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-green-500/10">
-                        <Compass size={22} className="text-green-500" />
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-blue-500/10">
+                        <Compass size={22} className="text-blue-500" />
                     </div>
                     <p className="text-xl font-bold mb-2 text-white">Sin escritores todavía</p>
                     <p className="text-sm text-gray-400">Vuelve pronto — los escritores fundadores están llegando.</p>
@@ -68,7 +68,7 @@ export default async function DashboardDiscoveryPage() {
 
             {/* See all link */}
             <div className="text-center pt-4">
-                <Link href="/discover" className="text-sm font-bold text-green-500 hover:text-green-400 transition-colors">
+                <Link href="/discover" className="text-sm font-bold text-blue-500 hover:text-blue-400 transition-colors">
                     Ver todos los escritores →
                 </Link>
             </div>

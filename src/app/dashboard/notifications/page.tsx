@@ -31,8 +31,8 @@ export default async function NotificationsPage() {
     return (
         <div className="space-y-6 max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-green-500/10 rounded-xl">
-                    <Bell className="text-green-500 h-6 w-6" />
+                <div className="p-2 bg-blue-500/10 rounded-xl">
+                    <Bell className="text-blue-500 h-6 w-6" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">Notificaciones</h1>
@@ -53,14 +53,14 @@ export default async function NotificationsPage() {
                             const isGift = notif.type === 'gift'
                             const isSub = notif.type === 'subscription'
                             const Icon = isGift ? Gift : isSub ? Star : DollarSign
-                            const iconColor = isGift ? 'text-pink-500' : isSub ? 'text-yellow-400' : 'text-green-400'
-                            const iconBg = isGift ? 'bg-pink-500/10' : isSub ? 'bg-yellow-400/10' : 'bg-green-500/10'
+                            const iconColor = isGift ? 'text-pink-500' : isSub ? 'text-yellow-400' : 'text-blue-400'
+                            const iconBg = isGift ? 'bg-pink-500/10' : isSub ? 'bg-yellow-400/10' : 'bg-blue-500/10'
                             
                             const actorName = notif.actor?.username || 'Alguien'
                             const actorAvatar = notif.actor?.avatar_url
 
                             return (
-                                <div key={notif.id} className={`p-4 flex gap-4 transition-colors hover:bg-[#1A1C23] ${!notif.is_read ? 'bg-green-500/5' : ''}`}>
+                                <div key={notif.id} className={`p-4 flex gap-4 transition-colors hover:bg-[#1A1C23] ${!notif.is_read ? 'bg-blue-500/5' : ''}`}>
                                     <div className="relative shrink-0">
                                         {actorAvatar ? (
                                             <img src={actorAvatar} alt={actorName} className="w-12 h-12 rounded-full object-cover border border-gray-700" />
@@ -77,7 +77,7 @@ export default async function NotificationsPage() {
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-300">
                                             <Link href={`/${actorName}`} className="font-bold text-white hover:underline">@{actorName}</Link>
-                                            {' '}{!notif.is_read && <span className="inline-block w-2 h-2 rounded-full bg-green-500 ml-1"></span>}
+                                            {' '}{!notif.is_read && <span className="inline-block w-2 h-2 rounded-full bg-blue-500 ml-1"></span>}
                                         </p>
                                         <p className="text-base text-gray-100 mt-0.5">{notif.message}</p>
                                         <p className="text-xs text-gray-600 mt-2 font-medium">

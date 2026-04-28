@@ -49,11 +49,11 @@ export function ChapterSoundtrack({ url, title }: ChapterSoundtrackProps) {
                 className="w-full flex items-center justify-between p-4 hover:bg-white/[0.03] transition group"
             >
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-green-500/20">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
                         <Music size={16} className="text-white" />
                     </div>
                     <div className="text-left">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-green-400 mb-0.5">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-0.5">
                             Banda sonora del capítulo
                         </p>
                         <p className="text-sm font-bold text-white truncate max-w-[260px] sm:max-w-md">
@@ -61,7 +61,7 @@ export function ChapterSoundtrack({ url, title }: ChapterSoundtrackProps) {
                         </p>
                     </div>
                 </div>
-                <div className="text-gray-500 group-hover:text-green-400 transition">
+                <div className="text-gray-500 group-hover:text-blue-400 transition">
                     {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </div>
             </button>

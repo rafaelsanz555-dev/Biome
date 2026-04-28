@@ -101,13 +101,13 @@
     line-height: 0.85;
     padding: 0.1em 0.15em 0 0;
     font-weight: 700;
-    color: var(--brand-accent, #22C55E);
+    color: var(--brand-accent, #2563EB);
     font-family: var(--brand-font-serif, var(--brand-font, Georgia, serif));
 }
 
 /* Mejor selección de texto */
 .bio-reader-immersive ::selection {
-    background: var(--brand-accent-soft, rgba(34,197,94,0.2));
+    background: var(--brand-accent-soft, rgba(37, 99, 235,0.2));
     color: white;
 }
 
@@ -118,14 +118,14 @@
 
 /* Pull quotes — citas dramáticas estilo editorial */
 .bio-reader-immersive blockquote {
-    border-left: 4px solid var(--brand-accent, #22C55E);
+    border-left: 4px solid var(--brand-accent, #2563EB);
     padding: 1em 1.5em;
     margin: 2em 0;
     font-style: italic;
     font-size: 1.15em;
     line-height: 1.6;
     color: rgba(255,255,255,0.92);
-    background: linear-gradient(90deg, var(--brand-accent-soft, rgba(34,197,94,0.06)) 0%, transparent 100%);
+    background: linear-gradient(90deg, var(--brand-accent-soft, rgba(37, 99, 235,0.06)) 0%, transparent 100%);
     border-radius: 0 12px 12px 0;
 }
 
@@ -179,7 +179,7 @@
     margin: 3em auto;
     width: 80px;
     height: 4px;
-    background: var(--brand-accent, #22C55E);
+    background: var(--brand-accent, #2563EB);
     border-radius: 2px;
     opacity: 0.5;
 }

@@ -12,7 +12,7 @@ interface Props {
     episodeStats: { id: string; title: string; views: number; completion: number }[]
 }
 
-const COLORS = ['#22C55E', '#3B82F6', '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316']
+const COLORS = ['#2563EB', '#3B82F6', '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316']
 
 export function AnalyticsCharts({ buckets, topCountries, deviceData, episodeStats }: Props) {
     return (
@@ -26,14 +26,14 @@ export function AnalyticsCharts({ buckets, topCountries, deviceData, episodeStat
                         <AreaChart data={buckets}>
                             <defs>
                                 <linearGradient id="retGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor="#22C55E" stopOpacity={0.5} />
-                                    <stop offset="100%" stopColor="#22C55E" stopOpacity={0.05} />
+                                    <stop offset="0%" stopColor="#2563EB" stopOpacity={0.5} />
+                                    <stop offset="100%" stopColor="#2563EB" stopOpacity={0.05} />
                                 </linearGradient>
                             </defs>
                             <XAxis dataKey="pct" tick={{ fill: '#6B7280', fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
                             <YAxis tick={{ fill: '#6B7280', fontSize: 11 }} />
                             <Tooltip contentStyle={{ background: '#0A0B0E', border: '1px solid #1f2937', borderRadius: 8, fontSize: 12 }} />
-                            <Area type="monotone" dataKey="count" stroke="#22C55E" strokeWidth={2} fill="url(#retGrad)" />
+                            <Area type="monotone" dataKey="count" stroke="#2563EB" strokeWidth={2} fill="url(#retGrad)" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
@@ -73,7 +73,7 @@ export function AnalyticsCharts({ buckets, topCountries, deviceData, episodeStat
                                 <XAxis type="number" hide />
                                 <YAxis type="category" dataKey="code" tick={{ fill: '#9CA3AF', fontSize: 11 }} width={40} />
                                 <Tooltip contentStyle={{ background: '#0A0B0E', border: '1px solid #1f2937', borderRadius: 8, fontSize: 12 }} />
-                                <Bar dataKey="count" fill="#22C55E" radius={[0, 6, 6, 0]} />
+                                <Bar dataKey="count" fill="#2563EB" radius={[0, 6, 6, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     )}
@@ -99,7 +99,7 @@ export function AnalyticsCharts({ buckets, topCountries, deviceData, episodeStat
                                     </div>
                                 </div>
                                 <div className="w-20 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-green-500" style={{ width: `${e.completion}%` }} />
+                                    <div className="h-full bg-blue-500" style={{ width: `${e.completion}%` }} />
                                 </div>
                             </div>
                         ))

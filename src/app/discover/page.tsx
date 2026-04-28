@@ -17,9 +17,9 @@ export default async function DiscoverPage() {
 
             {/* Header */}
             <div className="bg-[#15171C] border-b border-gray-800/80 py-16 px-6 text-center relative overflow-hidden">
-                <div className="absolute top-0 right-1/4 w-64 h-64 bg-green-600/10 blur-[80px] rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-1/4 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none" />
                 <div className="max-w-3xl mx-auto relative z-10">
-                    <p className="text-green-500 font-bold tracking-widest text-xs uppercase mb-3 drop-shadow-sm">
+                    <p className="text-blue-500 font-bold tracking-widest text-xs uppercase mb-3 drop-shadow-sm">
                         Creadores Premium
                     </p>
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">

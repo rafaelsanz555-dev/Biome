@@ -57,12 +57,12 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
                             onClick={() => setSelected(isSelected ? null : g)}
                             className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
                                 isSelected
-                                    ? 'bg-green-500/10 border-2 border-green-500 scale-105 shadow-lg shadow-green-500/10'
+                                    ? 'bg-blue-500/10 border-2 border-blue-500 scale-105 shadow-lg shadow-blue-500/10'
                                     : 'bg-[#0A0B0E] border-2 border-gray-800 hover:border-gray-600 hover:bg-[#15171C]'
                             }`}
                         >
                             <span className="text-2xl drop-shadow-md">{g.emoji}</span>
-                            <span className={`text-[10px] font-bold ${isSelected ? 'text-green-400' : 'text-gray-500'}`}>
+                            <span className={`text-[10px] font-bold ${isSelected ? 'text-blue-400' : 'text-gray-500'}`}>
                                 ${g.price}
                             </span>
                         </button>
@@ -72,17 +72,17 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
 
             {/* Selected preview */}
             {selected && (
-                <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-green-500/10 border border-green-500/20">
+                <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-blue-500/10 border border-blue-500/20">
                     <div className="flex items-center gap-3">
                         <span className="text-2xl drop-shadow-md">{selected.emoji}</span>
                         <div>
                             <p className="text-sm font-bold text-white">Regalo de {selected.label}</p>
                             <p className="text-xs text-gray-400">
-                                @{recipientUsername} recibe <span className="text-green-400 font-bold">${(selected.price * 0.88).toFixed(2)}</span>
+                                @{recipientUsername} recibe <span className="text-blue-400 font-bold">${(selected.price * 0.88).toFixed(2)}</span>
                             </p>
                         </div>
                     </div>
-                    <span className="text-xl font-black text-green-400">
+                    <span className="text-xl font-black text-blue-400">
                         ${selected.price}
                     </span>
                 </div>
@@ -94,7 +94,7 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
                 disabled={!selected || loading}
                 className={`w-full font-bold h-12 rounded-xl transition-all text-sm ${
                     selected
-                        ? 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-500/20'
+                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20'
                         : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                 } ${loading ? 'opacity-60' : ''}`}
             >

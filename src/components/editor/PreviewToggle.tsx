@@ -36,7 +36,7 @@ export function PreviewToggle({
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/50">
                 <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-green-400">Vista previa</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Vista previa</span>
                     <span className="text-xs text-gray-500">· así verá tu lector esta historia</span>
                 </div>
 
@@ -44,7 +44,7 @@ export function PreviewToggle({
                     <button
                         onClick={() => setMode('desktop')}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition ${
-                            mode === 'desktop' ? 'bg-green-500/15 text-green-400' : 'text-gray-500 hover:text-white'
+                            mode === 'desktop' ? 'bg-blue-500/15 text-blue-400' : 'text-gray-500 hover:text-white'
                         }`}
                     >
                         <Monitor size={14} /> Desktop
@@ -52,7 +52,7 @@ export function PreviewToggle({
                     <button
                         onClick={() => setMode('mobile')}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition ${
-                            mode === 'mobile' ? 'bg-green-500/15 text-green-400' : 'text-gray-500 hover:text-white'
+                            mode === 'mobile' ? 'bg-blue-500/15 text-blue-400' : 'text-gray-500 hover:text-white'
                         }`}
                     >
                         <Smartphone size={14} /> Mobile
@@ -91,13 +91,13 @@ export function PreviewToggle({
                         )}
 
                         {previewText && (
-                            <div className="text-lg italic text-gray-400 border-l-4 border-green-500 pl-5 py-1 mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+                            <div className="text-lg italic text-gray-400 border-l-4 border-blue-500 pl-5 py-1 mb-6" style={{ fontFamily: 'Georgia, serif' }}>
                                 {previewText}
                             </div>
                         )}
 
                         <div
-                            className="bio-reader-content prose prose-invert max-w-none selection:bg-green-500/40"
+                            className="bio-reader-content prose prose-invert max-w-none selection:bg-blue-500/40"
                             dangerouslySetInnerHTML={{ __html: contentHtml || '<p style="color:#6B7280;">El contenido aparecerá aquí...</p>' }}
                         />
                     </div>
@@ -128,7 +128,7 @@ export function PreviewToggle({
                     margin-top: 1.3em;
                 }
                 .bio-reader-content blockquote {
-                    border-left: 3px solid #22C55E;
+                    border-left: 3px solid #2563EB;
                     padding-left: 20px;
                     margin: 1.3em 0;
                     color: #D1D5DB;
@@ -145,7 +145,7 @@ export function PreviewToggle({
                     padding: 1.5em 1em;
                     margin: 2em 0;
                     color: #fff;
-                    background: linear-gradient(180deg, rgba(34,197,94,0.06), transparent);
+                    background: linear-gradient(180deg, rgba(37, 99, 235,0.06), transparent);
                     border-radius: 16px;
                     position: relative;
                 }
@@ -164,7 +164,7 @@ export function PreviewToggle({
                     margin: 1.5em auto;
                 }
                 .bio-reader-content a {
-                    color: #4ADE80;
+                    color: #60A5FA;
                     text-decoration: underline;
                 }
             `}</style>

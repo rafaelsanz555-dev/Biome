@@ -172,8 +172,8 @@ export function IdentityForm({ initial }: IdentityFormProps) {
     return (
         <div className="rounded-2xl bg-[#15171C] border border-gray-800 p-6 space-y-8">
             <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
-                <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                    <Sparkles size={18} className="text-green-400" />
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                    <Sparkles size={18} className="text-blue-400" />
                 </div>
                 <div>
                     <h2 className="font-bold text-lg text-white">Tu identidad</h2>
@@ -198,7 +198,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                         </button>
                     </div>
                 ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-green-500/50 cursor-pointer transition">
+                    <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-blue-500/50 cursor-pointer transition">
                         <Upload size={22} className="text-gray-500 mb-1.5" />
                         <span className="text-sm font-semibold text-gray-400">Haz clic para subir banner</span>
                         <span className="text-xs text-gray-600 mt-0.5">Recomendado: 1600×400</span>
@@ -216,7 +216,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     <select
                         value={country}
                         onChange={e => setCountry(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white focus:border-green-500/50 focus:ring-1 focus:ring-green-500 focus:outline-none text-sm"
+                        className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                     >
                         <option value="" className="bg-[#15171C]">Seleccionar país</option>
                         {COUNTRIES.map(c => (
@@ -236,7 +236,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                         onChange={e => setPronouns(e.target.value.slice(0, 30))}
                         placeholder="ella/she"
                         list="pronoun-presets"
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500 focus:outline-none text-sm"
+                        className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                     />
                     <datalist id="pronoun-presets">
                         {PRONOUN_PRESETS.map(p => <option key={p} value={p} />)}
@@ -259,7 +259,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                                 onClick={() => toggleLang(l.code)}
                                 className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${
                                     active
-                                        ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                                        ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
                                         : 'bg-[#0A0B0E] text-gray-400 border-gray-800 hover:border-gray-700'
                                 }`}
                             >
@@ -289,7 +289,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                                 disabled={disabled}
                                 className={`px-3.5 py-2 rounded-full text-sm font-semibold border transition ${
                                     active
-                                        ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                                        ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
                                         : disabled
                                             ? 'bg-[#0A0B0E] text-gray-700 border-gray-900 cursor-not-allowed'
                                             : 'bg-[#0A0B0E] text-gray-400 border-gray-800 hover:border-gray-700'
@@ -309,9 +309,9 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     <Tag size={12} /> Intereses
                     <span className="normal-case font-medium text-gray-600 text-[10px]">· máx 10, libre</span>
                 </label>
-                <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-[#0A0B0E] border border-gray-800 min-h-[52px] focus-within:border-green-500/50">
+                <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-[#0A0B0E] border border-gray-800 min-h-[52px] focus-within:border-blue-500/50">
                     {interests.map(i => (
-                        <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 text-green-400 text-xs font-semibold border border-green-500/20">
+                        <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20">
                             {i}
                             <button type="button" onClick={() => removeInterest(i)} className="hover:text-white transition">
                                 <X size={11} />
@@ -347,12 +347,12 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                             value={website}
                             onChange={e => setWebsite(e.target.value)}
                             placeholder="https://tuweb.com"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-green-500/50 focus:ring-1 focus:ring-green-500 focus:outline-none text-sm"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                         />
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-10 shrink-0 text-center text-xs font-bold text-pink-400">IG</div>
-                        <div className="flex-1 flex items-center rounded-xl bg-[#0A0B0E] border border-gray-800 focus-within:border-green-500/50">
+                        <div className="flex-1 flex items-center rounded-xl bg-[#0A0B0E] border border-gray-800 focus-within:border-blue-500/50">
                             <span className="px-3 text-gray-600 text-sm">@</span>
                             <input
                                 type="text"
@@ -365,7 +365,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-10 shrink-0 text-center text-xs font-bold text-gray-400">𝕏</div>
-                        <div className="flex-1 flex items-center rounded-xl bg-[#0A0B0E] border border-gray-800 focus-within:border-green-500/50">
+                        <div className="flex-1 flex items-center rounded-xl bg-[#0A0B0E] border border-gray-800 focus-within:border-blue-500/50">
                             <span className="px-3 text-gray-600 text-sm">@</span>
                             <input
                                 type="text"
@@ -391,12 +391,12 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                 <button
                     onClick={handleSave}
                     disabled={isPending}
-                    className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-sm transition-all shadow-lg shadow-green-500/20 disabled:opacity-50"
+                    className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
                 >
                     {isPending ? 'Guardando...' : 'Guardar identidad'}
                 </button>
                 {saved && (
-                    <span className="text-sm text-green-400 font-bold flex items-center gap-1.5">
+                    <span className="text-sm text-blue-400 font-bold flex items-center gap-1.5">
                         <Check size={14} /> Guardado
                     </span>
                 )}

@@ -20,7 +20,7 @@ export function NextEpisode({ creatorUsername, episode, seriesProgress }: NextEp
         // Last episode — show series-end message
         return (
             <div className="my-12 p-8 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] text-center">
-                <Sparkles className="text-green-400 mx-auto mb-3" size={28} />
+                <Sparkles className="text-blue-400 mx-auto mb-3" size={28} />
                 <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
                     Estás al día
                 </h3>
@@ -29,7 +29,7 @@ export function NextEpisode({ creatorUsername, episode, seriesProgress }: NextEp
                 </p>
                 <Link
                     href={`/${creatorUsername}`}
-                    className="mt-5 inline-flex items-center gap-2 text-sm text-green-400 hover:text-green-300 font-semibold"
+                    className="mt-5 inline-flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-semibold"
                 >
                     Ver perfil del autor <ArrowRight size={14} />
                 </Link>
@@ -40,7 +40,7 @@ export function NextEpisode({ creatorUsername, episode, seriesProgress }: NextEp
     return (
         <Link
             href={`/${creatorUsername}/${episode.id}`}
-            className="group block my-12 rounded-2xl border border-gray-800 hover:border-green-500/50 bg-gradient-to-br from-[#0F1114] to-[#15171C] overflow-hidden transition"
+            className="group block my-12 rounded-2xl border border-gray-800 hover:border-blue-500/50 bg-gradient-to-br from-[#0F1114] to-[#15171C] overflow-hidden transition"
         >
             <div className="p-2">
                 <div className="flex items-stretch gap-0 rounded-xl overflow-hidden">
@@ -51,7 +51,7 @@ export function NextEpisode({ creatorUsername, episode, seriesProgress }: NextEp
                     )}
                     <div className="flex-1 p-5">
                         <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="text-[10px] uppercase tracking-wider font-bold text-green-400">
+                            <span className="text-[10px] uppercase tracking-wider font-bold text-blue-400">
                                 Siguiente episodio
                                 {episode.chapter_number && ` · Cap. ${episode.chapter_number}`}
                             </span>
@@ -61,7 +61,7 @@ export function NextEpisode({ creatorUsername, episode, seriesProgress }: NextEp
                                 </span>
                             )}
                         </div>
-                        <h3 className="text-lg font-bold text-white group-hover:text-green-400 transition mb-1.5 leading-snug" style={{ fontFamily: 'Georgia, serif' }}>
+                        <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition mb-1.5 leading-snug" style={{ fontFamily: 'Georgia, serif' }}>
                             {episode.title}
                         </h3>
                         {episode.preview_text && (
@@ -71,14 +71,14 @@ export function NextEpisode({ creatorUsername, episode, seriesProgress }: NextEp
                         )}
                         <div className="mt-3 flex items-center gap-2 text-xs">
                             {episode.is_subscription_only && (
-                                <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold">
+                                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-bold">
                                     Exclusivo
                                 </span>
                             )}
                             {!episode.is_subscription_only && episode.ppv_price && (
                                 <span className="text-gray-500">${episode.ppv_price} desbloqueo</span>
                             )}
-                            <span className="ml-auto inline-flex items-center gap-1 text-green-400 font-semibold">
+                            <span className="ml-auto inline-flex items-center gap-1 text-blue-400 font-semibold">
                                 Continuar <ArrowRight size={12} className="group-hover:translate-x-1 transition" />
                             </span>
                         </div>

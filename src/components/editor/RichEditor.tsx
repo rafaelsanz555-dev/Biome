@@ -81,7 +81,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
     if (!editor) return null
 
     const btn = (active: boolean) =>
-        `p-2 rounded-lg transition text-sm ${active ? 'bg-green-500/15 text-green-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`
+        `p-2 rounded-lg transition text-sm ${active ? 'bg-blue-500/15 text-blue-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`
 
     function addImage() {
         const url = window.prompt('URL de la imagen:')
@@ -179,7 +179,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     letter-spacing: -0.01em;
                 }
                 .bio-editor-content blockquote {
-                    border-left: 3px solid #22C55E;
+                    border-left: 3px solid #2563EB;
                     padding-left: 20px;
                     margin: 1.3em 0;
                     color: #D1D5DB;
@@ -196,7 +196,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     padding: 1.5em 1em;
                     margin: 2em 0;
                     color: #fff;
-                    background: linear-gradient(180deg, rgba(34,197,94,0.06), transparent);
+                    background: linear-gradient(180deg, rgba(37, 99, 235,0.06), transparent);
                     border-radius: 16px;
                     position: relative;
                 }
@@ -209,7 +209,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     transform: translateX(-50%) translateY(-30%);
                     font-size: 80px;
                     font-family: Georgia, serif;
-                    color: rgba(34,197,94,0.3);
+                    color: rgba(37, 99, 235,0.3);
                     line-height: 1;
                 }
                 .bio-editor-content hr {
@@ -232,7 +232,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     line-height: 1.7;
                 }
                 .bio-editor-content a, .bio-editor-content .bio-editor-link {
-                    color: #4ADE80;
+                    color: #60A5FA;
                     text-decoration: underline;
                     text-underline-offset: 3px;
                 }
