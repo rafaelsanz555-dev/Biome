@@ -146,7 +146,7 @@ function ThemeCard({
     onSelect: () => void
     onHover: (v: boolean) => void
 }) {
-    // Construir el style del preview
+    // Construir el style del preview — IDÉNTICO al ThemeProvider real
     const cfg = theme.config || {}
     const bgLayers: string[] = []
     if (cfg.background_overlay) bgLayers.push(cfg.background_overlay)
@@ -159,6 +159,8 @@ function ThemeCard({
         backgroundImage: bgLayers.length > 0 ? bgLayers.join(', ') : undefined,
         backgroundSize: cfg.background_size || 'cover',
         backgroundPosition: 'center',
+        // ANIMACIÓN EN VIVO: misma animación que el theme real corre cuando se aplica
+        animation: cfg.background_animation || undefined,
     }
 
     const fontFamily = {

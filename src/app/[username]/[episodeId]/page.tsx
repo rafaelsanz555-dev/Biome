@@ -283,21 +283,21 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
                 {/* Full text — immersive reading */}
                 {hasAccess && episode.full_text && (
-                    <article className="prose prose-invert max-w-none">
+                    <article className="prose prose-invert max-w-none bio-reading-experience">
                         {/* 🎵 Chapter Soundtrack */}
                         {episode.soundtrack_url && (
                             <ChapterSoundtrack url={episode.soundtrack_url} title={episode.soundtrack_title} />
                         )}
 
                         {episode.content_json ? (
-                            <div className="text-gray-200 text-lg md:text-xl leading-[1.9] selection:bg-green-500/40 selection:text-white" style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}>
+                            <div className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] selection:bg-green-500/40 selection:text-white" style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}>
                                 <ReaderRenderer content={episode.content_json} />
                             </div>
                         ) : (
                             <div
                                 data-reader-content
-                                className="text-gray-200 text-lg md:text-xl leading-[1.9] whitespace-pre-wrap font-serif-like selection:bg-green-500/40 selection:text-white"
-                                style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}
+                                className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] whitespace-pre-wrap selection:bg-green-500/40 selection:text-white"
+                                style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}
                             >
                                 {episode.full_text}
                             </div>

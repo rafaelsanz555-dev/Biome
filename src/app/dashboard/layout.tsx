@@ -61,7 +61,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
                 {/* Main Navigation */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                    <DashboardNav isCreator={isCreator} />
+                    <DashboardNav isCreator={isCreator} username={profile?.username} />
                 </div>
 
                 {/* Wallet / Balance Info — only for creators */}

@@ -88,3 +88,98 @@
         animation-iteration-count: 1 !important;
     }
 }
+
+/* ─────────────────────────────────────────────────
+ * LECTURA ENVOLVENTE (immersive reading experience)
+ * ───────────────────────────────────────────────── */
+
+/* Drop cap: la primera letra del primer párrafo se vuelve grande y elegante */
+.bio-reader-immersive > p:first-of-type::first-letter,
+.bio-reader-immersive > div:first-child > p:first-of-type::first-letter {
+    float: left;
+    font-size: 4.5em;
+    line-height: 0.85;
+    padding: 0.1em 0.15em 0 0;
+    font-weight: 700;
+    color: var(--brand-accent, #22C55E);
+    font-family: var(--brand-font-serif, var(--brand-font, Georgia, serif));
+}
+
+/* Mejor selección de texto */
+.bio-reader-immersive ::selection {
+    background: var(--brand-accent-soft, rgba(34,197,94,0.2));
+    color: white;
+}
+
+/* Más respiro entre párrafos */
+.bio-reader-immersive p {
+    margin-bottom: 1.5em;
+}
+
+/* Pull quotes — citas dramáticas estilo editorial */
+.bio-reader-immersive blockquote {
+    border-left: 4px solid var(--brand-accent, #22C55E);
+    padding: 1em 1.5em;
+    margin: 2em 0;
+    font-style: italic;
+    font-size: 1.15em;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.92);
+    background: linear-gradient(90deg, var(--brand-accent-soft, rgba(34,197,94,0.06)) 0%, transparent 100%);
+    border-radius: 0 12px 12px 0;
+}
+
+/* Headings dentro de la lectura */
+.bio-reader-immersive h2 {
+    font-size: 1.85em;
+    line-height: 1.2;
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: white;
+}
+
+.bio-reader-immersive h3 {
+    font-size: 1.4em;
+    line-height: 1.3;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    color: rgba(255,255,255,0.95);
+}
+
+/* Fade-in suave al cargar la página */
+.bio-reading-experience {
+    animation: bio-reading-fade-in 0.8s ease-out;
+}
+
+@keyframes bio-reading-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Imágenes dentro de la lectura */
+.bio-reader-immersive img {
+    border-radius: 12px;
+    margin: 2em auto;
+    max-width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+/* Horizontal rules como separadores editoriales */
+.bio-reader-immersive hr {
+    border: 0;
+    margin: 3em auto;
+    width: 80px;
+    height: 4px;
+    background: var(--brand-accent, #22C55E);
+    border-radius: 2px;
+    opacity: 0.5;
+}

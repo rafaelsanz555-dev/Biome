@@ -13,13 +13,16 @@ import {
     FileText,
     Settings,
     BarChart3,
+    ExternalLink,
+    UserCircle,
 } from 'lucide-react'
 
 interface DashboardNavProps {
     isCreator: boolean
+    username?: string | null
 }
 
-export function DashboardNav({ isCreator }: DashboardNavProps) {
+export function DashboardNav({ isCreator, username }: DashboardNavProps) {
     const pathname = usePathname()
 
     // Main links — role-specific
@@ -83,6 +86,29 @@ export function DashboardNav({ isCreator }: DashboardNavProps) {
             </div>
 
             {libraryLinks.map(renderLink)}
+
+            {/* Botón "Ver mi perfil" — destacado, abre en nueva pestaña */}
+            {username && (
+                <div className="pt-6 px-1">
+                    <Link
+                        href={`/${username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-gradient-to-br from-green-500/15 to-emerald-700/10 border border-green-500/20 text-white hover:from-green-500/25 hover:to-emerald-700/15 transition group"
+                    >
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
+                                <UserCircle size={16} className="text-green-400" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-xs font-bold leading-tight">Ver mi perfil</p>
+                                <p className="text-[10px] text-gray-400 truncate">bio.me/{username}</p>
+                            </div>
+                        </div>
+                        <ExternalLink size={12} className="text-gray-500 group-hover:text-green-400 transition shrink-0" />
+                    </Link>
+                </div>
+            )}
         </nav>
     )
 }

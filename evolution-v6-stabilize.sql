@@ -109,15 +109,16 @@ GRANT SELECT ON storage.buckets TO anon, authenticated;
 
 -- ═══ PARTE 5: CONFIGS DE THEMES VISUALMENTE PROBLEMÁTICOS ═══
 
--- París Noche: overlay menos opaco para que se vea la foto urbana
+-- París Noche: overlay menos opaco + imagen FULL HD calidad alta
 UPDATE themes
 SET config = config || jsonb_build_object(
+    'background_image', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=2560&q=95&fm=jpg&auto=compress',
     'background_overlay',
     'linear-gradient(180deg, rgba(10,11,14,0.40) 0%, rgba(10,11,14,0.65) 50%, rgba(10,11,14,0.85) 100%)'
 )
 WHERE slug = 'paris-noche';
 
--- Vintage Paper: cambiar SVG malformado por imagen real con overlay sutil
+-- Vintage Paper: imagen real de papel + overlay calibrado, FULL HD
 UPDATE themes
 SET style = 'image',
     config = jsonb_build_object(
@@ -125,7 +126,7 @@ SET style = 'image',
         'accent_soft', 'rgba(146,64,14,0.12)',
         'font', 'crimson',
         'background', '#1A1612',
-        'background_image', 'https://images.unsplash.com/photo-1518655048521-f130df041f66?w=1920&q=80',
+        'background_image', 'https://images.unsplash.com/photo-1518655048521-f130df041f66?w=2560&q=95&fm=jpg&auto=compress',
         'background_overlay', 'linear-gradient(180deg, rgba(26,22,18,0.55) 0%, rgba(26,22,18,0.78) 100%)',
         'card_style', 'journal'
     )
