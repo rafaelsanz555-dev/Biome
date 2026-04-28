@@ -82,8 +82,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     const messages = await getMessages()
 
     return (
-        <html lang={locale}>
-            <body className={`${inter.variable} ${playfair.variable} ${crimson.variable} ${ibmPlex.variable} font-sans antialiased`}>
+        <html lang={locale} suppressHydrationWarning>
+            <body
+                className={`${inter.variable} ${playfair.variable} ${crimson.variable} ${ibmPlex.variable} font-sans antialiased`}
+                suppressHydrationWarning
+            >
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <PostHogProvider user={userForAnalytics}>
                         {children}

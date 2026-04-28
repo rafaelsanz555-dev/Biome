@@ -176,6 +176,7 @@ function ThemeCard({
             onClick={onSelect}
             onMouseEnter={() => onHover(true)}
             onMouseLeave={() => onHover(false)}
+            suppressHydrationWarning
             className={`group relative aspect-[4/5] rounded-xl overflow-hidden border-2 transition-all text-left ${
                 isSelected
                     ? 'border-green-500 shadow-lg shadow-green-500/20 scale-[1.02]'
