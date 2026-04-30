@@ -92,16 +92,17 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
         }
     }
 
-    // First episode is always free
-    const { data: allEpisodes } = await supabase
+    // First episode is always free — fetch only the very first one
+    const { data: firstEp } = await supabase
         .from('episodes')
-        .select('id, created_at')
+        .select('id')
         .eq('creator_id', creatorProfile.id)
         .eq('is_published', true)
         .order('created_at', { ascending: true })
         .limit(1)
+        .maybeSingle()
 
-    const isFirstEpisode = allEpisodes?.[0]?.id === episode.id
+    const isFirstEpisode = firstEp?.id === episode.id
     if (isFirstEpisode && !episode.is_subscription_only && !episode.ppv_price) {
         hasAccess = true
     }

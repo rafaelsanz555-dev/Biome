@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Star, Compass } from 'lucide-react'
+import { CancelButton } from './CancelButton'
 
 export default async function SubscriptionsPage() {
     const supabase = await createClient()
@@ -66,10 +67,16 @@ export default async function SubscriptionsPage() {
                                     <Star size={10} fill="currentColor" />
                                     Suscrito
                                 </span>
-                                <span className="text-xs text-gray-500">
-                                    Hasta {new Date(s.valid_until).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
-                                </span>
+                                <CancelButton
+                                    entitlementId={s.id}
+                                    creatorName={s.profiles?.username || ''}
+                                    validUntil={s.valid_until}
+                                    cancelAtPeriodEnd={s.cancel_at_period_end}
+                                />
                             </div>
+                            <p className="text-[10px] text-gray-600 mt-2 text-right">
+                                Hasta {new Date(s.valid_until).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </p>
                         </Link>
                     ))}
                 </div>

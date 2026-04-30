@@ -66,13 +66,14 @@ export default function OnboardingPage() {
                                     required
                                     minLength={3}
                                     maxLength={20}
-                                    pattern="[a-zA-Z0-9_]+"
+                                    pattern="[a-z0-9_]+"
                                     autoFocus
+                                    onChange={(e) => { e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }}
                                     className="flex-1 h-11 text-sm font-medium px-3 bg-transparent text-white placeholder:text-gray-600 focus:outline-none"
                                 />
                             </div>
                             <p className="text-xs text-gray-600">
-                                3–20 caracteres. Solo letras, números y guiones bajos.
+                                3–20 caracteres. Solo minúsculas, números y guiones bajos. Tu URL será <code className="text-blue-400 font-mono">bio.me/tunombre</code>.
                             </p>
                         </div>
 
@@ -151,6 +152,29 @@ export default function OnboardingPage() {
                             </div>
                         )}
 
+                        {/* Aceptación de términos */}
+                        <label className="flex items-start gap-3 p-4 rounded-xl border border-gray-800 bg-[#0A0B0E] cursor-pointer hover:border-gray-700 transition">
+                            <input
+                                type="checkbox"
+                                name="accept_terms"
+                                required
+                                className="mt-0.5 w-4 h-4 accent-blue-500 cursor-pointer shrink-0"
+                            />
+                            <span className="text-xs text-gray-400 leading-relaxed">
+                                He leído y acepto los{' '}
+                                <a href="/legal/terms" target="_blank" className="text-blue-400 hover:underline">Términos de Servicio</a>,{' '}
+                                la{' '}
+                                <a href="/legal/privacy" target="_blank" className="text-blue-400 hover:underline">Política de Privacidad</a>,{' '}
+                                la{' '}
+                                <a href="/legal/content-policy" target="_blank" className="text-blue-400 hover:underline">Política de Contenido</a>
+                                {selectedRole === 'creator' && (
+                                    <>{' '}y los{' '}
+                                    <a href="/legal/creator-terms" target="_blank" className="text-blue-400 hover:underline">Creator Terms</a></>
+                                )}
+                                {' '}de bio.me. Confirmo que tengo al menos 18 años.
+                            </span>
+                        </label>
+
                         <button
                             type="submit"
                             disabled={pending}
@@ -160,10 +184,6 @@ export default function OnboardingPage() {
                         </button>
                     </form>
                 </div>
-
-                <p className="text-center text-xs text-gray-600">
-                    Al continuar aceptas los términos de uso.
-                </p>
             </div>
         </div>
     )

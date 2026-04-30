@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { sendEmail } from '@/lib/email/client'
+import { welcomeEmail } from '@/lib/email/templates'
 
 export async function completeOnboarding(prevState: { error: string }, formData: FormData) {
     const supabase = await createClient()
@@ -13,9 +15,14 @@ export async function completeOnboarding(prevState: { error: string }, formData:
 
     const username = (formData.get('username') as string || '').trim().toLowerCase()
     const role = formData.get('role') as string
+    const acceptTerms = formData.get('accept_terms')
 
     if (!username || !role) {
         return { error: 'El nombre de usuario y el rol son obligatorios.' }
+    }
+
+    if (!acceptTerms) {
+        return { error: 'Debes aceptar los términos para continuar.' }
     }
 
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
@@ -64,6 +71,17 @@ export async function completeOnboarding(prevState: { error: string }, formData:
             console.error('[onboarding] creators.insert failed:', creatorError.message)
             return { error: 'No pudimos crear tu perfil de escritor. Intenta de nuevo en unos segundos.' }
         }
+    }
+
+    // Welcome email (fire-and-forget, no bloquea el redirect)
+    if (user.email) {
+        const { subject, html, text } = welcomeEmail({
+            username,
+            isCreator: role === 'creator',
+        })
+        sendEmail({ to: user.email, subject, html, text }).catch((e) =>
+            console.error('[onboarding] welcome email failed:', e)
+        )
     }
 
     redirect('/dashboard')

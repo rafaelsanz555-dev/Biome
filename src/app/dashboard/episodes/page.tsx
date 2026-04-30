@@ -87,11 +87,12 @@ export default async function EpisodesPage() {
                                         <Eye size={10} />Gratis
                                     </span>
                                 )}
-                                {profile?.username && episode.is_published ? (
-                                    <Link href={`/${profile.username}/${episode.id}`} className="text-sm font-bold text-blue-500 hover:text-blue-400">Ver</Link>
-                                ) : (
-                                    <span className="text-sm font-bold text-gray-600 cursor-not-allowed">Editar</span>
-                                )}
+                                <div className="flex items-center gap-4">
+                                    {profile?.username && episode.is_published && (
+                                        <Link href={`/${profile.username}/${episode.id}`} className="text-sm font-bold text-blue-500 hover:text-blue-400">Ver</Link>
+                                    )}
+                                    <Link href={`/dashboard/episodes/${episode.id}/edit`} className="text-sm font-bold text-gray-300 hover:text-white">Editar</Link>
+                                </div>
                             </div>
                         </div>
                     ))}
