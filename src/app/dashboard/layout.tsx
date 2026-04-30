@@ -41,8 +41,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     </Link>
                 </div>
 
-                {/* User Profile Summary */}
-                <div className="px-6 py-4 mb-2 flex items-center space-x-3 cursor-pointer group">
+                {/* User Profile Summary — clickable, navigates to public profile */}
+                <Link
+                    href={`/${profile.username}`}
+                    className="px-6 py-4 mb-2 flex items-center space-x-3 group hover:bg-white/5 transition rounded-lg mx-2"
+                    title="Ver mi perfil público"
+                >
                     <div className="relative">
                         {profile.avatar_url ? (
                             <img src={profile.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover border border-gray-700 group-hover:border-blue-500 transition-colors" />
@@ -53,11 +57,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         )}
                         <div className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 border-2 border-[#121212] rounded-full"></div>
                     </div>
-                    <div>
-                        <h3 className="text-sm font-semibold text-white capitalize">{profile.username}</h3>
-                        <p className="text-xs text-gray-500">{isCreator ? 'Creador verificado' : 'Lector'}</p>
+                    <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-semibold text-white capitalize truncate group-hover:text-blue-400 transition">{profile.username}</h3>
+                        <p className="text-[10px] text-gray-500 truncate">{isCreator ? '→ Ver mi perfil' : 'Lector'}</p>
                     </div>
-                </div>
+                </Link>
 
                 {/* Main Navigation */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">

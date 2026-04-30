@@ -58,7 +58,7 @@ export function TrustSignals({
     }
 
     return (
-        <div className="rounded-xl border border-gray-800 bg-[#0F1114] p-4 space-y-3">
+        <div className="rounded-xl border border-white/10 bg-[#0F1114]/80 backdrop-blur-md p-4 space-y-3">
             <h3 className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Señales de confianza</h3>
 
             {/* Verified */}

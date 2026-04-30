@@ -77,17 +77,13 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
         <ThemeProvider theme={theme} fallbackBranding={fallback} className="min-h-screen text-gray-100 font-sans pb-20">
             <Navbar />
 
-            {/* Premium Header / Cover */}
-            <div className="relative h-48 md:h-64 bg-[#15171C]">
-                {/* Minimal gradient background instead of old cinematic cover */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/40 via-[#15171C] to-[#15171C]"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0B0E]"></div>
-            </div>
+            {/* Espacio superior — deja respirar el theme arriba sin taparlo con un bg sólido */}
+            <div className="h-32 md:h-48"></div>
 
             <main className="max-w-2xl mx-auto px-4 sm:px-6">
-                
-                {/* Profile Info Card */}
-                <div className="bg-[#15171C] rounded-2xl border border-gray-800 p-6 -mt-16 relative z-10 shadow-2xl mb-8">
+
+                {/* Profile Info Card — semi-transparente con blur para que el theme se vea atrás */}
+                <div className="bg-[#15171C]/85 backdrop-blur-md rounded-2xl border border-white/10 p-6 -mt-16 relative z-10 shadow-2xl mb-8">
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-5">
                         
                         {/* Avatar */}
