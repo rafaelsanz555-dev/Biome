@@ -157,7 +157,7 @@ export function FeatureGrid() {
                         <span className="italic text-[#C9A84C]">waiting long enough.</span>
                     </h2>
                     <p className="text-[#0D0D0D]/40 text-lg mb-12 max-w-xl mx-auto leading-relaxed">
-                        $5/month to publish. No contracts. Cancel anytime. The first chapter is always free.
+                        Free to publish for our Founding Storytellers. No contracts. The first chapter is always free.
                     </p>
                     <a href="/login">
                         <button className="

@@ -48,7 +48,7 @@ export default function LandingPage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         <Link href="/login" className="w-full sm:w-auto">
                             <Button size="lg" className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 h-14 text-base rounded-xl shadow-[0_0_40px_-10px_rgba(37, 99, 235,0.5)] transition-all hover:scale-105 w-full">
-                                Crear mi perfil — $5/mes
+                                Empieza gratis · sé Founding Storyteller
                             </Button>
                         </Link>
                         <Link href="/discover" className="w-full sm:w-auto">

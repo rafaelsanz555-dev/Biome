@@ -77,7 +77,8 @@ function StatCard({ label, value, sub, accent = false }: {
 export default async function AdminOverview() {
     const stats = await getAdminStats()
 
-    const writerFees = stats.totalWriters * 5
+    // Writer fees suspendidos durante Founding Storyteller Program
+    const writerFees = 0
 
     return (
         <div className="space-y-8">
@@ -107,8 +108,8 @@ export default async function AdminOverview() {
                             <p className="text-xl font-bold text-[#FAF7F0]">${stats.recentRevenue.toFixed(2)}</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-[10px] text-[#666] uppercase tracking-wider">Writer fees ($5/mes)</p>
-                            <p className="text-xl font-bold text-[#FAF7F0]">${writerFees}/mes</p>
+                            <p className="text-[10px] text-[#666] uppercase tracking-wider">Writer fees</p>
+                            <p className="text-xl font-bold text-[#FAF7F0]">$0 · suspendido</p>
                         </div>
                     </div>
                 </div>
@@ -117,7 +118,7 @@ export default async function AdminOverview() {
             {/* Main stats grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard label="Usuarios Totales" value={stats.totalUsers} sub="Registrados en la plataforma" />
-                <StatCard label="Escritores" value={stats.totalWriters} sub={`$${writerFees}/mes en fees`} accent />
+                <StatCard label="Escritores" value={stats.totalWriters} sub="Founding Storytellers (gratis)" accent />
                 <StatCard label="Lectores" value={stats.totalReaders} sub="Consumidores de contenido" />
                 <StatCard label="Suscripciones" value={stats.totalFollows} sub="Conexiones lector-escritor" />
             </div>
@@ -136,8 +137,8 @@ export default async function AdminOverview() {
                     <h3 className="text-sm font-bold text-[#FAF7F0] mb-4 uppercase tracking-wider">Desglose de Revenue</h3>
                     <div className="space-y-4">
                         <div className="flex items-center justify-between py-2 border-b border-[#222]">
-                            <span className="text-sm text-[#999]">Writer fees ($5/mes x {stats.totalWriters})</span>
-                            <span className="text-sm font-bold text-[#FAF7F0]">${writerFees}/mes</span>
+                            <span className="text-sm text-[#999]">Writer fees · suspendido (Founding · {stats.totalWriters} writers)</span>
+                            <span className="text-sm font-bold text-[#FAF7F0]">$0</span>
                         </div>
                         <div className="flex items-center justify-between py-2 border-b border-[#222]">
                             <span className="text-sm text-[#999]">10% de suscripciones/PPV</span>

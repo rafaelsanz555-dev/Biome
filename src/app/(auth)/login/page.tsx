@@ -117,7 +117,7 @@ export default async function LoginPage({
                 </div>
 
                 <p className="text-center text-xs text-gray-600 font-medium">
-                    Gratis para leer · $5/mes para publicar
+                    Gratis para leer · gratis para publicar (Founding Storytellers)
                 </p>
             </div>
         </div>
