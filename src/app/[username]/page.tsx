@@ -27,10 +27,10 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const { data: episodes } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, full_text, cover_image_url, is_subscription_only, ppv_price, created_at')
+        .select('id, title, preview_text, full_text, cover_image_url, is_subscription_only, ppv_price, created_at, season_id, seasons(id, title, description)')
         .eq('creator_id', profile.id)
         .eq('is_published', true)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -72,6 +72,28 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const branding = extractBranding(profile.creators)
     const { theme, fallback } = extractTheme(profile.creators)
+
+    // Agrupar episodios por temporada (Historia)
+    const groupedEpisodes = (episodes || []).reduce((acc: any, episode: any) => {
+        const seasonId = episode.season_id || 'standalone';
+        if (!acc[seasonId]) {
+            acc[seasonId] = {
+                season: episode.seasons || null,
+                episodes: []
+            };
+        }
+        acc[seasonId].episodes.push(episode);
+        return acc;
+    }, {});
+    
+    // Convertir a array y ordenar (Las historias más recientes arriba, basadas en su último capítulo)
+    const groupedList = Object.values(groupedEpisodes).sort((a: any, b: any) => {
+        if (a.season && !b.season) return -1;
+        if (!a.season && b.season) return 1;
+        const lastDateA = new Date(a.episodes[a.episodes.length - 1].created_at).getTime();
+        const lastDateB = new Date(b.episodes[b.episodes.length - 1].created_at).getTime();
+        return lastDateB - lastDateA; // Descending order of update
+    });
 
     return (
         <ThemeProvider theme={theme} fallbackBranding={fallback} className="min-h-screen text-gray-100 font-sans pb-20">
@@ -185,101 +207,124 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                     />
                 </div>
 
-                {/* Feed */}
-                <div className="space-y-6">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 ml-2 mb-4">
-                        Feed Exclusivo
-                    </h2>
-
+                {/* Feed (Agrupado por Historia/Temporada) */}
+                <div className="space-y-12">
                     {(!episodes || episodes.length === 0) ? (
                         <div className="bg-[#15171C] border border-gray-800 rounded-2xl py-16 text-center text-gray-500">
                             Aún no hay publicaciones.
                         </div>
                     ) : (
-                        episodes.map((episode) => {
-                            const isFree = freePostIds.has(episode.id) || (!episode.is_subscription_only && !episode.ppv_price)
-                            const canRead = isFree || isSubscribed || isOwnProfile
+                        groupedList.map((group: any, idx: number) => (
+                            <div key={idx} className="relative">
+                                {/* Encabezado de la Historia */}
+                                {group.season ? (
+                                    <div className="mb-6 pl-4 border-l-4 border-[var(--brand-accent)]">
+                                        <h2 className="text-2xl font-serif font-bold text-white mb-2">{group.season.title}</h2>
+                                        {group.season.description && (
+                                            <p className="text-sm text-gray-400 max-w-2xl leading-relaxed">{group.season.description}</p>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="mb-6 pl-4 border-l-4 border-gray-700">
+                                        <h2 className="text-xl font-bold text-gray-300">Publicaciones Sueltas</h2>
+                                    </div>
+                                )}
 
-                            return (
-                                <div key={episode.id} className="bg-[#15171C] border border-gray-800 rounded-2xl overflow-hidden shadow-md">
-                                    
-                                    {/* Post Header */}
-                                    <div className="p-4 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-800 shrink-0">
-                                                {profile.avatar_url ? (
-                                                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-blue-900 text-blue-400">{initial}</div>
+                                {/* Lista de Capítulos */}
+                                <div className="space-y-6">
+                                    {group.episodes.map((episode: any, epIdx: number) => {
+                                        const isFree = freePostIds.has(episode.id) || (!episode.is_subscription_only && !episode.ppv_price)
+                                        const canRead = isFree || isSubscribed || isOwnProfile
+                                        const chapterNumber = group.season ? `Capítulo ${epIdx + 1}` : null
+
+                                        return (
+                                            <div key={episode.id} className="bg-[#15171C] border border-gray-800 rounded-2xl overflow-hidden shadow-md">
+                                                {/* Post Header */}
+                                                <div className="p-4 flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-800 shrink-0">
+                                                            {profile.avatar_url ? (
+                                                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-blue-900 text-blue-400">{initial}</div>
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-bold text-white text-sm hover:underline cursor-pointer">{profile.full_name || profile.username}</p>
+                                                            <p className="text-xs text-gray-500">
+                                                                {new Date(episode.created_at).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} a las {new Date(episode.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit'})}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="shrink-0 flex items-center gap-2">
+                                                        {chapterNumber && (
+                                                            <span className="text-xs font-medium text-gray-400 bg-gray-800 px-2 py-1 rounded-md">
+                                                                {chapterNumber}
+                                                            </span>
+                                                        )}
+                                                        {!canRead && (
+                                                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400">
+                                                                <Lock size={12} /> Exclusivo
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Post Content */}
+                                                <div className="px-4 pb-3">
+                                                    <h3 className="font-bold text-gray-100 text-base mb-1">{episode.title}</h3>
+                                                    <p className="text-sm text-gray-400 mb-4 whitespace-pre-wrap leading-relaxed line-clamp-3">
+                                                        {episode.preview_text || "Mira este post..."}
+                                                    </p>
+                                                </div>
+
+                                                {/* Big Media Area */}
+                                                {(episode.cover_image_url || !canRead) && (
+                                                    <div className="relative w-full bg-[#0A0B0E] border-y border-gray-800 min-h-[250px] flex items-center justify-center overflow-hidden">
+                                                        {episode.cover_image_url && (
+                                                            <img 
+                                                                src={episode.cover_image_url} 
+                                                                alt="Contenido" 
+                                                                className={`w-full h-auto max-h-[600px] object-cover ${!canRead ? 'blur-2xl opacity-40 scale-110' : ''}`} 
+                                                            />
+                                                        )}
+                                                        
+                                                        {!canRead && (
+                                                            <div className="absolute inset-0 flex items-center justify-center flex-col bg-black/40 p-6 text-center">
+                                                                <Lock className="w-10 h-10 text-gray-400 mb-3" />
+                                                                <p className="text-white font-bold text-lg mb-2">Contenido Exclusivo</p>
+                                                                <p className="text-sm text-gray-400 mb-4">Suscríbete a {profile.username} para desbloquear este post y más.</p>
+                                                                <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`}>
+                                                                    <Button className="bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/20">
+                                                                        Suscribirse por ${subscriptionPrice}/mes
+                                                                    </Button>
+                                                                </Link>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 )}
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-white text-sm hover:underline cursor-pointer">{profile.full_name || profile.username}</p>
-                                                <p className="text-xs text-gray-500">
-                                                    {new Date(episode.created_at).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} a las {new Date(episode.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit'})}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="shrink-0">
-                                            {!canRead && (
-                                                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400">
-                                                    <Lock size={12} /> Exclusivo
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
 
-                                    {/* Post Content */}
-                                    <div className="px-4 pb-3">
-                                        {/* Title & snippet */}
-                                        <h3 className="font-bold text-gray-100 text-base mb-1">{episode.title}</h3>
-                                        <p className="text-sm text-gray-400 mb-4 whitespace-pre-wrap leading-relaxed line-clamp-3">
-                                            {episode.preview_text || "Mira este post..."}
-                                        </p>
-                                    </div>
-
-                                    {/* Big Media Area */}
-                                    {(episode.cover_image_url || !canRead) && (
-                                        <div className="relative w-full bg-[#0A0B0E] border-y border-gray-800 min-h-[250px] flex items-center justify-center overflow-hidden">
-                                            {episode.cover_image_url && (
-                                                <img 
-                                                    src={episode.cover_image_url} 
-                                                    alt="Contenido" 
-                                                    className={`w-full h-auto max-h-[600px] object-cover ${!canRead ? 'blur-2xl opacity-40 scale-110' : ''}`} 
-                                                />
-                                            )}
-                                            
-                                            {!canRead && (
-                                                <div className="absolute inset-0 flex items-center justify-center flex-col bg-black/40 p-6 text-center">
-                                                    <Lock className="w-10 h-10 text-gray-400 mb-3" />
-                                                    <p className="text-white font-bold text-lg mb-2">Contenido Exclusivo</p>
-                                                    <p className="text-sm text-gray-400 mb-4">Suscríbete a {profile.username} para desbloquear este post y más.</p>
-                                                    <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`}>
-                                                        <Button className="bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/20">
-                                                            Suscribirse por ${subscriptionPrice}/mes
-                                                        </Button>
+                                                {/* Action Bar */}
+                                                <div className="px-4 py-3 bg-[#15171C] flex items-center gap-6">
+                                                    <button className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
+                                                        <Heart size={18} /> Me gusta
+                                                    </button>
+                                                    <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
+                                                        <MessageCircle size={18} /> Comentar
+                                                    </Link>
+                                                    <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors ml-auto">
+                                                        <Gift size={18} /> Dar regalo
+                                                    </Link>
+                                                    <Link href={`/${profile.username}/${episode.id}`}>
+                                                        <Button variant="ghost" className="text-white hover:bg-gray-800 ml-2">Leer →</Button>
                                                     </Link>
                                                 </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Action Bar */}
-                                    <div className="px-4 py-3 bg-[#15171C] flex items-center gap-6">
-                                        <button className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
-                                            <Heart size={18} /> Me gusta
-                                        </button>
-                                        <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
-                                            <MessageCircle size={18} /> Comentar
-                                        </Link>
-                                        <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors ml-auto">
-                                            <Gift size={18} /> Dar regalo
-                                        </Link>
-                                    </div>
-                                    
+                                            </div>
+                                        )
+                                    })}
                                 </div>
-                            )
-                        })
+                            </div>
+                        ))
                     )}
                 </div>
             </main>

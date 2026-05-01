@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/Navbar'
-import { Lock, ChevronLeft, Heart, MessageCircle, Gift, Play, Share2 } from 'lucide-react'
+import { Lock, ChevronLeft, Heart, MessageCircle, Gift, Play, Share2, ArrowRight, Sparkles } from 'lucide-react'
 import { GiftPanel } from '@/components/GiftPanel'
 import { ReadingProgress } from '@/components/ReadingProgress'
 import { TextHighlightShare } from '@/components/TextHighlightShare'
@@ -113,12 +113,21 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     const creatorIdForSub = creatorProfile.creators?.profile_id || creatorProfile.id
 
     // Continuity context: previous + next episodes, total count, last activity
-    const { data: siblings } = await supabase
+    // Continuity context: previous + next episodes within the SAME story (season)
+    let siblingsQuery = supabase
         .from('episodes')
         .select('id, title, preview_text, cover_image_url, created_at, chapter_number, auto_recap, is_subscription_only, ppv_price')
         .eq('creator_id', creatorProfile.id)
         .eq('is_published', true)
         .order('created_at', { ascending: true })
+
+    if (episode.season_id) {
+        siblingsQuery = siblingsQuery.eq('season_id', episode.season_id)
+    } else {
+        siblingsQuery = siblingsQuery.is('season_id', null)
+    }
+
+    const { data: siblings } = await siblingsQuery
 
     const totalPublished = siblings?.length ?? 0
     const myIndex = siblings?.findIndex((e) => e.id === episode.id) ?? -1
@@ -430,21 +439,32 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                     </>
                 )}
 
-                {/* Next episode (continuity) */}
+                {/* Continuity Navigation (Prev/Next) */}
                 {hasAccess && (
-                    <NextEpisode
-                        creatorUsername={creatorProfile.username}
-                        episode={nextEp ? {
-                            id: nextEp.id,
-                            title: nextEp.title,
-                            preview_text: nextEp.preview_text,
-                            cover_image_url: nextEp.cover_image_url,
-                            is_subscription_only: nextEp.is_subscription_only,
-                            ppv_price: nextEp.ppv_price,
-                            chapter_number: nextEp.chapter_number,
-                        } : null}
-                        seriesProgress={totalPublished > 1 ? { current: myIndex + 1, total: totalPublished } : null}
-                    />
+                    <div className="my-12 flex flex-col sm:flex-row gap-4 justify-between items-stretch">
+                        {prevEp ? (
+                            <Link href={`/${creatorProfile.username}/${prevEp.id}`} className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-blue-500/50 transition group flex flex-col justify-center">
+                                <div className="text-[10px] uppercase tracking-wider font-bold text-gray-500 mb-1 flex items-center gap-1">
+                                    <ChevronLeft size={12} className="group-hover:-translate-x-1 transition" /> Anterior
+                                </div>
+                                <h3 className="font-bold text-white group-hover:text-blue-400 transition" style={{ fontFamily: 'Georgia, serif' }}>{prevEp.title}</h3>
+                            </Link>
+                        ) : <div className="flex-1 hidden sm:block"></div>}
+                        
+                        {nextEp ? (
+                            <Link href={`/${creatorProfile.username}/${nextEp.id}`} className="flex-1 p-4 rounded-2xl border border-blue-900/40 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-blue-500/80 transition group flex flex-col justify-center text-right">
+                                <div className="text-[10px] uppercase tracking-wider font-bold text-blue-400 mb-1 flex items-center gap-1 justify-end">
+                                    Siguiente <ArrowRight size={12} className="group-hover:translate-x-1 transition" />
+                                </div>
+                                <h3 className="font-bold text-white group-hover:text-blue-400 transition" style={{ fontFamily: 'Georgia, serif' }}>{nextEp.title}</h3>
+                            </Link>
+                        ) : (
+                            <div className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] text-center flex flex-col justify-center items-center">
+                                <Sparkles className="text-blue-400 mb-1" size={16} />
+                                <h3 className="text-sm font-bold text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Estás al día</h3>
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 {/* Report button */}
