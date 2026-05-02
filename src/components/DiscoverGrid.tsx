@@ -93,43 +93,24 @@ export function DiscoverGrid({ creators }: DiscoverGridProps) {
         return (
             <div className="mt-12">
                 {/* Founding Writers Banner */}
-                <div
-                    className="rounded-2xl p-8 mb-10 text-center"
-                    style={{
-                        backgroundColor: 'var(--ink)',
-                        backgroundImage: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,168,76,0.15), transparent)',
-                    }}
-                >
-                    <p
-                        className="text-xs font-bold tracking-widest uppercase mb-3"
-                        style={{ color: 'var(--gold)' }}
-                    >
-                        ◆  Escritores fundadores
-                    </p>
-                    <h2
-                        className="font-serif font-bold text-2xl md:text-3xl mb-3"
-                        style={{ color: 'var(--cream)' }}
-                    >
-                        Los primeros escritores están llegando
-                    </h2>
-                    <p
-                        className="text-sm leading-relaxed mb-6 max-w-md mx-auto"
-                        style={{ color: 'var(--cream-mid)' }}
-                    >
-                        Sé parte de los 50 escritores fundadores de bio.me. Precio bloqueado para siempre. Tu historia empieza aquí.
-                    </p>
-                    <Link href="/login">
-                        <button
-                            className="font-bold px-8 py-3 rounded-xl text-sm transition-all hover:opacity-85"
-                            style={{
-                                backgroundColor: 'var(--gold)',
-                                color: 'var(--ink)',
-                                border: 'none',
-                            }}
-                        >
-                            Únete como escritor fundador →
-                        </button>
-                    </Link>
+                <div className="rounded-2xl p-8 md:p-10 mb-10 text-center bg-gradient-to-br from-blue-600/10 via-[#0F1114] to-[#0A0B0E] border border-blue-500/20 relative overflow-hidden">
+                    <div className="absolute top-0 right-1/4 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none" />
+                    <div className="relative z-10">
+                        <p className="text-xs font-bold tracking-widest uppercase mb-3 text-blue-400">
+                            ◆  Escritores fundadores
+                        </p>
+                        <h2 className="font-bold text-2xl md:text-3xl mb-3 text-white" style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}>
+                            Los primeros escritores están llegando
+                        </h2>
+                        <p className="text-sm leading-relaxed mb-6 max-w-md mx-auto text-gray-300">
+                            Sé parte de los primeros 300 Founding Storytellers de bio.me. Plan gratuito de por vida + badge permanente. Tu historia empieza aquí.
+                        </p>
+                        <Link href="/login">
+                            <button className="font-bold px-8 py-3 rounded-xl text-sm transition bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20">
+                                Únete como Founding Storyteller →
+                            </button>
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Category Cards Grid */}

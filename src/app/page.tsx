@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/ui/button'
 import { EarningsCalculator } from '@/components/EarningsCalculator'
+import { createClient } from '@/lib/supabase/server'
 
 const CATEGORIES = [
     { label: 'Exclusivos', icon: '💎', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
@@ -19,7 +20,13 @@ const GIFTS = [
     { emoji: '🚀', label: 'Cohete', price: 50 },
 ]
 
-export default function LandingPage() {
+export default async function LandingPage() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    // Si ya está logueado, los CTAs llevan al dashboard en lugar de /login
+    const ctaPrimary = user ? '/dashboard' : '/login'
+    const ctaPrimaryLabel = user ? 'Ir a mi dashboard →' : 'Empieza gratis · sé Founding Storyteller'
+
     return (
         <div className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans selection:bg-blue-500/30">
             <Navbar />
@@ -46,9 +53,9 @@ export default function LandingPage() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <Link href="/login" className="w-full sm:w-auto">
+                        <Link href={ctaPrimary} className="w-full sm:w-auto">
                             <Button size="lg" className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 h-14 text-base rounded-xl shadow-[0_0_40px_-10px_rgba(37, 99, 235,0.5)] transition-all hover:scale-105 w-full">
-                                Empieza gratis · sé Founding Storyteller
+                                {ctaPrimaryLabel}
                             </Button>
                         </Link>
                         <Link href="/discover" className="w-full sm:w-auto">

@@ -63,7 +63,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     setError('Error subiendo portada: ' + upErr.message)
                     return
                 }
-                const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
+                const { data: urlData } = supabase.storage.from('episodes').getPublicUrl(fileName)
                 finalCoverUrl = urlData.publicUrl
             }
 

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Heart, MessageCircle, Gift, Lock, MoreHorizontal, Crown, Play } from 'lucide-react'
 import { ResumeReading } from '@/components/reader/ResumeReading'
+import { FeedTabs } from '@/components/FeedTabs'
 
 function timeAgo(date: string): string {
     const diff = Date.now() - new Date(date).getTime()
@@ -163,20 +164,7 @@ export default async function DashboardHome() {
     return (
         <div className="w-full">
             <div className="px-8 pt-6">
-                <div className="flex items-center space-x-8 mb-6 border-b border-[#262626] overflow-x-auto whitespace-nowrap">
-                    <button className="pb-4 text-blue-500 border-b-2 border-blue-500 font-medium text-sm">Para ti</button>
-                    <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Trending</button>
-                    <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Nuevas voces</button>
-                    <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Historias reales</button>
-                    <button className="pb-4 text-gray-500 hover:text-gray-300 font-medium text-sm transition">Más regaladas</button>
-                </div>
-
-                <div className="flex items-center space-x-3 mb-8 overflow-x-auto whitespace-nowrap pb-2">
-                    <button className="px-4 py-1.5 bg-[#1E1E1E] hover:bg-[#2D2D2D] border border-[#333] rounded-full text-xs text-gray-300 transition">Gratis el primer capítulo</button>
-                    <button className="px-4 py-1.5 bg-[#1E1E1E] hover:bg-[#2D2D2D] border border-[#333] rounded-full text-xs text-gray-300 transition">Series en progreso</button>
-                    <button className="px-4 py-1.5 bg-[#1E1E1E] hover:bg-[#2D2D2D] border border-[#333] rounded-full text-xs text-gray-300 transition">Top gifted</button>
-                    <button className="px-4 py-1.5 bg-[#1E1E1E] hover:bg-[#2D2D2D] border border-[#333] rounded-full text-xs text-gray-300 transition">Top episodios</button>
-                </div>
+                <FeedTabs />
             </div>
 
             <div className="max-w-3xl mx-auto px-6">

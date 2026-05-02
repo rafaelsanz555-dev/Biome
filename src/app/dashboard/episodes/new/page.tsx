@@ -10,7 +10,7 @@ export default async function NewEpisodePage() {
 
     const { data: profile } = await supabase
         .from('profiles')
-        .select('*, creators(*, themes(*))')
+        .select('*, creators!profile_id(*, themes(*))')
         .eq('id', user?.id ?? '')
         .maybeSingle()
 

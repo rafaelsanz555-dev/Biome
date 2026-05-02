@@ -7,7 +7,7 @@ export default async function DiscoverPage() {
 
     const { data: creators } = await supabase
         .from('profiles')
-        .select('*, creators!inner(subscription_price)')
+        .select('*, creators!profile_id!inner(subscription_price, posting_frequency, series_status, is_verified_storyteller)')
         .eq('role', 'creator')
         .limit(100)
 
