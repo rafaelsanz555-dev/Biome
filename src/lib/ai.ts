@@ -9,8 +9,10 @@ function getClient(): Anthropic | null {
     return client
 }
 
-// Default: Claude Opus 4.7 (último flagship). Override via ANTHROPIC_MODEL si necesitas algo distinto.
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-7'
+// Default: Claude Haiku 4.5 — barato y rápido, perfecto para tareas ligeras
+// (improve, titles, recap). Override con ANTHROPIC_MODEL si en algún flow
+// necesitas algo más potente (ej. análisis editorial profundo).
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5'
 const MAX_INPUT_CHARS = 16000
 
 export type AIAssistType = 'improve_text' | 'suggest_titles' | 'recap' | 'translate'

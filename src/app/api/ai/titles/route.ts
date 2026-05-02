@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         assist_type: 'suggest_titles',
         input_length: text.length,
         output_length: titles.join('\n').length,
-        model: process.env.ANTHROPIC_MODEL || 'claude-opus-4-7',
+        model: process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5',
     })
 
     return NextResponse.json({ titles })

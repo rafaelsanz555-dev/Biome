@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         assist_type: 'improve_text',
         input_length: text.length,
         output_length: out.length,
-        model: process.env.ANTHROPIC_MODEL || 'claude-opus-4-7',
+        model: process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5',
     })
 
     return NextResponse.json({ output: out })
