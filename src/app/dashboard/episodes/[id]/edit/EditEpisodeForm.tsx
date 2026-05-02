@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation'
 import { updateEpisode, deleteEpisode } from '../../actions'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2, ImagePlus, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { LivePreview } from '@/app/dashboard/settings/LivePreview'
 
 interface EditEpisodeFormProps {
     episode: any
+    previewInitial?: any
 }
 
-export function EditEpisodeForm({ episode }: EditEpisodeFormProps) {
+export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProps) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
@@ -105,8 +107,9 @@ export function EditEpisodeForm({ episode }: EditEpisodeFormProps) {
 
     return (
         <>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-6 space-y-5">
                     {/* Título */}
                     <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Título</label>
@@ -247,6 +250,14 @@ export function EditEpisodeForm({ episode }: EditEpisodeFormProps) {
                 <p className="text-[11px] text-gray-600 italic text-center pt-2 border-t border-gray-800">
                     💡 Para editar el cuerpo del episodio (texto e imágenes inline), próximamente desde aquí. Por ahora puedes despublicar y crear uno nuevo si necesitas cambios profundos.
                 </p>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-4">
+                    <div className="hidden lg:block mt-0">
+                        <LivePreview initial={previewInitial} />
+                    </div>
+                </div>
             </form>
 
             {/* Delete confirm modal */}

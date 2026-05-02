@@ -9,7 +9,7 @@ function getClient(): Anthropic | null {
     return client
 }
 
-const MODEL = 'claude-sonnet-4-5-20250929'
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6-20260301'
 const MAX_INPUT_CHARS = 16000
 
 export type AIAssistType = 'improve_text' | 'suggest_titles' | 'recap' | 'translate'

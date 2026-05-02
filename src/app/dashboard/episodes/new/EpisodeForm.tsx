@@ -14,12 +14,14 @@ import Link from '@tiptap/extension-link'
 import { PullQuote } from '@/components/editor/PullQuote'
 import { WritingCoach } from '@/components/writer/WritingCoach'
 import { AIAssistant } from '@/components/writer/AIAssistant'
+import { LivePreview } from '@/app/dashboard/settings/LivePreview'
 
 interface EpisodeFormProps {
     seasons: any[]
+    previewInitial?: any
 }
 
-export default function EpisodeForm({ seasons }: EpisodeFormProps) {
+export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProps) {
     const [isPending, setIsPending] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [monetization, setMonetization] = useState<'free' | 'subscription' | 'ppv'>('subscription')
@@ -410,6 +412,11 @@ export default function EpisodeForm({ seasons }: EpisodeFormProps) {
                                 Tu primer capítulo siempre es gratis para todos
                             </p>
                         </div>
+                    </div>
+
+                    {/* Live Preview en el Sidebar */}
+                    <div className="hidden lg:block mt-6">
+                        <LivePreview initial={previewInitial} />
                     </div>
                 </div>
             </div>
