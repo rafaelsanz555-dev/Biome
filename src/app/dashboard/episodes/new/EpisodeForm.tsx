@@ -80,13 +80,13 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
         if (coverFile) {
             const ext = coverFile.name.split('.').pop()
             const fileName = `cover_${Date.now()}_${Math.random().toString(36).substring(2)}.${ext}`
-            const { error: uploadError } = await supabase.storage.from('post-images').upload(fileName, coverFile)
+            const { error: uploadError } = await supabase.storage.from('episodes').upload(fileName, coverFile)
             if (uploadError) {
                 setErrorMsg('Error al subir la portada: ' + uploadError.message)
                 setIsPending(false)
                 return
             }
-            const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
+            const { data: urlData } = supabase.storage.from('episodes').getPublicUrl(fileName)
             formData.append('cover_image_url', urlData.publicUrl)
         }
 
@@ -95,13 +95,13 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
             for (const file of postImages) {
                 const ext = file.name.split('.').pop()
                 const fileName = `post_${Date.now()}_${Math.random().toString(36).substring(2)}.${ext}`
-                const { error: uploadError } = await supabase.storage.from('post-images').upload(fileName, file)
+                const { error: uploadError } = await supabase.storage.from('episodes').upload(fileName, file)
                 if (uploadError) {
                     setErrorMsg('Error al subir imagen: ' + uploadError.message)
                     setIsPending(false)
                     return
                 }
-                const { data: urlData } = supabase.storage.from('post-images').getPublicUrl(fileName)
+                const { data: urlData } = supabase.storage.from('episodes').getPublicUrl(fileName)
                 imageUrls.push(urlData.publicUrl)
             }
             formData.append('images', JSON.stringify(imageUrls))
