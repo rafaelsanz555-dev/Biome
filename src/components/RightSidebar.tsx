@@ -14,7 +14,7 @@ export function RightSidebar() {
                 </div>
                 <div className="space-y-4">
                     {/* Item 1 */}
-                    <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-white/5 transition cursor-pointer">
+                    <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-white/5 transition">
                         <img 
                             className="w-16 h-16 rounded-lg object-cover" 
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYj709WdrrX7Ml05H0jt4e28qAfI5SZFxytVOQbQUqUtYBod75EXALdFTaVqxG14t1hiw-BLcZ7jnySHr7bj91eyIQmDCuKpTeZPjoui9dXmyP8vQBjFa17rz0g75zHCV0W1kNQf1_tmHzblsF_XJ5DFz4bgaXjDixQtxhGdPKF8JD2D6DdxoEFMsmwouAM4u3j8KvoOx0v59PtH011Ht9CUqWh_7J5n55_oYPbralZRIoiHx2E0rLvRdjJ1G53lcfFIqrTkNoRGN_"
@@ -30,7 +30,7 @@ export function RightSidebar() {
                         </div>
                     </div>
                     {/* Item 2 */}
-                    <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-white/5 transition cursor-pointer">
+                    <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-white/5 transition">
                         <img 
                             className="w-16 h-16 rounded-lg object-cover" 
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw9WeE06N0yfAReT0x0HbFuWOS9No35_ii03cHegZ_OmYCndXOeOAl5x95RK084OMP6GeDNGpyUhUBaHmumauqFi1OCMRnTUeVWVdj7R3w4PC9vuGd1BYU8UZVPRPsyxFP70bqqYBgXqFehNfzsxcBXlCFhEP0gFjFNYSzYXecYJ4gemr8xrLo7WdHPYYTP_IWsASUvL8ml0hylpre6qK2A2pDpiqHBzSJmlLFXtsFQ3QK0aLu18ErlpLVKXHp8urFHWrXkj9CBAt-"
@@ -50,12 +50,12 @@ export function RightSidebar() {
 
             {/* Widget: Top Gifted */}
             <section>
-                <div className="flex items-center justify-between mb-4 hover:text-white group cursor-pointer transition">
+                <div className="flex items-center justify-between mb-4 group transition">
                     <h4 className="font-bold text-sm text-gray-200 tracking-wide">Top Gifted</h4>
                     <ChevronRight size={14} className="text-gray-500 group-hover:text-white" />
                 </div>
                 <div className="space-y-4 mb-4">
-                    <div className="flex items-center space-x-3 cursor-pointer">
+                    <div className="flex items-center space-x-3">
                         <img 
                             className="w-10 h-10 rounded-full border border-gray-700 object-cover" 
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWyokb37gPMBEJCOIv6tGUcXlX6w3agdrTojVZgJJ9iYC52lfHNDDv05R6VVk_I5iuGcMGxmVp3f814FiTfE-Fk4Eor5ZBE3aQ9EHYd6-IMhunE_SemYyUsZxSwy_i1rxqZVHtQp8_jDhQXYtjLyNJECn1Tpvjjc7OU5_TI-eYJo4_peAjI3mdfHmG8jF6fyTEjudnkvrOf6ftKePlSyV4GsMhsocEWhHILXkDrNWB1YXT-7zV9_6WyPebTukbuWVxwMRkGrd6Y0hD"
@@ -66,7 +66,7 @@ export function RightSidebar() {
                             <p className="text-xs text-gray-500">14.8k lecturas</p>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-3 cursor-pointer">
+                    <div className="flex items-center space-x-3">
                         <img 
                             className="w-10 h-10 rounded-full border border-gray-700 object-cover" 
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6Xq0cBpk4_Om02Vszpp2RpRY6vUt6HMXMgIMdvWb7u-7v2_s7iH-ay2-BkNzNoqJY7K206oIZxG3W50z1A9YF1YIm9N1rFAgyRLN6rxLdkdk_4JVw3OnXnF6aKTnwvh0XysLuHdIBGG3OrYs0KBEQTnh81pnJD6g40N9QvWOd1xTbvMJ7QA_p_vFF186rDmonASrEnxQpDr51BQqVkD6o2-89jnVD-tGnnnfBLWYAyu4ajHbzPOJeIOuRb_1klCm9YFFiLFLUBB3K"
@@ -88,7 +88,7 @@ export function RightSidebar() {
             <section>
                 <h4 className="font-bold text-sm text-gray-200 tracking-wide mb-4">Escritores destacados</h4>
                 <div className="space-y-4">
-                    <div className="flex items-center space-x-3 cursor-pointer">
+                    <div className="flex items-center space-x-3">
                         <img 
                             className="w-10 h-10 rounded-full object-cover" 
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlpb7CchMEDmQ313dCCrmXcHJgyV-S4HYy1j70P8dCCUBqqJIstqCl74pUU_bgelq9GQcCNo1TLRXO77MMp-ImHm45o1_L6VHPDLtakc8Si_u-fJc34_xAnhamX5e0NG9LwEAc1Vr3ap0J6u-_LFQJMifJkb6EYAjA3zNraY8lXGLgG4CjDEtYV66-kAPaHwBjPJGYowcYnpZD2NqNLwpmDlrNggJkEUbo1X9WJXBhfTnKH8aDkqaURWNvw2qj2vEB38ClADZZ55bk"
@@ -102,7 +102,7 @@ export function RightSidebar() {
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-3 cursor-pointer">
+                    <div className="flex items-center space-x-3">
                         <img 
                             className="w-10 h-10 rounded-full object-cover" 
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCvzNNuXVqZKJZbF2B3z1AFQRs3ztb7jzraqnJR61MHBYKMl0Fi1yxMPioIpi3jTHpgGZZ83dZZWb1bFtZDF5Ah6QppyGd_VZlwmiXxPURqBlbendbN7e5PI-9_PmKebyrThSpWSaXTaeV6u_XNPb8_wurrysHI9OovBnh7r7P7P5Uw_iUzbpailpHvbeA1cC8_GgO3BEtBCuK-s7v3mJX8_fL-PI4fqY5lMwQ8x-qZfH6aerWS5o_ZStUlkbZxeCk25qN91v_cRr7"
@@ -119,7 +119,7 @@ export function RightSidebar() {
             {/* Widget: Recommended Episodes */}
             <section>
                 <h4 className="font-bold text-sm text-gray-200 tracking-wide mb-4">Episodios recomendados</h4>
-                <div className="relative rounded-xl overflow-hidden group cursor-pointer">
+                <div className="relative rounded-xl overflow-hidden group">
                     <img 
                         className="w-full h-48 object-cover group-hover:scale-105 transition duration-500" 
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDppo856tBfiKSB87B2oj9WxTtu1N0SaLLf_VqhX300ATNcvnL8KiIS8zlwj_jFgh386ZPLNfd2ynTnMwWV7F77iBKTozJZQanGLm-bSF6_11Fwmj7Bw-k3fMR8gVNWBNNFQfrQjGTRf3iC4SA8HxKv6MwYc1FxEiwhBFCHyQNSp3yBza8-uA6xO73kZguLdB_4hoZdfp9cAFyD2OozPQl5pTpiXPL1SENigvHLB2aYNx7dB-oDk3yOKGrjCpaPxDxZCdQLG4cWEA1s"

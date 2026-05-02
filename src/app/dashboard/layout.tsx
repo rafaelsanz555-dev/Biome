@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/auth/actions'
 import { DashboardNav } from '@/components/DashboardNav'
-import { RightSidebar } from '@/components/RightSidebar'
+import { RightRail } from '@/components/RightRail'
 import { UserMenu } from '@/components/UserMenu'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { Search, Bell, Edit3, Play, ChevronDown, RefreshCw } from 'lucide-react'
@@ -180,8 +180,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 </div>
             </main>
 
-            {/* ── Right Sidebar ── */}
-            <RightSidebar />
+            {/* ── Right Rail (RightSidebar en Reader mode, StudioPanel en Studio mode) ── */}
+            <RightRail />
             
         </div>
     )

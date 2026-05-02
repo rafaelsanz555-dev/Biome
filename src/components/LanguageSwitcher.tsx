@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { changeLocale } from '@/i18n/actions'
 import { track } from '@/lib/analytics'
@@ -13,6 +14,7 @@ const LANGS = [
 
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
     const currentLocale = useLocale()
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
     const ref = useRef<HTMLDivElement>(null)
@@ -31,6 +33,8 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         startTransition(async () => {
             await changeLocale(code)
             setOpen(false)
+            // Force re-render so the new locale is picked up by useTranslations everywhere
+            router.refresh()
         })
     }
 

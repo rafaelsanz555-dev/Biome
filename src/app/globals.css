@@ -173,4 +173,17 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #444;
   }
+
+  /* ── Global cursor pointer (Casiani feedback) ──
+   * Todo elemento interactivo debe mostrar la "manito" al hover.
+   * Buttons, links, role=button, labels y elementos con onclick.
+   */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  label[for],
+  summary,
+  [onclick] {
+    cursor: pointer;
+  }
 }
