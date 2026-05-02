@@ -159,6 +159,9 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
                                     Imagen de portada <span className="normal-case font-medium text-gray-600 ml-1">· opcional</span>
                                 </label>
+                                <p className="text-[11px] text-gray-500 leading-relaxed">
+                                    Recomendado: <span className="text-gray-300 font-mono">1200×630px</span> (proporción 16:9). Otras medidas serán recortadas al centro.
+                                </p>
                                 {coverPreview ? (
                                     <div className="relative w-full h-52 rounded-xl overflow-hidden border border-gray-800">
                                         <img src={coverPreview} alt="" className="w-full h-full object-cover" />
@@ -177,7 +180,7 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                                     >
                                         <ImagePlus size={24} className="text-gray-500 group-hover:text-blue-500 transition mb-1.5" />
                                         <span className="text-sm font-semibold text-gray-400 group-hover:text-white transition">Haz clic para agregar portada</span>
-                                        <span className="text-xs text-gray-600 mt-0.5">JPG, PNG — hasta 5MB</span>
+                                        <span className="text-xs text-gray-600 mt-0.5">JPG, PNG · 1200×630px ideal · hasta 5MB</span>
                                     </label>
                                 )}
                                 <input id="cover_image" type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
@@ -333,6 +336,19 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                                     <option key={s.id} value={s.id} className="bg-[#15171C]">{s.title}</option>
                                 ))}
                             </select>
+                            <a
+                                href="/dashboard/seasons"
+                                target="_blank"
+                                rel="noopener"
+                                className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition"
+                            >
+                                + Crear nueva serie
+                            </a>
+                            {(!seasons || seasons.length === 0) && (
+                                <p className="text-[11px] text-gray-500 leading-relaxed">
+                                    Aún no creaste series. Una serie agrupa varios episodios bajo un arco narrativo (ej. "Mi divorcio en 8 capítulos").
+                                </p>
+                            )}
                         </div>
 
                         {/* Monetization */}

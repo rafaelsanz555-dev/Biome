@@ -19,6 +19,7 @@ export async function createEpisode(formData: FormData) {
     const word_count_raw = formData.get('word_count') as string
     const reading_time_raw = formData.get('reading_time_min') as string
     const cover_image_url = formData.get('cover_image_url') as string
+    const images_raw = formData.get('images') as string
     const season_id = formData.get('season_id') as string
     const soundtrack_url = formData.get('soundtrack_url') as string
     const soundtrack_title = formData.get('soundtrack_title') as string
@@ -28,6 +29,16 @@ export async function createEpisode(formData: FormData) {
 
     if (!title || !full_text) {
         return { error: 'Title and Full Text are required' }
+    }
+
+    let images: string[] | null = null
+    try {
+        if (images_raw) {
+            const parsed = JSON.parse(images_raw)
+            if (Array.isArray(parsed)) images = parsed.filter((u) => typeof u === 'string')
+        }
+    } catch {
+        images = null
     }
 
     let content_json = null
@@ -52,6 +63,7 @@ export async function createEpisode(formData: FormData) {
             word_count,
             reading_time_min,
             cover_image_url,
+            images,
             soundtrack_url: soundtrack_url || null,
             soundtrack_title: soundtrack_title || null,
             is_published,
@@ -102,6 +114,7 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
     const word_count_raw = formData.get('word_count') as string
     const reading_time_raw = formData.get('reading_time_min') as string
     const cover_image_url = formData.get('cover_image_url') as string
+    const images_raw = formData.get('images') as string
     const season_id = formData.get('season_id') as string
     const soundtrack_url = formData.get('soundtrack_url') as string
     const soundtrack_title = formData.get('soundtrack_title') as string
@@ -110,6 +123,16 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
     const ppv_price = formData.get('monetization') === 'ppv' ? parseFloat(formData.get('ppv_price') as string) : null
 
     if (!title || !full_text) return { error: 'Title and Full Text are required' }
+
+    let images: string[] | null = null
+    try {
+        if (images_raw) {
+            const parsed = JSON.parse(images_raw)
+            if (Array.isArray(parsed)) images = parsed.filter((u) => typeof u === 'string')
+        }
+    } catch {
+        images = null
+    }
 
     // Validación de min words (anti-spam)
     const word_count = word_count_raw ? parseInt(word_count_raw, 10) : 0
@@ -140,6 +163,7 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
             word_count,
             reading_time_min,
             cover_image_url: cover_image_url || null,
+            images,
             soundtrack_url: soundtrack_url || null,
             soundtrack_title: soundtrack_title || null,
             is_published,

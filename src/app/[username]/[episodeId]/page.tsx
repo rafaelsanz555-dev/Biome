@@ -314,6 +314,22 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         )}
                         <TextHighlightShare creatorUsername={creatorProfile.username} episodeTitle={episode.title} />
 
+                        {/* 🖼️ Galería: imágenes adicionales del episodio */}
+                        {Array.isArray(episode.images) && episode.images.length > 0 && (
+                            <div className="not-prose mt-10 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {episode.images.map((url: string, i: number) => (
+                                    <div key={i} className="relative rounded-xl overflow-hidden border border-white/5 bg-black/20">
+                                        <img
+                                            src={url}
+                                            alt={`Imagen ${i + 1} del capítulo`}
+                                            className="w-full h-auto object-contain max-h-[600px]"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         {/* 🎭 Emotional Signature */}
                         <EmotionalReactions
                             episodeId={episode.id}

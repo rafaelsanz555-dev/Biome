@@ -7,7 +7,8 @@
       "mcp__Claude_in_Chrome__browser_batch",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git push *)"
     ]
   }
 }
