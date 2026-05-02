@@ -20,6 +20,7 @@ import { NextEpisode } from '@/components/reader/NextEpisode'
 import { EpisodeRecap } from '@/components/reader/EpisodeRecap'
 import { HonestPaywall } from '@/components/reader/HonestPaywall'
 import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
+import { CommentSection } from '@/components/comments/CommentSection'
 
 interface EpisodePageProps {
     params: Promise<{
@@ -402,6 +403,9 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 </a>
                             )}
                         </div>
+
+                        {/* Comentarios */}
+                        <CommentSection episodeId={episode.id} creatorId={creatorProfile.id} />
 
                         {/* Gift section */}
                         {!isOwnProfile && (

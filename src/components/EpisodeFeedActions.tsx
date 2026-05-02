@@ -148,24 +148,19 @@ export function EpisodeFeedActions({
                 <span>{likeCount > 0 ? likeCount : 'Me gusta'}</span>
             </button>
 
-            {/* Comment — en feed va al episodio; en la pagina del episodio scrollea al hash */}
+            {/* Comment — en feed va al episodio (con #comments); en la pagina del episodio scrollea */}
             {commentScrollTarget ? (
                 <a
                     href={commentScrollTarget}
                     className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
-                    title="Comentar (próximamente)"
-                    onClick={(e) => {
-                        // Hasta que exista el sistema de comments real, mostrar toast amable
-                        e.preventDefault()
-                        alert('Los comentarios llegan pronto. Mientras tanto, podés dejar tu reacción ❤️ arriba.')
-                    }}
+                    title="Ir a los comentarios"
                 >
                     <MessageCircle size={18} />
                     <span>Comentar</span>
                 </a>
             ) : (
                 <Link
-                    href={episodeUrl}
+                    href={`${episodeUrl}#comments`}
                     className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
                     title="Leer y comentar"
                 >
