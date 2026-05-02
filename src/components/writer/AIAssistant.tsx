@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, X, Wand2, Type, Loader2, Copy, Check } from 'lucide-react'
+import { Sparkles, X, Wand2, Type, Loader2, Copy, Check, Globe } from 'lucide-react'
 
 interface Props {
     /** Devuelve el texto plano actual del editor */
@@ -20,6 +20,7 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
     const [loading, setLoading] = useState(false)
     const [improvedText, setImprovedText] = useState<string | null>(null)
     const [titles, setTitles] = useState<string[] | null>(null)
+    const [translatedText, setTranslatedText] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
 
@@ -27,6 +28,7 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
         setMode('menu')
         setImprovedText(null)
         setTitles(null)
+        setTranslatedText(null)
         setError(null)
     }
 
@@ -79,6 +81,33 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
             }
             const j = await res.json()
             setTitles(j.titles)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    async function handleTranslate() {
+        const text = getText()
+        if (!text || text.length < 30) {
+            setError('Escribe al menos 30 caracteres antes de traducir.')
+            return
+        }
+        setMode('translate')
+        setLoading(true)
+        setError(null)
+        try {
+            const res = await fetch('/api/ai/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text }),
+            })
+            if (!res.ok) {
+                const j = await res.json().catch(() => null)
+                setError(j?.error === 'ai_unavailable' ? 'IA no configurada' : 'Error traduciendo.')
+                return
+            }
+            const j = await res.json()
+            setTranslatedText(j.output)
         } finally {
             setLoading(false)
         }
@@ -148,6 +177,16 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
                                 <p className="text-[11px] text-gray-500 mt-0.5">5 alternativas basadas en tu texto.</p>
                             </div>
                         </button>
+                        <button
+                            onClick={handleTranslate}
+                            className="w-full flex items-start gap-3 p-3 rounded-lg border border-gray-800 hover:border-violet-500/30 hover:bg-violet-500/5 text-left transition"
+                        >
+                            <Globe className="text-violet-400 shrink-0 mt-0.5" size={16} />
+                            <div>
+                                <p className="text-sm font-semibold text-white">Traducir al Inglés</p>
+                                <p className="text-[11px] text-gray-500 mt-0.5">Llega a una audiencia global sin perder tu voz.</p>
+                            </div>
+                        </button>
                     </div>
                 )}
 
@@ -207,6 +246,26 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
                         <button onClick={reset} className="w-full mt-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition">
                             Volver
                         </button>
+                    </div>
+                )}
+
+                {mode === 'translate' && translatedText && !loading && (
+                    <div className="space-y-3">
+                        <p className="text-[10px] uppercase tracking-wider font-bold text-violet-400">English Translation</p>
+                        <div className="p-3 rounded-lg bg-white/[0.02] border border-gray-800 text-sm text-gray-200 leading-relaxed max-h-72 overflow-y-auto whitespace-pre-wrap" style={{ fontFamily: 'Georgia, serif' }}>
+                            {translatedText}
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => copyText(translatedText, 0)}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 text-xs font-semibold transition"
+                            >
+                                {copiedIdx === 0 ? <><Check size={12} /> Copiado</> : <><Copy size={12} /> Copiar</>}
+                            </button>
+                            <button onClick={reset} className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold transition">
+                                Volver
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
