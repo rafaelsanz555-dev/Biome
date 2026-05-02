@@ -9,7 +9,8 @@ function getClient(): Anthropic | null {
     return client
 }
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6-20260301'
+// Default: Claude Opus 4.7 (último flagship). Override via ANTHROPIC_MODEL si necesitas algo distinto.
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-7'
 const MAX_INPUT_CHARS = 16000
 
 export type AIAssistType = 'improve_text' | 'suggest_titles' | 'recap' | 'translate'
@@ -39,8 +40,13 @@ async function callClaude({ system, user, maxTokens = 1024, temperature = 0.7, c
         const block = res.content[0]
         if (block.type !== 'text') return null
         return block.text.trim()
-    } catch (e) {
-        console.error('[ai] anthropic call failed', e)
+    } catch (e: any) {
+        console.error('[ai] anthropic call failed', {
+            message: e?.message,
+            status: e?.status,
+            type: e?.error?.type,
+            model: MODEL,
+        })
         return null
     }
 }

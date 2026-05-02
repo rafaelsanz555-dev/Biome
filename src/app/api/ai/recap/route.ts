@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         assist_type: 'recap',
         input_length: (ep.full_text || '').length,
         output_length: recap.length,
-        model: 'claude-sonnet-4-5',
+        model: process.env.ANTHROPIC_MODEL || 'claude-opus-4-7',
     })
 
     return NextResponse.json({ recap })
