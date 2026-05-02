@@ -8,6 +8,7 @@ import { ThemeProvider, extractTheme } from '@/components/theme/ThemeProvider'
 import { CreatorBioCard } from '@/components/trust/CreatorBioCard'
 import Link from 'next/link'
 import { Lock, Heart, Gift, MessageCircle } from 'lucide-react'
+import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
 
 interface ProfilePageProps {
     params: Promise<{ username: string }>
@@ -50,6 +51,22 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
     const isOwnProfile = user?.id === profile.id
     const subscriptionPrice = profile.creators?.subscription_price || 4.99
     const initial = (profile.full_name || profile.username).charAt(0).toUpperCase()
+
+    // Reactions (likes ❤️) por episodio — para alimentar el action bar
+    const episodeIds = (episodes || []).map((e) => e.id)
+    const likeCountByEp: Record<string, number> = {}
+    const likedByMe: Record<string, boolean> = {}
+    if (episodeIds.length > 0) {
+        const { data: heartRows } = await supabase
+            .from('reactions')
+            .select('episode_id, user_id')
+            .in('episode_id', episodeIds)
+            .eq('emoji', '❤️')
+        heartRows?.forEach((r) => {
+            likeCountByEp[r.episode_id] = (likeCountByEp[r.episode_id] || 0) + 1
+            if (user && r.user_id === user.id) likedByMe[r.episode_id] = true
+        })
+    }
 
     // Subscriber count (social proof in CTA)
     const { count: subCount } = await supabase
@@ -304,21 +321,16 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                     </div>
                                                 )}
 
-                                                {/* Action Bar */}
-                                                <div className="px-4 py-3 bg-[#15171C] flex items-center gap-6">
-                                                    <button className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
-                                                        <Heart size={18} /> Me gusta
-                                                    </button>
-                                                    <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors">
-                                                        <MessageCircle size={18} /> Comentar
-                                                    </Link>
-                                                    <Link href={`/${profile.username}/${episode.id}`} className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors ml-auto">
-                                                        <Gift size={18} /> Dar regalo
-                                                    </Link>
-                                                    <Link href={`/${profile.username}/${episode.id}`}>
-                                                        <Button variant="ghost" className="text-white hover:bg-gray-800 ml-2">Leer →</Button>
-                                                    </Link>
-                                                </div>
+                                                {/* Action Bar — like real, share funcional, kebab para dueño */}
+                                                <EpisodeFeedActions
+                                                    episodeId={episode.id}
+                                                    episodeUrl={`/${profile.username}/${episode.id}`}
+                                                    episodeTitle={episode.title}
+                                                    isOwner={isOwnProfile}
+                                                    isAuthenticated={!!user}
+                                                    initialLiked={!!likedByMe[episode.id]}
+                                                    initialLikeCount={likeCountByEp[episode.id] || 0}
+                                                />
                                             </div>
                                         )
                                     })}
