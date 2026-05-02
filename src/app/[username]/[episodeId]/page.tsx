@@ -19,6 +19,7 @@ import { ReportButton } from '@/components/ReportButton'
 import { NextEpisode } from '@/components/reader/NextEpisode'
 import { EpisodeRecap } from '@/components/reader/EpisodeRecap'
 import { HonestPaywall } from '@/components/reader/HonestPaywall'
+import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
 
 interface EpisodePageProps {
     params: Promise<{
@@ -382,21 +383,18 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 {/* Engagement bar (sticky footer-like) */}
                 {hasAccess && (
                     <>
-                        <div className="mt-16 py-6 border-y border-gray-800 flex items-center justify-between">
-                            <div className="flex items-center gap-1">
-                                <button className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-red-500 font-semibold text-sm">
-                                    <Heart size={18} />
-                                    <span>Me gusta</span>
-                                </button>
-                                <button className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white font-semibold text-sm">
-                                    <MessageCircle size={18} />
-                                    <span>Comentar</span>
-                                </button>
-                                <button className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-white/5 transition text-gray-400 hover:text-white font-semibold text-sm">
-                                    <Share2 size={18} />
-                                    <span>Compartir</span>
-                                </button>
-                            </div>
+                        <div className="mt-16 py-2 border-y border-gray-800 flex items-center justify-between">
+                            <EpisodeFeedActions
+                                episodeId={episode.id}
+                                episodeUrl={`/${creatorProfile.username}/${episode.id}`}
+                                episodeTitle={episode.title}
+                                isOwner={isOwnProfile}
+                                isAuthenticated={!!user}
+                                initialLiked={myReaction === '❤️'}
+                                initialLikeCount={reactionCounts['❤️'] || 0}
+                                hideGift={true}
+                                commentScrollTarget="#comments"
+                            />
                             {!isOwnProfile && (
                                 <a href="#gift-panel" className="flex items-center gap-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500/20 transition">
                                     <Gift size={16} />

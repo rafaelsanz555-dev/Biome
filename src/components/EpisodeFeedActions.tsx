@@ -14,6 +14,10 @@ interface Props {
     isAuthenticated: boolean
     initialLiked: boolean
     initialLikeCount: number
+    /** En la página del episodio ya hay anchor a #gift-panel, evitar duplicado */
+    hideGift?: boolean
+    /** Comentar es link al episodio en feeds; en la pagina del episodio no tiene sentido */
+    commentScrollTarget?: string
 }
 
 /**
@@ -38,6 +42,8 @@ export function EpisodeFeedActions({
     isAuthenticated,
     initialLiked,
     initialLikeCount,
+    hideGift = false,
+    commentScrollTarget,
 }: Props) {
     const router = useRouter()
     const [liked, setLiked] = useState(initialLiked)
@@ -142,15 +148,31 @@ export function EpisodeFeedActions({
                 <span>{likeCount > 0 ? likeCount : 'Me gusta'}</span>
             </button>
 
-            {/* Comment (link al episodio — sistema de comments en backlog) */}
-            <Link
-                href={episodeUrl}
-                className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
-                title="Leer y comentar"
-            >
-                <MessageCircle size={18} />
-                <span>Comentar</span>
-            </Link>
+            {/* Comment — en feed va al episodio; en la pagina del episodio scrollea al hash */}
+            {commentScrollTarget ? (
+                <a
+                    href={commentScrollTarget}
+                    className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
+                    title="Comentar (próximamente)"
+                    onClick={(e) => {
+                        // Hasta que exista el sistema de comments real, mostrar toast amable
+                        e.preventDefault()
+                        alert('Los comentarios llegan pronto. Mientras tanto, podés dejar tu reacción ❤️ arriba.')
+                    }}
+                >
+                    <MessageCircle size={18} />
+                    <span>Comentar</span>
+                </a>
+            ) : (
+                <Link
+                    href={episodeUrl}
+                    className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
+                    title="Leer y comentar"
+                >
+                    <MessageCircle size={18} />
+                    <span>Comentar</span>
+                </Link>
+            )}
 
             {/* Share */}
             <button
@@ -164,13 +186,15 @@ export function EpisodeFeedActions({
 
             <div className="ml-auto flex items-center gap-2">
                 {/* Gift */}
-                <Link
-                    href={episodeUrl}
-                    className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors"
-                >
-                    <Gift size={18} />
-                    <span>Dar regalo</span>
-                </Link>
+                {!hideGift && (
+                    <Link
+                        href={episodeUrl}
+                        className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors"
+                    >
+                        <Gift size={18} />
+                        <span>Dar regalo</span>
+                    </Link>
+                )}
 
                 {/* Owner kebab menu */}
                 {isOwner && (
