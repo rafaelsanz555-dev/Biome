@@ -238,12 +238,12 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
                 {/* Cover */}
                 {(episode.cover_image_url || !hasAccess) && (
-                    <div className="mb-10 w-full rounded-2xl overflow-hidden relative border border-gray-800 bg-[#15171C] aspect-[16/9] flex items-center justify-center">
+                    <div className={`mb-10 w-full rounded-2xl overflow-hidden relative border border-gray-800 bg-[#15171C] flex items-center justify-center ${episode.cover_image_url ? '' : 'aspect-[16/9]'}`}>
                         {episode.cover_image_url ? (
                             <img
                                 src={episode.cover_image_url}
                                 alt={episode.title}
-                                className={`w-full h-full object-cover transition-all ${!hasAccess ? 'blur-2xl opacity-40 scale-110' : ''}`}
+                                className={`w-full h-auto max-h-[70vh] object-contain transition-all ${!hasAccess ? 'blur-2xl opacity-40 scale-110' : ''}`}
                             />
                         ) : (
                             <div className="w-full h-full bg-gradient-to-br from-blue-900/30 via-[#15171C] to-[#0A0B0E]"></div>

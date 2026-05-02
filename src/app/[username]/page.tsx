@@ -282,10 +282,10 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                 {(episode.cover_image_url || !canRead) && (
                                                     <div className="relative w-full bg-[#0A0B0E] border-y border-gray-800 min-h-[250px] flex items-center justify-center overflow-hidden">
                                                         {episode.cover_image_url && (
-                                                            <img 
-                                                                src={episode.cover_image_url} 
-                                                                alt="Contenido" 
-                                                                className={`w-full h-auto max-h-[600px] object-cover ${!canRead ? 'blur-2xl opacity-40 scale-110' : ''}`} 
+                                                            <img
+                                                                src={episode.cover_image_url}
+                                                                alt="Contenido"
+                                                                className={`w-full h-auto max-h-[600px] object-contain ${!canRead ? 'blur-2xl opacity-40 scale-110' : ''}`}
                                                             />
                                                         )}
                                                         
