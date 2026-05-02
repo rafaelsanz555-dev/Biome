@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { UserMenu } from '@/components/UserMenu'
@@ -7,6 +8,9 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 export async function Navbar() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+    const tCommon = await getTranslations('common')
+    const tLanding = await getTranslations('landing')
+    const tOnboarding = await getTranslations('onboarding')
 
     let profile = null
     if (user) {
@@ -28,10 +32,10 @@ export async function Navbar() {
                     </Link>
                     <nav className="hidden md:flex items-center gap-2">
                         <Link href="/discover" className="text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-all">
-                            Descubrir
+                            {tCommon('discover')}
                         </Link>
                         <Link href="/dashboard" className="text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-all">
-                            Feed
+                            {tCommon('feed')}
                         </Link>
                     </nav>
                 </div>
@@ -40,7 +44,7 @@ export async function Navbar() {
                     <div className="flex items-center gap-3">
                         <Link href="/dashboard" className="hidden sm:block">
                             <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-9">
-                                {profile.role === 'creator' ? 'Dashboard' : 'Feed'}
+                                {profile.role === 'creator' ? tCommon('dashboard') : tCommon('feed')}
                             </Button>
                         </Link>
                         <UserMenu
@@ -54,7 +58,7 @@ export async function Navbar() {
                     <div className="flex items-center gap-3">
                         <Link href="/onboarding">
                             <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-9">
-                                Completar perfil
+                                {tOnboarding('complete_profile')}
                             </Button>
                         </Link>
                     </div>
@@ -62,11 +66,11 @@ export async function Navbar() {
                     <div className="flex items-center gap-2">
                         <LanguageSwitcher compact />
                         <Link href="/login" className="text-sm font-semibold text-gray-400 hover:text-white transition-colors hidden sm:block">
-                            Iniciar sesión
+                            {tCommon('login')}
                         </Link>
                         <Link href="/login?mode=registro">
                             <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 h-9">
-                                Empieza gratis
+                                {tCommon('signup')}
                             </Button>
                         </Link>
                     </div>

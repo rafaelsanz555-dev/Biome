@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/ui/button'
 import { EarningsCalculator } from '@/components/EarningsCalculator'
@@ -23,9 +24,10 @@ const GIFTS = [
 export default async function LandingPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+    const tLanding = await getTranslations('landing')
     // Si ya está logueado, los CTAs llevan al dashboard en lugar de /login
     const ctaPrimary = user ? '/dashboard' : '/login'
-    const ctaPrimaryLabel = user ? 'Ir a mi dashboard →' : 'Empieza gratis · sé Founding Storyteller'
+    const ctaPrimaryLabel = user ? 'Dashboard →' : tLanding('cta_start')
 
     return (
         <div className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans selection:bg-blue-500/30">
@@ -39,17 +41,16 @@ export default async function LandingPage() {
                 <div className="relative max-w-4xl mx-auto px-6 text-center">
                     <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase mb-8 px-4 py-2 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                        La red social premium para creadores
+                        {tLanding('badge_platform')}
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 tracking-tight">
-                        Tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-400">historia.</span><br />
-                        Tus ingresos.
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-400">{tLanding('hero_title_1')}</span><br />
+                        {tLanding('hero_title_2')}
                     </h1>
 
                     <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-                        Sube publicaciones exclusivas, crea tu comunidad y recibe apoyo directo. 
-                        Tus fans más leales pagarán por ver lo que tienes que contar.
+                        {tLanding('hero_description')}
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -60,7 +61,7 @@ export default async function LandingPage() {
                         </Link>
                         <Link href="/discover" className="w-full sm:w-auto">
                             <Button size="lg" variant="outline" className="border-gray-700 bg-[#15171C] text-gray-300 hover:bg-gray-800 hover:text-white font-bold px-10 h-14 text-base rounded-xl w-full">
-                                Explorar creadores
+                                {tLanding('cta_explore')}
                             </Button>
                         </Link>
                     </div>

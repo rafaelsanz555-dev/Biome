@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
     Home,
     Compass,
@@ -24,34 +25,35 @@ interface DashboardNavProps {
 
 export function DashboardNav({ isCreator, username }: DashboardNavProps) {
     const pathname = usePathname()
+    const t = useTranslations('dashboard')
 
     // Main links — role-specific
     const mainLinks = isCreator
         ? [
-            { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
-            { href: '/dashboard/discovery', label: 'Discovery', icon: Compass },
-            { href: '/dashboard/episodes', label: 'Mis historias', icon: BookOpen },
-            { href: '/dashboard/billing', label: 'Monetización', icon: TrendingUp },
-            { href: '/dashboard/analytics', label: 'Analítica', icon: BarChart3 },
-            { href: '/dashboard/audience', label: 'Audiencia', icon: Users },
+            { href: '/dashboard', label: t('nav_home'), icon: Home, exact: true },
+            { href: '/dashboard/discovery', label: t('nav_discovery'), icon: Compass },
+            { href: '/dashboard/episodes', label: t('nav_stories'), icon: BookOpen },
+            { href: '/dashboard/billing', label: t('nav_monetization'), icon: TrendingUp },
+            { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+            { href: '/dashboard/audience', label: t('nav_audience'), icon: Users },
         ]
         : [
-            { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
-            { href: '/dashboard/discovery', label: 'Discovery', icon: Compass },
+            { href: '/dashboard', label: t('nav_home'), icon: Home, exact: true },
+            { href: '/dashboard/discovery', label: t('nav_discovery'), icon: Compass },
         ]
 
     // Library section — role-specific
     const libraryLinks = isCreator
         ? [
-            { href: '/dashboard/subscriptions', label: 'Mis suscripciones', icon: Star },
-            { href: '/dashboard/history', label: 'Historial', icon: Clock },
-            { href: '/dashboard/drafts', label: 'Borradores', icon: FileText },
-            { href: '/dashboard/settings', label: 'Ajustes', icon: Settings },
+            { href: '/dashboard/subscriptions', label: t('nav_subscriptions'), icon: Star },
+            { href: '/dashboard/history', label: t('nav_history'), icon: Clock },
+            { href: '/dashboard/drafts', label: t('nav_drafts'), icon: FileText },
+            { href: '/dashboard/settings', label: t('nav_settings'), icon: Settings },
         ]
         : [
-            { href: '/dashboard/subscriptions', label: 'Mis suscripciones', icon: Star },
-            { href: '/dashboard/history', label: 'Historial', icon: Clock },
-            { href: '/dashboard/settings', label: 'Ajustes', icon: Settings },
+            { href: '/dashboard/subscriptions', label: t('nav_subscriptions'), icon: Star },
+            { href: '/dashboard/history', label: t('nav_history'), icon: Clock },
+            { href: '/dashboard/settings', label: t('nav_settings'), icon: Settings },
         ]
 
     const renderLink = (link: any) => {
@@ -82,7 +84,7 @@ export function DashboardNav({ isCreator, username }: DashboardNavProps) {
             {mainLinks.map(renderLink)}
 
             <div className="pt-6 pb-2 px-3 text-[10px] uppercase font-bold text-gray-600 tracking-wider">
-                Biblioteca
+                {t('nav_library')}
             </div>
 
             {libraryLinks.map(renderLink)}

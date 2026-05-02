@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/auth/actions'
 import { DashboardNav } from '@/components/DashboardNav'
@@ -11,6 +12,8 @@ import { Search, Bell, Edit3, Play, ChevronDown, RefreshCw } from 'lucide-react'
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+    const tDash = await getTranslations('dashboard')
+    const tCommon = await getTranslations('common')
 
     if (!user) redirect('/login')
 
@@ -59,7 +62,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     </div>
                     <div className="min-w-0 flex-1">
                         <h3 className="text-sm font-semibold text-white capitalize truncate group-hover:text-blue-400 transition">{profile.username}</h3>
-                        <p className="text-[10px] text-gray-500 truncate">{isCreator ? '→ Ver mi perfil' : 'Lector'}</p>
+                        <p className="text-[10px] text-gray-500 truncate">{isCreator ? '→ ' + tCommon('profile') : tDash('reader_role')}</p>
                     </div>
                 </Link>
 
@@ -82,7 +85,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         </div>
                         <button className="w-full bg-[#262626] hover:bg-[#333] text-gray-300 text-xs py-2 rounded-lg flex items-center justify-center space-x-2 transition">
                             <RefreshCw size={12} />
-                            <span>Retirar</span>
+                            <span>{tDash('wallet_withdraw')}</span>
                         </button>
                     </div>
                 </div>}
@@ -99,7 +102,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                 <polyline points="16 17 21 12 16 7"/>
                                 <line x1="21" y1="12" x2="9" y2="12"/>
                             </svg>
-                            Cerrar sesión
+                            {tCommon('logout')}
                         </button>
                     </form>
                 </div>
@@ -120,7 +123,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         <Bell size={20} />
                     </Link>
                     {isCreator && <Link href="/dashboard/episodes/new" className="text-xs font-bold px-3 py-1.5 rounded-lg bg-[#1e40af] text-blue-400 border border-blue-500/20">
-                        Publicar
+                        {tCommon('publish')}
                     </Link>}
                     <UserMenu
                         email={user.email || ''}
@@ -142,7 +145,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         <input 
                             type="text" 
                             className="block w-full bg-[#1E1E1E] border border-transparent rounded-lg pl-10 pr-3 py-2 text-sm focus:border-blue-500/50 focus:bg-[#1E1E1E] focus:ring-1 focus:ring-blue-500 text-white placeholder-gray-500 transition-all outline-none" 
-                            placeholder="Buscar usuarios, historias o tags..." 
+                            placeholder={tDash('topbar_search')}
                         />
                     </div>
                     <div className="flex items-center space-x-6 pl-4">
@@ -156,12 +159,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         {isCreator ? (
                             <Link href="/dashboard/episodes/new" className="bg-[#1e40af] text-blue-400 border border-blue-500/20 px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-medium hover:bg-[#24634c] transition shadow-lg shadow-blue-500/10">
                                 <Edit3 size={16} />
-                                <span>Publicar</span>
+                                <span>{tCommon('publish')}</span>
                             </Link>
                         ) : (
                             <Link href="/discover" className="bg-[#1e40af] text-blue-400 border border-blue-500/20 px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-medium hover:bg-[#24634c] transition shadow-lg shadow-blue-500/10">
                                 <Edit3 size={16} />
-                                <span>Explorar</span>
+                                <span>{tCommon('explore')}</span>
                             </Link>
                         )}
                         <LanguageSwitcher compact />
