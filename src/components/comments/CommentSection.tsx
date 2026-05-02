@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getTranslations } from 'next-intl/server'
 import { CommentComposer } from './CommentComposer'
 import { CommentItem } from './CommentItem'
 import { MessageCircle } from 'lucide-react'
@@ -30,6 +31,7 @@ export type CommentRow = {
 export async function CommentSection({ episodeId, creatorId }: Props) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
+    const t = await getTranslations('comments')
 
     // Pull all comments for this episode (capped 200 — paginado real cuando crezcan)
     const { data: rows } = await supabase
@@ -77,10 +79,14 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
             <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
                 <MessageCircle className="text-blue-400" size={20} />
                 <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
-                    Conversación
+                    {t('section_title')}
                 </h2>
                 <span className="text-sm text-gray-500">
-                    {totalCount === 0 ? 'Sé el primero' : `${totalCount} ${totalCount === 1 ? 'comentario' : 'comentarios'}`}
+                    {totalCount === 0
+                        ? t('count_zero')
+                        : totalCount === 1
+                            ? t('count_one', { count: totalCount })
+                            : t('count_other', { count: totalCount })}
                 </span>
             </div>
 
@@ -88,14 +94,14 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
                 <CommentComposer episodeId={episodeId} parentId={null} />
             ) : (
                 <div className="rounded-xl border border-gray-800 bg-[#0F1114] p-5 text-sm text-gray-400">
-                    <Link href="/login" className="text-blue-400 hover:text-blue-300 font-semibold">Inicia sesión</Link>
-                    {' '}para dejar tu comentario.
+                    <Link href="/login" className="text-blue-400 hover:text-blue-300 font-semibold">Login</Link>
+                    {' '}{t('login_prompt')}
                 </div>
             )}
 
             {roots.length === 0 ? (
                 <p className="text-sm text-gray-500 italic py-8 text-center">
-                    Todavía no hay comentarios. Tu lectura puede inspirar la primera respuesta.
+                    {t('empty_state')}
                 </p>
             ) : (
                 <div className="space-y-5">

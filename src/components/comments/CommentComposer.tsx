@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Send, Loader2 } from 'lucide-react'
 
 interface Props {
@@ -27,6 +28,8 @@ export function CommentComposer({
     editingId = null,
 }: Props) {
     const router = useRouter()
+    const t = useTranslations('comments')
+    const tCommon = useTranslations('common')
     const [body, setBody] = useState(initialBody)
     const [busy, setBusy] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -66,9 +69,9 @@ export function CommentComposer({
             }
             if (!res.ok) {
                 const j = await res.json().catch(() => null)
-                if (j?.error === 'rate_limit') setError('Estás comentando muy rápido. Esperá un momento.')
-                else if (j?.error === 'body_length') setError(`Mantenelo entre 1 y ${MAX} caracteres.`)
-                else setError('Error guardando el comentario.')
+                if (j?.error === 'rate_limit') setError(t('error_rate_limit'))
+                else if (j?.error === 'body_length') setError(t('error_length'))
+                else setError(t('error_generic'))
                 return
             }
             setBody('')
@@ -81,7 +84,7 @@ export function CommentComposer({
 
     const remaining = MAX - body.length
     const overLimit = remaining < 0
-    const placeholderText = placeholder || (parentId ? 'Tu respuesta…' : 'Compartí lo que esta historia te dejó.')
+    const placeholderText = placeholder || (parentId ? t('placeholder_reply') : t('placeholder_root'))
 
     return (
         <div className="rounded-xl border border-gray-800 bg-[#0F1114] focus-within:border-blue-500/40 transition">
@@ -97,7 +100,7 @@ export function CommentComposer({
             />
             <div className="flex items-center justify-between px-4 py-2 border-t border-gray-800/60">
                 <span className={`text-[11px] ${overLimit ? 'text-red-400 font-bold' : 'text-gray-600'}`}>
-                    {overLimit ? `${-remaining} de más` : `${remaining} restantes`}
+                    {overLimit ? t('over_limit', { count: -remaining }) : t('remaining', { count: remaining })}
                 </span>
                 <div className="flex items-center gap-2">
                     {onCancel && (
@@ -107,7 +110,7 @@ export function CommentComposer({
                             disabled={busy}
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition"
                         >
-                            Cancelar
+                            {tCommon('cancel')}
                         </button>
                     )}
                     <button
@@ -117,7 +120,7 @@ export function CommentComposer({
                         className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
                     >
                         {busy ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
-                        {editingId ? 'Guardar' : (parentId ? 'Responder' : 'Comentar')}
+                        {editingId ? t('submit_save') : (parentId ? t('submit_reply') : t('submit_root'))}
                     </button>
                 </div>
             </div>

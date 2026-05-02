@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Heart, MessageCircle, Gift, Share2, MoreHorizontal, Edit3, Trash2, Loader2 } from 'lucide-react'
 import { deleteEpisode } from '@/app/dashboard/episodes/actions'
 
@@ -46,6 +47,7 @@ export function EpisodeFeedActions({
     commentScrollTarget,
 }: Props) {
     const router = useRouter()
+    const t = useTranslations('reader')
     const [liked, setLiked] = useState(initialLiked)
     const [likeCount, setLikeCount] = useState(initialLikeCount)
     const [likeBusy, setLikeBusy] = useState(false)
@@ -96,7 +98,7 @@ export function EpisodeFeedActions({
             try {
                 await (navigator as any).share({
                     title: episodeTitle,
-                    text: `Lee "${episodeTitle}" en bio.me`,
+                    text: episodeTitle,
                     url: fullUrl,
                 })
                 return
@@ -115,7 +117,7 @@ export function EpisodeFeedActions({
     }
 
     async function handleDelete() {
-        if (!confirm(`¿Eliminar "${episodeTitle}"? Esta acción no se puede deshacer.`)) return
+        if (!confirm(t('owner_delete_confirm', { title: episodeTitle }))) return
         setDeleting(true)
         try {
             const res = await deleteEpisode(episodeId)
@@ -142,10 +144,10 @@ export function EpisodeFeedActions({
                     liked ? 'text-red-500 hover:text-red-400' : 'text-gray-500 hover:text-white'
                 }`}
                 aria-pressed={liked}
-                title={liked ? 'Quitar me gusta' : 'Me gusta'}
+                title={t('action_like')}
             >
                 <Heart size={18} className={liked ? 'fill-current' : ''} />
-                <span>{likeCount > 0 ? likeCount : 'Me gusta'}</span>
+                <span>{likeCount > 0 ? likeCount : t('action_like')}</span>
             </button>
 
             {/* Comment — en feed va al episodio (con #comments); en la pagina del episodio scrollea */}
@@ -153,19 +155,19 @@ export function EpisodeFeedActions({
                 <a
                     href={commentScrollTarget}
                     className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
-                    title="Ir a los comentarios"
+                    title={t('action_comment')}
                 >
                     <MessageCircle size={18} />
-                    <span>Comentar</span>
+                    <span>{t('action_comment')}</span>
                 </a>
             ) : (
                 <Link
                     href={`${episodeUrl}#comments`}
                     className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
-                    title="Leer y comentar"
+                    title={t('action_comment')}
                 >
                     <MessageCircle size={18} />
-                    <span>Comentar</span>
+                    <span>{t('action_comment')}</span>
                 </Link>
             )}
 
@@ -173,10 +175,10 @@ export function EpisodeFeedActions({
             <button
                 onClick={handleShare}
                 className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
-                title="Compartir"
+                title={t('action_share')}
             >
                 <Share2 size={18} />
-                <span>{shared ? 'Link copiado' : 'Compartir'}</span>
+                <span>{shared ? t('action_share_copied') : t('action_share')}</span>
             </button>
 
             <div className="ml-auto flex items-center gap-2">
@@ -187,7 +189,7 @@ export function EpisodeFeedActions({
                         className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors"
                     >
                         <Gift size={18} />
-                        <span>Dar regalo</span>
+                        <span>{t('action_gift')}</span>
                     </Link>
                 )}
 
@@ -197,7 +199,7 @@ export function EpisodeFeedActions({
                         <button
                             onClick={() => setMenuOpen((o) => !o)}
                             className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition"
-                            title="Más opciones"
+                            title={t('action_more')}
                             aria-haspopup="menu"
                             aria-expanded={menuOpen}
                         >
@@ -214,7 +216,7 @@ export function EpisodeFeedActions({
                                     role="menuitem"
                                 >
                                     <Edit3 size={14} className="text-gray-500" />
-                                    Editar
+                                    {t('owner_edit')}
                                 </Link>
                                 <button
                                     onClick={handleDelete}
@@ -223,7 +225,7 @@ export function EpisodeFeedActions({
                                     role="menuitem"
                                 >
                                     {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                                    {deleting ? 'Eliminando…' : 'Eliminar'}
+                                    {deleting ? '…' : t('owner_delete')}
                                 </button>
                             </div>
                         )}

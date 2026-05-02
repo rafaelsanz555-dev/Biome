@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ThumbsUp, ThumbsDown, MoreHorizontal, Edit3, Trash2, Pin, EyeOff, Loader2, Reply } from 'lucide-react'
 import { CommentComposer } from './CommentComposer'
 import type { CommentRow } from './CommentSection'
@@ -15,16 +16,19 @@ interface Props {
     episodeId: string
 }
 
-function timeAgo(iso: string): string {
-    const diff = Date.now() - new Date(iso).getTime()
-    const m = Math.floor(diff / 60000)
-    if (m < 1) return 'ahora'
-    if (m < 60) return `hace ${m} min`
-    const h = Math.floor(m / 60)
-    if (h < 24) return `hace ${h}h`
-    const d = Math.floor(h / 24)
-    if (d < 7) return `hace ${d}d`
-    return new Date(iso).toLocaleDateString('es', { day: 'numeric', month: 'short' })
+function useTimeAgo() {
+    const t = useTranslations('comments')
+    return (iso: string): string => {
+        const diff = Date.now() - new Date(iso).getTime()
+        const m = Math.floor(diff / 60000)
+        if (m < 1) return t('now')
+        if (m < 60) return t('ago_minutes', { min: m })
+        const h = Math.floor(m / 60)
+        if (h < 24) return t('ago_hours', { h })
+        const d = Math.floor(h / 24)
+        if (d < 7) return t('ago_days', { d })
+        return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+    }
 }
 
 export function CommentItem({ comment, replies, currentUserId, isCreator, episodeId }: Props) {
@@ -56,6 +60,8 @@ function CommentRow({
     isReply: boolean
 }) {
     const router = useRouter()
+    const t = useTranslations('comments')
+    const timeAgo = useTimeAgo()
     const [score, setScore] = useState(comment.score)
     const [myVote, setMyVote] = useState<number>(comment.myVote || 0)
     const [voting, setVoting] = useState(false)
@@ -71,7 +77,7 @@ function CommentRow({
     const canDelete = isAuthor || canModerate
 
     const author = comment.profiles
-    const displayName = author?.full_name || author?.username || 'Lector'
+    const displayName = author?.full_name || author?.username || t('anonymous_reader')
     const handle = author?.username || 'anonimo'
     const initial = displayName.charAt(0).toUpperCase()
 
@@ -115,7 +121,7 @@ function CommentRow({
     }
 
     async function handleDelete() {
-        if (!confirm('¿Eliminar este comentario?')) return
+        if (!confirm(t('delete_confirm'))) return
         setBusy(true)
         try {
             const res = await fetch(`/api/comments/${comment.id}`, { method: 'DELETE' })
@@ -162,12 +168,12 @@ function CommentRow({
             <div className={`rounded-xl ${comment.is_pinned ? 'border border-blue-500/30 bg-blue-500/[0.03]' : 'border border-gray-800/60 bg-[#0F1114]'} p-4 ${comment.is_hidden ? 'opacity-50' : ''}`}>
                 {comment.is_pinned && (
                     <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-2">
-                        <Pin size={10} /> Destacado por el autor
+                        <Pin size={10} /> {t('pinned_label')}
                     </p>
                 )}
                 {comment.is_hidden && (
                     <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-2">
-                        <EyeOff size={10} /> Oculto · solo visible para vos y el autor
+                        <EyeOff size={10} /> {t('hidden_label')}
                     </p>
                 )}
 
@@ -191,7 +197,7 @@ function CommentRow({
                             <span className="text-[11px] text-gray-600">@{handle}</span>
                             <span className="text-[11px] text-gray-600">·</span>
                             <span className="text-[11px] text-gray-500">{timeAgo(comment.created_at)}</span>
-                            {comment.edited_at && <span className="text-[11px] text-gray-600 italic">· editado</span>}
+                            {comment.edited_at && <span className="text-[11px] text-gray-600 italic">· {t('edited')}</span>}
                         </div>
 
                         {/* Body or editing */}
@@ -225,7 +231,7 @@ function CommentRow({
                                             : 'text-gray-500 hover:bg-white/5 hover:text-blue-400'
                                     }`}
                                     aria-pressed={myVote === 1}
-                                    title="Útil"
+                                    title={t('vote_up')}
                                 >
                                     <ThumbsUp size={13} className={myVote === 1 ? 'fill-current' : ''} />
                                     {score !== 0 && <span>{score}</span>}
@@ -240,7 +246,7 @@ function CommentRow({
                                             : 'text-gray-500 hover:bg-white/5 hover:text-red-400'
                                     }`}
                                     aria-pressed={myVote === -1}
-                                    title="No útil"
+                                    title={t('vote_down')}
                                 >
                                     <ThumbsDown size={13} className={myVote === -1 ? 'fill-current' : ''} />
                                 </button>
@@ -251,7 +257,7 @@ function CommentRow({
                                         onClick={() => setReplying((r) => !r)}
                                         className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-gray-500 hover:bg-white/5 hover:text-white transition"
                                     >
-                                        <Reply size={13} /> Responder
+                                        <Reply size={13} /> {t('reply')}
                                     </button>
                                 )}
 
@@ -273,7 +279,7 @@ function CommentRow({
                                                         onClick={() => { setMenuOpen(false); setEditing(true) }}
                                                         className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-200 hover:bg-white/5 transition text-left"
                                                     >
-                                                        <Edit3 size={12} /> Editar
+                                                        <Edit3 size={12} /> {t('edit')}
                                                     </button>
                                                 )}
                                                 {canModerate && !isReply && (
@@ -281,7 +287,7 @@ function CommentRow({
                                                         onClick={() => { setMenuOpen(false); togglePinned() }}
                                                         className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-200 hover:bg-white/5 transition text-left"
                                                     >
-                                                        <Pin size={12} /> {comment.is_pinned ? 'Quitar destacado' : 'Destacar'}
+                                                        <Pin size={12} /> {comment.is_pinned ? t('unpin') : t('pin')}
                                                     </button>
                                                 )}
                                                 {canModerate && (
@@ -289,7 +295,7 @@ function CommentRow({
                                                         onClick={() => { setMenuOpen(false); toggleHidden() }}
                                                         className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-200 hover:bg-white/5 transition text-left"
                                                     >
-                                                        <EyeOff size={12} /> {comment.is_hidden ? 'Mostrar' : 'Ocultar'}
+                                                        <EyeOff size={12} /> {comment.is_hidden ? t('unhide') : t('hide')}
                                                     </button>
                                                 )}
                                                 {canDelete && (
@@ -297,7 +303,7 @@ function CommentRow({
                                                         onClick={() => { setMenuOpen(false); handleDelete() }}
                                                         className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 transition text-left"
                                                     >
-                                                        <Trash2 size={12} /> Eliminar
+                                                        <Trash2 size={12} /> {t('delete')}
                                                     </button>
                                                 )}
                                             </div>

@@ -1,15 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
-const EMOTIONS = [
-    { emoji: '❤️', label: 'Conmovedor' },
-    { emoji: '🔥', label: 'Inspirador' },
-    { emoji: '😢', label: 'Triste' },
-    { emoji: '😡', label: 'Rabia' },
-    { emoji: '🤯', label: 'Impactante' },
-    { emoji: '😂', label: 'Divertido' },
-]
+const EMOTION_KEYS = [
+    { emoji: '❤️', key: 'emotion_touching' },
+    { emoji: '🔥', key: 'emotion_inspiring' },
+    { emoji: '😢', key: 'emotion_sad' },
+    { emoji: '😡', key: 'emotion_angry' },
+    { emoji: '🤯', key: 'emotion_shocking' },
+    { emoji: '😂', key: 'emotion_funny' },
+] as const
 
 interface EmotionalReactionsProps {
     episodeId: string
@@ -19,6 +20,7 @@ interface EmotionalReactionsProps {
 }
 
 export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction, totalReaders }: EmotionalReactionsProps) {
+    const t = useTranslations('reader')
     const [counts, setCounts] = useState<Record<string, number>>(initialCounts)
     const [myReaction, setMyReaction] = useState<string | null>(initialMyReaction)
     const [loading, setLoading] = useState(false)
@@ -68,16 +70,19 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
                 <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-1">
                     ✦ Huella emocional
                 </p>
-                <h3 className="font-bold text-white text-lg">¿Cómo te hizo sentir este capítulo?</h3>
+                <h3 className="font-bold text-white text-lg">{t('emotional_title')}</h3>
                 {totalReactions > 0 && (
                     <p className="text-xs text-gray-500 mt-1">
-                        {totalReactions} {totalReactions === 1 ? 'reacción' : 'reacciones'} de los lectores
+                        {totalReactions === 1
+                            ? t('emotional_subtitle_one', { count: totalReactions })
+                            : t('emotional_subtitle_other', { count: totalReactions })}
                     </p>
                 )}
             </div>
 
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                {EMOTIONS.map(({ emoji, label }) => {
+                {EMOTION_KEYS.map(({ emoji, key }) => {
+                    const label = t(key)
                     const count = counts[emoji] || 0
                     const isSelected = myReaction === emoji
                     const pct = totalReactions > 0 ? Math.round((count / totalReactions) * 100) : 0
@@ -114,7 +119,7 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
 
             {myReaction && (
                 <p className="text-xs text-gray-500 mt-4 text-center">
-                    Reaccionaste con <span className="text-lg">{myReaction}</span> · Haz clic de nuevo para quitar
+                    {t('reacted_with')} <span className="text-lg">{myReaction}</span> · {t('click_to_remove')}
                 </p>
             )}
         </div>

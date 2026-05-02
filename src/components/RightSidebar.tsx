@@ -1,7 +1,11 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { CheckCircle, ChevronRight, Play, Zap, TrendingUp, Lock, Crown, ArrowUp, Heart } from 'lucide-react'
 
 export function RightSidebar() {
+    const t = useTranslations('right_sidebar')
     return (
         <aside className="w-80 bg-[#121212] border-l border-[#262626] overflow-y-auto p-6 space-y-8 hidden lg:block">
             {/* Widget: Trending Stories */}
@@ -9,7 +13,7 @@ export function RightSidebar() {
                 <div className="flex items-center justify-between mb-4">
                     <h4 className="font-bold text-sm text-gray-200 tracking-wide flex items-center gap-2">
                         <TrendingUp size={16} className="text-blue-500" />
-                        Historias en tendencia
+                        {t('trending')}
                     </h4>
                 </div>
                 <div className="space-y-4">
@@ -22,7 +26,7 @@ export function RightSidebar() {
                         />
                         <div className="flex-1">
                             <h5 className="text-sm font-semibold truncate text-white">Rommel Diaz</h5>
-                            <p className="text-[11px] text-gray-500 flex items-center gap-1">2,327 seguidores <CheckCircle size={10} className="text-blue-500" /></p>
+                            <p className="text-[11px] text-gray-500 flex items-center gap-1">2,327 {t('followers')} <CheckCircle size={10} className="text-blue-500" /></p>
                             <div className="flex items-center space-x-2 mt-1">
                                 <span className="text-blue-500 font-bold text-xs">$3.3k+</span>
                                 <span className="px-1.5 py-0.5 bg-blue-900/40 text-blue-500 text-[8px] rounded uppercase font-bold">Deng</span>
@@ -38,7 +42,7 @@ export function RightSidebar() {
                         />
                         <div className="flex-1">
                             <h5 className="text-sm font-semibold truncate text-white">Laura Castillo</h5>
-                            <p className="text-[11px] text-gray-500 flex items-center gap-1">3,2k seguidores <CheckCircle size={10} className="text-blue-500" /></p>
+                            <p className="text-[11px] text-gray-500 flex items-center gap-1">3,2k {t('followers')} <CheckCircle size={10} className="text-blue-500" /></p>
                             <div className="flex items-center space-x-2 mt-1">
                                 <span className="text-yellow-500 font-bold text-xs flex items-center"><Crown size={10} className="mr-1" /> 2.669k</span>
                                 <span className="px-1.5 py-0.5 bg-blue-900/40 text-blue-500 text-[8px] rounded uppercase font-bold">Deng</span>
@@ -51,7 +55,7 @@ export function RightSidebar() {
             {/* Widget: Top Gifted */}
             <section>
                 <div className="flex items-center justify-between mb-4 group transition">
-                    <h4 className="font-bold text-sm text-gray-200 tracking-wide">Top Gifted</h4>
+                    <h4 className="font-bold text-sm text-gray-200 tracking-wide">{t('top_gifted')}</h4>
                     <ChevronRight size={14} className="text-gray-500 group-hover:text-white" />
                 </div>
                 <div className="space-y-4 mb-4">
@@ -79,14 +83,14 @@ export function RightSidebar() {
                     </div>
                 </div>
                 <button className="w-full bg-[#1e40af] hover:bg-[#24634c] text-blue-400 font-bold py-2 rounded-lg text-xs flex items-center justify-center space-x-2 transition">
-                    <span>Unlock story</span>
+                    <span>{t('unlock_story')}</span>
                     <Lock size={12} />
                 </button>
             </section>
 
             {/* Widget: Featured Writers */}
             <section>
-                <h4 className="font-bold text-sm text-gray-200 tracking-wide mb-4">Escritores destacados</h4>
+                <h4 className="font-bold text-sm text-gray-200 tracking-wide mb-4">{t('featured_writers')}</h4>
                 <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                         <img 
@@ -118,7 +122,7 @@ export function RightSidebar() {
 
             {/* Widget: Recommended Episodes */}
             <section>
-                <h4 className="font-bold text-sm text-gray-200 tracking-wide mb-4">Episodios recomendados</h4>
+                <h4 className="font-bold text-sm text-gray-200 tracking-wide mb-4">{t('recommended_episodes')}</h4>
                 <div className="relative rounded-xl overflow-hidden group">
                     <img 
                         className="w-full h-48 object-cover group-hover:scale-105 transition duration-500" 
@@ -135,7 +139,7 @@ export function RightSidebar() {
                     </div>
                 </div>
                 <button className="w-full mt-3 bg-[#1e40af] hover:bg-[#24634c] py-2 rounded-lg text-xs font-bold text-blue-400 transition">
-                    Desbloquear historia
+                    {t('unlock_story')}
                 </button>
             </section>
         </aside>
