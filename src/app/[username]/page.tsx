@@ -89,6 +89,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const branding = extractBranding(profile.creators)
     const { theme, fallback } = extractTheme(profile.creators)
+    const cardStyle = profile.creators?.card_style || 'editorial'
 
     // Agrupar episodios por temporada (Historia)
     const groupedEpisodes = (episodes || []).reduce((acc: any, episode: any) => {
@@ -144,6 +145,11 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                     <span className="text-blue-500 text-sm bg-blue-500/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
                                 </h1>
                                 <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
+                                {profile.creators?.brand_tagline && (
+                                    <p className="text-sm font-semibold text-blue-400 mt-1.5 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                                        {profile.creators.brand_tagline}
+                                    </p>
+                                )}
                                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 font-medium justify-center md:justify-start">
                                     <span><strong className="text-white">{subCount || 0}</strong> suscriptores</span>
                                     <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
@@ -225,7 +231,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                 </div>
 
                 {/* Feed (Agrupado por Historia/Temporada) */}
-                <div className="space-y-12">
+                <div className="space-y-12 bio-card-style-root" data-card-style={cardStyle}>
                     {(!episodes || episodes.length === 0) ? (
                         <div className="bg-[#15171C] border border-gray-800 rounded-2xl py-16 text-center text-gray-500">
                             Aún no hay publicaciones.

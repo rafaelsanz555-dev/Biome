@@ -121,7 +121,11 @@ function getContextForPath(pathname: string): ContextConfig {
     }
 }
 
-export function StudioPanel() {
+interface StudioPanelProps {
+    username?: string | null
+}
+
+export function StudioPanel({ username }: StudioPanelProps = {}) {
     const pathname = usePathname()
     const ctx = getContextForPath(pathname)
     const Icon = ctx.icon
@@ -156,10 +160,19 @@ export function StudioPanel() {
                         {ctx.shortcuts.map((s) => {
                             const SIcon = s.icon
                             const label = t(s.labelKey)
+                            // Resolver "Mi perfil público" al username real cuando lo tenemos
+                            const realHref = s.labelKey === 'shortcut_my_public_profile' && username
+                                ? `/${username}`
+                                : s.href
+                            // Si quedó como '#' (sin username disponible), no renderizamos el link
+                            if (realHref === '#') return null
+                            const isExternal = realHref.startsWith('/') && !realHref.startsWith('/dashboard')
                             return (
                                 <Link
-                                    key={s.labelKey + s.href}
-                                    href={s.href}
+                                    key={s.labelKey + realHref}
+                                    href={realHref}
+                                    target={isExternal ? '_blank' : undefined}
+                                    rel={isExternal ? 'noopener' : undefined}
                                     className="flex items-center justify-between gap-2 p-2.5 rounded-lg hover:bg-white/5 transition group"
                                 >
                                     <div className="flex items-center gap-2.5">
@@ -178,8 +191,8 @@ export function StudioPanel() {
             <div className="pt-4 border-t border-white/5">
                 <p className="text-[10px] text-gray-600 italic leading-relaxed">
                     {t.rich('feed_returns', {
-                        home: () => <Link href="/dashboard" className="text-blue-400 hover:underline">{tDash('nav_home')}</Link>,
-                        discovery: () => <Link href="/dashboard/discovery" className="text-blue-400 hover:underline">{tDash('nav_discovery')}</Link>,
+                        home: (chunks) => <Link href="/dashboard" className="text-blue-400 hover:underline">{chunks}</Link>,
+                        discovery: (chunks) => <Link href="/dashboard/discovery" className="text-blue-400 hover:underline">{chunks}</Link>,
                     })}
                 </p>
             </div>

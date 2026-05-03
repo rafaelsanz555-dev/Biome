@@ -25,10 +25,14 @@ const STUDIO_PATHS = [
     '/dashboard/notifications',
 ]
 
-export function RightRail() {
+interface RightRailProps {
+    username?: string | null
+}
+
+export function RightRail({ username }: RightRailProps = {}) {
     const pathname = usePathname() || ''
     const isStudio = STUDIO_PATHS.some((p) => pathname.startsWith(p))
 
-    if (isStudio) return <StudioPanel />
+    if (isStudio) return <StudioPanel username={username} />
     return <RightSidebar />
 }

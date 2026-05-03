@@ -184,7 +184,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </main>
 
             {/* ── Right Rail (RightSidebar en Reader mode, StudioPanel en Studio mode) ── */}
-            <RightRail />
+            <RightRail username={profile.username} />
             
         </div>
     )

@@ -198,7 +198,7 @@
     "mode_label": "Studio Mode",
     "where": "Where you are",
     "shortcuts": "Shortcuts",
-    "feed_returns": "The feed returns when you go to {home} or {discovery}.",
+    "feed_returns": "The feed returns when you go to <home>Home</home> or <discovery>Discovery</discovery>.",
     "publishing_title": "Publishing",
     "publishing_desc": "You're creating a new chapter. Focus matters more than the feed.",
     "editing_title": "Editing",

@@ -174,6 +174,44 @@
     background: #444;
   }
 
+  /* ── Estilos de card del creator (Settings → Estilo de Card) ──
+   * 3 variantes con diferencias visibles. data-card-style se aplica
+   * en el contenedor del feed del perfil publico.
+   */
+
+  /* Journal: mas intimo, bordes calidos, padding mayor, sin sombra dura */
+  [data-card-style="journal"] > div > .space-y-6 > div {
+    background: linear-gradient(180deg, #15171C 0%, #121419 100%) !important;
+    border-color: rgba(255, 255, 255, 0.04) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 24px rgba(0,0,0,0.3) !important;
+  }
+  [data-card-style="journal"] h3 {
+    font-family: Georgia, "Playfair Display", serif !important;
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Minimal: sin cover, solo texto, mucho whitespace */
+  [data-card-style="minimal"] > div > .space-y-6 > div {
+    background: transparent !important;
+    border-left: 2px solid rgba(255, 255, 255, 0.06) !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding-left: 1.5rem !important;
+  }
+  [data-card-style="minimal"] [class*="min-h-[250px]"] {
+    display: none !important;
+  }
+  [data-card-style="minimal"] h3 {
+    font-family: Georgia, serif !important;
+  }
+
+  /* Editorial es el default — no necesita overrides */
+
   /* ── Global cursor pointer (Casiani feedback) ──
    * Todo elemento interactivo debe mostrar la "manito" al hover.
    * Buttons, links, role=button, labels y elementos con onclick.

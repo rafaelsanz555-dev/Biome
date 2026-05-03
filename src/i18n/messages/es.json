@@ -198,7 +198,7 @@
     "mode_label": "Modo Estudio",
     "where": "Donde estás",
     "shortcuts": "Atajos",
-    "feed_returns": "El feed regresa cuando salgas a {home} o {discovery}.",
+    "feed_returns": "El feed regresa cuando salgas a <home>Inicio</home> o <discovery>Discovery</discovery>.",
     "publishing_title": "Publicación",
     "publishing_desc": "Estás creando un episodio nuevo. La concentración importa más que el feed.",
     "editing_title": "Edición",
