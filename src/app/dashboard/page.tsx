@@ -130,12 +130,31 @@ export default async function DashboardHome() {
         exclusive: <><Lock size={10} className="inline mr-1" /> {tFeed('exclusive_badge')}</>,
     }
 
-    const { data: episodes } = await supabase
+    // Episodios publicados (sin embed para evitar FK ambigua episodes.creator_id -> creators.profile_id)
+    const { data: episodesRaw, error: epError } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, cover_image_url, is_subscription_only, ppv_price, created_at, creator_id, profiles:creator_id(username, full_name, avatar_url)')
+        .select('id, title, preview_text, cover_image_url, is_subscription_only, ppv_price, created_at, creator_id')
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(10)
+    if (epError) console.error('[dashboard feed] episodes query failed:', epError.message)
+
+    // Profiles de los autores en una segunda query, mergeamos en JS
+    const creatorIds = Array.from(new Set((episodesRaw || []).map((e) => e.creator_id).filter(Boolean)))
+    let profilesMap: Record<string, { username: string | null; full_name: string | null; avatar_url: string | null }> = {}
+    if (creatorIds.length > 0) {
+        const { data: profilesRows } = await supabase
+            .from('profiles')
+            .select('id, username, full_name, avatar_url')
+            .in('id', creatorIds)
+        profilesRows?.forEach((p) => {
+            profilesMap[p.id] = { username: p.username, full_name: p.full_name, avatar_url: p.avatar_url }
+        })
+    }
+    const episodes = (episodesRaw || []).map((ep) => ({
+        ...ep,
+        profiles: profilesMap[ep.creator_id] || null,
+    }))
 
     const { data: gifts } = await supabase
         .from('gifts')
@@ -163,9 +182,11 @@ export default async function DashboardHome() {
         realUrl: `/${ep.profiles?.username}/${ep.id}`,
     }))
 
-    // Mix: real episodes first, then featured fill the rest
-    const feed = [...realEpisodes, ...FEATURED].slice(0, 8)
-    // Make the newest real episode the hero if any, otherwise featured[0]
+    // Si hay episodios reales, mostrar SOLO esos (no mezclar con mocks).
+    // Los FEATURED son fallback cuando todavia no hay nada real publicado.
+    const feed = realEpisodes.length > 0
+        ? realEpisodes.slice(0, 8)
+        : FEATURED.slice(0, 8)
     if (feed.length > 0) feed[0].hero = true
 
     return (
