@@ -67,7 +67,7 @@ export function RightSidebar() {
                         />
                         <div>
                             <p className="text-sm font-semibold text-white">Carla Mendoza</p>
-                            <p className="text-xs text-gray-500">14.8k lecturas</p>
+                            <p className="text-xs text-gray-500">14.8k {t('reads')}</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -78,7 +78,7 @@ export function RightSidebar() {
                         />
                         <div>
                             <p className="text-sm font-semibold text-white">Javier Lopes</p>
-                            <p className="text-xs text-gray-500">118.4k lecturas</p>
+                            <p className="text-xs text-gray-500">118.4k {t('reads')}</p>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ export function RightSidebar() {
                         <div>
                             <p className="text-sm font-semibold text-white">Rommel Diaz</p>
                             <div className="flex items-center space-x-2 text-[10px] text-gray-500">
-                                <span className="flex items-center gap-1"><Play size={10} /> videos</span>
+                                <span className="flex items-center gap-1"><Play size={10} /> {t('videos')}</span>
                                 <span className="flex items-center gap-1"><Zap size={10} /> 2h</span>
                             </div>
                         </div>
@@ -114,7 +114,7 @@ export function RightSidebar() {
                         />
                         <div>
                             <p className="text-sm font-semibold text-white">Lorena Ruiz</p>
-                            <p className="text-[10px] text-gray-500 flex items-center gap-1"><ArrowUp size={10} /> 24.8k suscripciones</p>
+                            <p className="text-[10px] text-gray-500 flex items-center gap-1"><ArrowUp size={10} /> 24.8k {t('subscriptions')}</p>
                         </div>
                     </div>
                 </div>
@@ -134,7 +134,7 @@ export function RightSidebar() {
                         <p className="text-xs text-gray-300 line-clamp-2">Cómo dejé todo para viajar por el mundo</p>
                         <div className="mt-2 text-[10px] flex items-center space-x-1.5 text-gray-300">
                             <Heart size={10} className="text-red-500 fill-red-500" />
-                            <span>27.5k lecturas</span>
+                            <span>27.5k {t('reads')}</span>
                         </div>
                     </div>
                 </div>

@@ -1,19 +1,22 @@
 import Link from 'next/link'
+import { getTranslations, getLocale } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Heart, MessageCircle, Gift, Lock, MoreHorizontal, Crown, Play } from 'lucide-react'
 import { ResumeReading } from '@/components/reader/ResumeReading'
 import { FeedTabs } from '@/components/FeedTabs'
 
-function timeAgo(date: string): string {
-    const diff = Date.now() - new Date(date).getTime()
-    const mins = Math.floor(diff / 60000)
-    const hours = Math.floor(mins / 60)
-    const days = Math.floor(hours / 24)
-    if (mins < 1) return 'ahora'
-    if (mins < 60) return `hace ${mins} min`
-    if (hours < 24) return `hace ${hours}h`
-    if (days < 7) return `hace ${days}d`
-    return new Date(date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+function makeTimeAgo(locale: string, t: (k: string, v?: any) => string) {
+    return (date: string): string => {
+        const diff = Date.now() - new Date(date).getTime()
+        const mins = Math.floor(diff / 60000)
+        const hours = Math.floor(mins / 60)
+        const days = Math.floor(hours / 24)
+        if (mins < 1) return t('now')
+        if (mins < 60) return t('ago_minutes', { min: mins })
+        if (hours < 24) return t('ago_hours', { h: hours })
+        if (days < 7) return t('ago_days', { d: days })
+        return new Date(date).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { day: 'numeric', month: 'short' })
+    }
 }
 
 // Featured stories — shown when real data is thin, creates a vibrant feed
@@ -100,18 +103,12 @@ const FEATURED = [
     },
 ]
 
-function Badge({ type }: { type: string }) {
+function Badge({ type, labels }: { type: string; labels: Record<string, React.ReactNode> }) {
     const styles: Record<string, string> = {
         free: 'bg-yellow-600/30 text-yellow-500 border-yellow-500/20',
         series: 'bg-blue-600/30 text-blue-400 border-blue-500/20',
         top: 'bg-red-900/30 text-red-400 border-red-500/20',
         exclusive: 'bg-purple-600/30 text-purple-400 border-purple-500/20',
-    }
-    const labels: Record<string, React.ReactNode> = {
-        free: 'Gratis el primer capítulo',
-        series: <><Play size={10} fill="currentColor" className="inline mr-1" /> Series en progreso</>,
-        top: <><Crown size={10} className="inline mr-1" /> Top gifted</>,
-        exclusive: <><Lock size={10} className="inline mr-1" /> Exclusivo</>,
     }
     return (
         <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase border ${styles[type] || styles.exclusive}`}>
@@ -122,6 +119,16 @@ function Badge({ type }: { type: string }) {
 
 export default async function DashboardHome() {
     const supabase = await createClient()
+    const tFeed = await getTranslations('feed')
+    const tComments = await getTranslations('comments')
+    const locale = await getLocale()
+    const timeAgo = makeTimeAgo(locale, tComments)
+    const badgeLabels: Record<string, React.ReactNode> = {
+        free: tFeed('chip_first_free'),
+        series: <><Play size={10} fill="currentColor" className="inline mr-1" /> {tFeed('chip_series')}</>,
+        top: <><Crown size={10} className="inline mr-1" /> {tFeed('chip_top_gifted')}</>,
+        exclusive: <><Lock size={10} className="inline mr-1" /> {tFeed('exclusive_badge')}</>,
+    }
 
     const { data: episodes } = await supabase
         .from('episodes')
@@ -143,8 +150,8 @@ export default async function DashboardHome() {
         title: ep.title,
         chapter: null,
         cover: ep.cover_image_url,
-        author: ep.profiles?.full_name || ep.profiles?.username || 'Escritor',
-        handle: ep.profiles?.username || 'anonimo',
+        author: ep.profiles?.full_name || ep.profiles?.username || tFeed('fallback_author'),
+        handle: ep.profiles?.username || tFeed('fallback_handle'),
         avatar: ep.profiles?.avatar_url,
         time: timeAgo(ep.created_at),
         reads: '0',
@@ -193,7 +200,7 @@ export default async function DashboardHome() {
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
                                         <div className="absolute bottom-0 left-0 w-full p-6">
                                             <div className="flex flex-wrap gap-2 mb-3">
-                                                {ep.badges.map((b: string) => <Badge key={b} type={b} />)}
+                                                {ep.badges.map((b: string) => <Badge key={b} type={b} labels={badgeLabels} />)}
                                             </div>
                                             <h2 className="text-3xl font-bold text-white mb-2 leading-tight drop-shadow-md">{ep.title}</h2>
                                             {ep.chapter && (
@@ -220,7 +227,7 @@ export default async function DashboardHome() {
                                 <div className="p-5 bg-[#242424] border-t border-[#333]">
                                     <Link href={href}>
                                         <button className="w-full bg-[#1e40af] hover:bg-[#24634c] text-blue-400 font-bold py-3.5 rounded-xl transition text-base tracking-wide shadow-lg border border-blue-500/20">
-                                            Leer episodio
+                                            {tFeed('read_episode')}
                                         </button>
                                     </Link>
                                 </div>
@@ -245,7 +252,7 @@ export default async function DashboardHome() {
                             </div>
 
                             <div className="flex flex-wrap gap-2 mb-4">
-                                {ep.badges.map((b: string) => <Badge key={b} type={b} />)}
+                                {ep.badges.map((b: string) => <Badge key={b} type={b} labels={badgeLabels} />)}
                             </div>
 
                             <Link href={href}>
@@ -263,7 +270,7 @@ export default async function DashboardHome() {
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2">
                                                     <Lock size={16} className="text-blue-400" />
-                                                    <span className="text-blue-400 font-bold text-sm">Solo suscriptores</span>
+                                                    <span className="text-blue-400 font-bold text-sm">{tFeed('subscribers_only')}</span>
                                                 </div>
                                             </div>
                                         )}
@@ -284,7 +291,7 @@ export default async function DashboardHome() {
                                     </span>
                                 </div>
                                 <Link href={href} className="text-xs font-bold text-blue-500 hover:text-blue-400 transition">
-                                    Leer →
+                                    {tFeed('read_short')}
                                 </Link>
                             </div>
                         </article>

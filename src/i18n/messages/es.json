@@ -172,7 +172,27 @@
     "discover_title": "Descubrir",
     "trending_now": "En tendencia ahora",
     "new_voices_title": "Nuevas voces",
-    "no_posts": "Aún no hay publicaciones."
+    "no_posts": "Aún no hay publicaciones.",
+    "tab_foryou": "Para ti",
+    "tab_trending": "Trending",
+    "tab_new": "Nuevas voces",
+    "tab_real": "Historias reales",
+    "tab_gifted": "Más regaladas",
+    "chip_first_free": "Gratis el primer capítulo",
+    "chip_series": "Series en progreso",
+    "chip_top_gifted": "Top gifted",
+    "chip_top_eps": "Top episodios",
+    "filter_label": "Filtro",
+    "chips_active_one": "{count} chip activo",
+    "chips_active_other": "{count} chips activos",
+    "clear": "Limpiar",
+    "read_episode": "Leer episodio",
+    "read_short": "Leer →",
+    "subscribers_only": "Solo suscriptores",
+    "fallback_author": "Escritor",
+    "fallback_handle": "anónimo",
+    "exclusive_badge": "Exclusivo",
+    "reads": "lecturas"
   },
   "studio": {
     "mode_label": "Modo Estudio",
@@ -218,7 +238,10 @@
     "featured_writers": "Escritores destacados",
     "recommended_episodes": "Episodios recomendados",
     "unlock_story": "Desbloquear historia",
-    "followers": "seguidores"
+    "followers": "seguidores",
+    "reads": "lecturas",
+    "subscriptions": "suscripciones",
+    "videos": "videos"
   },
   "discover_page": {
     "header_kicker": "Creadores Premium",

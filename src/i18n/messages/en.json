@@ -172,7 +172,27 @@
     "discover_title": "Discover",
     "trending_now": "Trending now",
     "new_voices_title": "New voices",
-    "no_posts": "No posts yet."
+    "no_posts": "No posts yet.",
+    "tab_foryou": "For you",
+    "tab_trending": "Trending",
+    "tab_new": "New voices",
+    "tab_real": "Real stories",
+    "tab_gifted": "Most gifted",
+    "chip_first_free": "First chapter free",
+    "chip_series": "Series in progress",
+    "chip_top_gifted": "Top gifted",
+    "chip_top_eps": "Top episodes",
+    "filter_label": "Filter",
+    "chips_active_one": "{count} chip active",
+    "chips_active_other": "{count} chips active",
+    "clear": "Clear",
+    "read_episode": "Read chapter",
+    "read_short": "Read →",
+    "subscribers_only": "Subscribers only",
+    "fallback_author": "Writer",
+    "fallback_handle": "anon",
+    "exclusive_badge": "Exclusive",
+    "reads": "reads"
   },
   "studio": {
     "mode_label": "Studio Mode",
@@ -218,7 +238,10 @@
     "featured_writers": "Featured writers",
     "recommended_episodes": "Recommended chapters",
     "unlock_story": "Unlock story",
-    "followers": "followers"
+    "followers": "followers",
+    "reads": "reads",
+    "subscriptions": "subscriptions",
+    "videos": "videos"
   },
   "discover_page": {
     "header_kicker": "Premium creators",
