@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null)
     const title = typeof body?.title === 'string' ? body.title.trim() : ''
     const description = typeof body?.description === 'string' ? body.description.trim() : ''
+    const formatRaw = typeof body?.format === 'string' ? body.format : 'series'
+    const format = formatRaw === 'thread' ? 'thread' : 'series'
 
     if (title.length < 1 || title.length > 120) {
         return NextResponse.json({ error: 'invalid_title' }, { status: 400 })
@@ -22,8 +24,9 @@ export async function POST(req: NextRequest) {
             title,
             description: description || null,
             sort_order: 1,
+            format,
         })
-        .select('id, title')
+        .select('id, title, format')
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

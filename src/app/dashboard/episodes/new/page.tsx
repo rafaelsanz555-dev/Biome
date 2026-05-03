@@ -18,7 +18,7 @@ export default async function NewEpisodePage() {
 
     const { data: seasons } = await supabase
         .from('seasons')
-        .select('id, title')
+        .select('id, title, format')
         .eq('creator_id', user?.id)
         .order('created_at', { ascending: false })
 

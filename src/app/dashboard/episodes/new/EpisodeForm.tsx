@@ -333,7 +333,9 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                                 inputClassName={inputCls}
                             />
                             <p className="text-[11px] text-gray-500 leading-relaxed">
-                                Una serie agrupa varios capítulos bajo un mismo arco narrativo (ej. "Mi divorcio en 8 capítulos"). Si es una historia auto-contenida, dejalo como independiente.
+                                <strong className="text-gray-300">Independiente</strong>: una historia que termina ahí.{' '}
+                                <strong className="text-gray-300">Historia</strong>: arco narrativo en capítulos densos.{' '}
+                                <strong className="text-gray-300">Hilo</strong>: cronología corta tipo Twitter.
                             </p>
                         </div>
 
