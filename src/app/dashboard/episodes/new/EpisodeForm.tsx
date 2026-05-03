@@ -14,6 +14,7 @@ import Link from '@tiptap/extension-link'
 import { PullQuote } from '@/components/editor/PullQuote'
 import { WritingCoach } from '@/components/writer/WritingCoach'
 import { AIAssistant } from '@/components/writer/AIAssistant'
+import { SeasonPicker } from '@/components/writer/SeasonPicker'
 import { LivePreview } from '@/app/dashboard/settings/LivePreview'
 
 interface EpisodeFormProps {
@@ -321,34 +322,19 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                 <div className="space-y-4">
                     <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-5 sticky top-4 space-y-5">
 
-                        {/* Season */}
+                        {/* Season — picker custom con creación inline (sin abrir otra pestaña) */}
                         <div className="space-y-2">
-                            <label htmlFor="season_id" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
                                 Serie / Temporada
                             </label>
-                            <select
-                                id="season_id"
+                            <SeasonPicker
                                 name="season_id"
-                                className={`${inputCls} px-3 py-2.5 text-sm`}
-                            >
-                                <option value="" className="bg-[#15171C]">Sin serie — episodio independiente</option>
-                                {seasons?.map(s => (
-                                    <option key={s.id} value={s.id} className="bg-[#15171C]">{s.title}</option>
-                                ))}
-                            </select>
-                            <a
-                                href="/dashboard/seasons"
-                                target="_blank"
-                                rel="noopener"
-                                className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition"
-                            >
-                                + Crear nueva serie
-                            </a>
-                            {(!seasons || seasons.length === 0) && (
-                                <p className="text-[11px] text-gray-500 leading-relaxed">
-                                    Aún no creaste series. Una serie agrupa varios episodios bajo un arco narrativo (ej. "Mi divorcio en 8 capítulos").
-                                </p>
-                            )}
+                                initialSeasons={seasons || []}
+                                inputClassName={inputCls}
+                            />
+                            <p className="text-[11px] text-gray-500 leading-relaxed">
+                                Una serie agrupa varios capítulos bajo un mismo arco narrativo (ej. "Mi divorcio en 8 capítulos"). Si es una historia auto-contenida, dejalo como independiente.
+                            </p>
                         </div>
 
                         {/* Monetization */}
