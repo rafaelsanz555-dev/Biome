@@ -395,6 +395,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 initialLikeCount={reactionCounts['❤️'] || 0}
                                 hideGift={true}
                                 commentScrollTarget="#comments"
+                                creatorUsername={creatorProfile.username}
                             />
                             {!isOwnProfile && (
                                 <a href="#gift-panel" className="flex items-center gap-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500/20 transition">

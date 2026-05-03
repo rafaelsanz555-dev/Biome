@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Heart, MessageCircle, Gift, Lock, MoreHorizontal, Crown, Play } from 'lucide-react'
 import { ResumeReading } from '@/components/reader/ResumeReading'
 import { FeedTabs } from '@/components/FeedTabs'
+import { EpisodeKebab } from '@/components/EpisodeKebab'
 
 function makeTimeAgo(locale: string, t: (k: string, v?: any) => string) {
     return (date: string): string => {
@@ -119,6 +120,7 @@ function Badge({ type, labels }: { type: string; labels: Record<string, React.Re
 
 export default async function DashboardHome() {
     const supabase = await createClient()
+    const { data: { user: viewer } } = await supabase.auth.getUser()
     const tFeed = await getTranslations('feed')
     const tComments = await getTranslations('comments')
     const locale = await getLocale()
@@ -180,6 +182,8 @@ export default async function DashboardHome() {
         hero: false,
         preview: ep.preview_text,
         realUrl: `/${ep.profiles?.username}/${ep.id}`,
+        creatorId: ep.creator_id,            // para isOwner check
+        isReal: true,                        // distingue de mocks
     }))
 
     // Si hay episodios reales, mostrar SOLO esos (no mezclar con mocks).
@@ -211,8 +215,24 @@ export default async function DashboardHome() {
 
                     // Hero card for first item
                     if (idx === 0 && ep.hero) {
+                        const isOwnerHero = !!(ep.isReal && viewer && ep.creatorId === viewer.id)
                         return (
-                            <article key={ep.id} className="bg-[#1E1E1E] border border-[#2D2D2D] rounded-2xl overflow-hidden shadow-2xl">
+                            <article key={ep.id} className="bg-[#1E1E1E] border border-[#2D2D2D] rounded-2xl overflow-hidden shadow-2xl relative">
+                                {/* Kebab — overlay sobre cover, top-right */}
+                                {ep.isReal && (
+                                    <div className="absolute top-4 right-4 z-20">
+                                        <EpisodeKebab
+                                            episodeId={ep.id}
+                                            episodeUrl={ep.realUrl}
+                                            episodeTitle={ep.title}
+                                            isOwner={isOwnerHero}
+                                            isAuthenticated={!!viewer}
+                                            creatorUsername={ep.handle}
+                                            variant="overlay"
+                                            align="right"
+                                        />
+                                    </div>
+                                )}
                                 <Link href={href} className="block">
                                     <div className="relative h-96 sm:h-[400px]" style={ep.cover ? {} : { background: 'linear-gradient(135deg, #14532d, #052e16)' }}>
                                         {ep.cover && (
@@ -269,7 +289,19 @@ export default async function DashboardHome() {
                                         <p className="text-xs text-gray-500">{ep.time} · @{ep.handle}</p>
                                     </div>
                                 </Link>
-                                <button className="text-gray-500 hover:text-white"><MoreHorizontal size={20} /></button>
+                                {ep.isReal ? (
+                                    <EpisodeKebab
+                                        episodeId={ep.id}
+                                        episodeUrl={ep.realUrl}
+                                        episodeTitle={ep.title}
+                                        isOwner={!!(viewer && ep.creatorId === viewer.id)}
+                                        isAuthenticated={!!viewer}
+                                        creatorUsername={ep.handle}
+                                        align="right"
+                                    />
+                                ) : (
+                                    <span className="text-gray-700"><MoreHorizontal size={20} /></span>
+                                )}
                             </div>
 
                             <div className="flex flex-wrap gap-2 mb-4">

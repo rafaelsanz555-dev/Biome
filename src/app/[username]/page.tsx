@@ -336,6 +336,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                     isAuthenticated={!!user}
                                                     initialLiked={!!likedByMe[episode.id]}
                                                     initialLikeCount={likeCountByEp[episode.id] || 0}
+                                                    creatorUsername={profile.username}
                                                 />
                                             </div>
                                         )

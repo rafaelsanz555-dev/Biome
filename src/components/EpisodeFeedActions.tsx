@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Heart, MessageCircle, Gift, Share2, MoreHorizontal, Edit3, Trash2, Loader2 } from 'lucide-react'
-import { deleteEpisode } from '@/app/dashboard/episodes/actions'
+import { Heart, MessageCircle, Gift, Share2 } from 'lucide-react'
+import { EpisodeKebab } from '@/components/EpisodeKebab'
 
 interface Props {
     episodeId: string
@@ -17,23 +17,25 @@ interface Props {
     initialLikeCount: number
     /** En la página del episodio ya hay anchor a #gift-panel, evitar duplicado */
     hideGift?: boolean
-    /** Comentar es link al episodio en feeds; en la pagina del episodio no tiene sentido */
+    /** Comentar es link al episodio en feeds; en la pagina del episodio scrollea */
     commentScrollTarget?: string
+    /** Para el kebab spectator: silenciar a @username */
+    creatorUsername?: string | null
 }
 
 /**
- * Action bar funcional para una card de episodio en el feed del perfil.
+ * Action bar funcional para una card de episodio.
  *
- * Casiani feedback: el "me gusta" no hace nada, "compartir" no existe,
- * y el dueño no tiene un menú de 3 puntos para editar/eliminar.
+ * Acciones FRECUENTES (visibles inline):
+ *   - Like (toggle a /api/reactions con ❤️, optimistic UI)
+ *   - Comentar (scroll a #comments si ya estamos en el episodio,
+ *     link al episodio si estamos en feed)
+ *   - Compartir (native Share API + clipboard fallback)
+ *   - Dar regalo (oculto si hideGift=true)
  *
- * Cosas que funcionan ahora:
- * - Like: toggle vía /api/reactions con emoji ❤️ (optimistic UI)
- * - Compartir: native Share API + fallback a copiar link
- * - Menú dueño: editar (link) + eliminar (confirm + server action)
- *
- * Comentar sigue siendo un link al episodio — el sistema de comments
- * todavía no existe en DB. Backlog.
+ * Acciones POWER (en EpisodeKebab — owner vs spectator distinto):
+ *   - Owner: Editar, Copiar enlace, Eliminar
+ *   - Spectator: Copiar enlace, Silenciar (stub), Ocultar (stub), Reportar
  */
 export function EpisodeFeedActions({
     episodeId,
@@ -45,6 +47,7 @@ export function EpisodeFeedActions({
     initialLikeCount,
     hideGift = false,
     commentScrollTarget,
+    creatorUsername,
 }: Props) {
     const router = useRouter()
     const t = useTranslations('reader')
@@ -52,26 +55,16 @@ export function EpisodeFeedActions({
     const [likeCount, setLikeCount] = useState(initialLikeCount)
     const [likeBusy, setLikeBusy] = useState(false)
     const [shared, setShared] = useState(false)
-    const [menuOpen, setMenuOpen] = useState(false)
-    const [deleting, setDeleting] = useState(false)
-    const menuRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        function onClickOutside(e: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
-        }
-        document.addEventListener('mousedown', onClickOutside)
-        return () => document.removeEventListener('mousedown', onClickOutside)
-    }, [])
 
     async function toggleLike() {
+        // No tiene sentido que el dueño dé like a su propio post
+        if (isOwner) return
         if (!isAuthenticated) {
             router.push('/login')
             return
         }
         if (likeBusy) return
         setLikeBusy(true)
-        // Optimistic
         const wasLiked = liked
         setLiked(!wasLiked)
         setLikeCount((n) => Math.max(0, n + (wasLiked ? -1 : 1)))
@@ -83,7 +76,6 @@ export function EpisodeFeedActions({
             })
             if (!res.ok) throw new Error('reaction failed')
         } catch {
-            // Revert
             setLiked(wasLiked)
             setLikeCount((n) => Math.max(0, n + (wasLiked ? 1 : -1)))
         } finally {
@@ -92,65 +84,48 @@ export function EpisodeFeedActions({
     }
 
     async function handleShare() {
-        const fullUrl = typeof window !== 'undefined' ? new URL(episodeUrl, window.location.origin).toString() : episodeUrl
-        // Try native share first
+        const fullUrl = typeof window !== 'undefined'
+            ? new URL(episodeUrl, window.location.origin).toString()
+            : episodeUrl
         if (typeof navigator !== 'undefined' && (navigator as any).share) {
             try {
-                await (navigator as any).share({
-                    title: episodeTitle,
-                    text: episodeTitle,
-                    url: fullUrl,
-                })
+                await (navigator as any).share({ title: episodeTitle, text: episodeTitle, url: fullUrl })
                 return
-            } catch {
-                // user cancelled — fall through to clipboard
-            }
+            } catch { /* user cancelled, fall through */ }
         }
-        // Fallback: copy link
         try {
             await navigator.clipboard.writeText(fullUrl)
             setShared(true)
             setTimeout(() => setShared(false), 1800)
-        } catch {
-            // ignore
-        }
-    }
-
-    async function handleDelete() {
-        if (!confirm(t('owner_delete_confirm', { title: episodeTitle }))) return
-        setDeleting(true)
-        try {
-            const res = await deleteEpisode(episodeId)
-            if (res?.error) {
-                alert('Error eliminando: ' + res.error)
-                setDeleting(false)
-                return
-            }
-            // deleteEpisode redirige a /dashboard/episodes; refresh por si seguimos en /[username]
-            router.refresh()
-        } catch (e) {
-            alert('Error eliminando episodio')
-            setDeleting(false)
-        }
+        } catch { /* ignore */ }
     }
 
     return (
         <div className="px-4 py-3 bg-[#15171C] flex items-center gap-5">
-            {/* Like */}
-            <button
-                onClick={toggleLike}
-                disabled={likeBusy}
-                className={`flex items-center gap-2 font-medium text-sm transition-colors disabled:opacity-50 ${
-                    liked ? 'text-red-500 hover:text-red-400' : 'text-gray-500 hover:text-white'
-                }`}
-                aria-pressed={liked}
-                title={t('action_like')}
-            >
-                <Heart size={18} className={liked ? 'fill-current' : ''} />
-                <span>{likeCount > 0 ? likeCount : t('action_like')}</span>
-            </button>
+            {/* Like — el dueño no puede darse like a sí mismo */}
+            {!isOwner && (
+                <button
+                    onClick={toggleLike}
+                    disabled={likeBusy}
+                    className={`flex items-center gap-2 font-medium text-sm transition-colors disabled:opacity-50 ${
+                        liked ? 'text-red-500 hover:text-red-400' : 'text-gray-500 hover:text-white'
+                    }`}
+                    aria-pressed={liked}
+                    title={t('action_like')}
+                >
+                    <Heart size={18} className={liked ? 'fill-current' : ''} />
+                    <span>{likeCount > 0 ? likeCount : t('action_like')}</span>
+                </button>
+            )}
+            {/* Si sos dueño mostramos el contador de likes recibidos como info, sin botón */}
+            {isOwner && likeCount > 0 && (
+                <span className="flex items-center gap-2 text-sm text-gray-500" title={t('action_like')}>
+                    <Heart size={18} className="text-red-500/70" />
+                    <span>{likeCount}</span>
+                </span>
+            )}
 
-            {/* Comment — en feed va al episodio (con #comments); en la pagina del episodio scrollea */}
+            {/* Comment */}
             {commentScrollTarget ? (
                 <a
                     href={commentScrollTarget}
@@ -171,7 +146,7 @@ export function EpisodeFeedActions({
                 </Link>
             )}
 
-            {/* Share */}
+            {/* Share — disponible para todos */}
             <button
                 onClick={handleShare}
                 className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
@@ -182,8 +157,8 @@ export function EpisodeFeedActions({
             </button>
 
             <div className="ml-auto flex items-center gap-2">
-                {/* Gift */}
-                {!hideGift && (
+                {/* Gift — solo para espectadores (no podés regalarte a vos mismo) */}
+                {!hideGift && !isOwner && (
                     <Link
                         href={episodeUrl}
                         className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors"
@@ -193,44 +168,16 @@ export function EpisodeFeedActions({
                     </Link>
                 )}
 
-                {/* Owner kebab menu */}
-                {isOwner && (
-                    <div ref={menuRef} className="relative">
-                        <button
-                            onClick={() => setMenuOpen((o) => !o)}
-                            className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition"
-                            title={t('action_more')}
-                            aria-haspopup="menu"
-                            aria-expanded={menuOpen}
-                        >
-                            <MoreHorizontal size={18} />
-                        </button>
-                        {menuOpen && (
-                            <div
-                                role="menu"
-                                className="absolute right-0 bottom-full mb-2 w-48 bg-[#0F1114] border border-gray-800 rounded-xl shadow-2xl overflow-hidden z-50"
-                            >
-                                <Link
-                                    href={`/dashboard/episodes/${episodeId}/edit`}
-                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition"
-                                    role="menuitem"
-                                >
-                                    <Edit3 size={14} className="text-gray-500" />
-                                    {t('owner_edit')}
-                                </Link>
-                                <button
-                                    onClick={handleDelete}
-                                    disabled={deleting}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
-                                    role="menuitem"
-                                >
-                                    {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                                    {deleting ? '…' : t('owner_delete')}
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
+                {/* Kebab universal — owner ve Editar/Eliminar, spectator ve Reportar/etc */}
+                <EpisodeKebab
+                    episodeId={episodeId}
+                    episodeUrl={episodeUrl}
+                    episodeTitle={episodeTitle}
+                    isOwner={isOwner}
+                    isAuthenticated={isAuthenticated}
+                    creatorUsername={creatorUsername}
+                    align="right"
+                />
             </div>
         </div>
     )
