@@ -7,32 +7,27 @@ export default async function DiscoverPage() {
 
     const { data: creators } = await supabase
         .from('profiles')
-        .select('*, creators!profile_id!inner(subscription_price, posting_frequency, series_status, is_verified_storyteller)')
+        .select('id, username, full_name, avatar_url, bio, story_themes, creators!profile_id!inner(subscription_price, brand_tagline, posting_frequency, series_status, is_verified_storyteller)')
         .eq('role', 'creator')
         .limit(100)
 
     return (
-        <div className="min-h-screen bg-[#0A0B0E]">
+        <div className="min-h-screen bg-[#FAF7F0] text-[#0D0D0D]">
             <Navbar />
 
-            {/* Header */}
-            <div className="bg-[#15171C] border-b border-gray-800/80 py-16 px-6 text-center relative overflow-hidden">
-                <div className="absolute top-0 right-1/4 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none" />
-                <div className="max-w-3xl mx-auto relative z-10">
-                    <p className="text-blue-500 font-bold tracking-widest text-xs uppercase mb-3 drop-shadow-sm">
-                        Creadores Premium
-                    </p>
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-                        Descubre historias reales
+            <section className="border-b border-[#0D0D0D]/10 bg-[#FAF7F0] px-4 py-14 sm:px-6 md:py-20">
+                <div className="mx-auto max-w-5xl text-center">
+                    <p className="text-xs font-black uppercase tracking-[0.26em] text-[#8A6A1C]">Discovery is the moat</p>
+                    <h1 className="mx-auto mt-4 max-w-4xl font-serif text-5xl font-black leading-tight text-[#0D0D0D] md:text-7xl">
+                        Encuentra escritores que convierten vida en serie.
                     </h1>
-                    <p className="text-gray-400 text-lg max-w-md mx-auto font-medium">
-                        Encuentra escritores y sumérgete en sus mundos.
+                    <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[#0D0D0D]/64 md:text-lg">
+                        Cada card debe vender una voz: quien escribe, que promesa tiene su historia, cual es el primer capitulo gratis y como apoyarlo.
                     </p>
                 </div>
-            </div>
+            </section>
 
-            {/* Grid */}
-            <main className="max-w-6xl mx-auto px-6 py-12 pb-28 relative">
+            <main className="mx-auto max-w-7xl px-4 py-10 pb-24 sm:px-6">
                 <DiscoverGrid creators={creators || []} />
             </main>
         </div>

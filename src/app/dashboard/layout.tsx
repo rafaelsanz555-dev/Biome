@@ -36,7 +36,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 
                 {/* Brand Logo */}
                 <div className="p-6 flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-[#C9A84C] rounded-full flex items-center justify-center">
                         <Play size={12} fill="currentColor" className="text-white ml-0.5" />
                     </div>
                     <Link href="/dashboard" className="text-xl font-bold tracking-tight text-white hover:opacity-80 transition">
@@ -52,16 +52,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 >
                     <div className="relative">
                         {profile.avatar_url ? (
-                            <img src={profile.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover border border-gray-700 group-hover:border-blue-500 transition-colors" />
+                            <img src={profile.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover border border-gray-700 group-hover:border-[#C9A84C] transition-colors" />
                         ) : (
-                            <div className="w-12 h-12 rounded-full border border-gray-700 bg-gray-800 flex items-center justify-center font-bold text-gray-300 group-hover:border-blue-500 transition-colors">
+                            <div className="w-12 h-12 rounded-full border border-gray-700 bg-gray-800 flex items-center justify-center font-bold text-gray-300 group-hover:border-[#C9A84C] transition-colors">
                                 {initial}
                             </div>
                         )}
-                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-blue-500 border-2 border-[#121212] rounded-full"></div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#C9A84C] border-2 border-[#121212] rounded-full"></div>
                     </div>
                     <div className="min-w-0 flex-1">
-                        <h3 className="text-sm font-semibold text-white capitalize truncate group-hover:text-blue-400 transition">{profile.username}</h3>
+                        <h3 className="text-sm font-semibold text-white capitalize truncate group-hover:text-[#C9A84C] transition">{profile.username}</h3>
                         <p className="text-[10px] text-gray-500 truncate">{isCreator ? '→ ' + tCommon('profile') : tDash('reader_role')}</p>
                     </div>
                 </Link>
@@ -111,7 +111,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             {/* Mobile Nav Top */}
             <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 bg-[#121212] border-b border-[#262626] backdrop-blur-md">
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-[#C9A84C] rounded-full flex items-center justify-center">
                         <Play size={8} fill="currentColor" className="text-white ml-0.5" />
                     </div>
                     <Link href="/dashboard" className="font-bold text-lg text-white tracking-tight">
@@ -122,7 +122,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     <Link href="/dashboard/notifications" className="relative text-gray-400">
                         <Bell size={20} />
                     </Link>
-                    {isCreator && <Link href="/dashboard/episodes/new" className="text-xs font-bold px-3 py-1.5 rounded-lg bg-[#1e40af] text-blue-400 border border-blue-500/20">
+                    {isCreator && <Link href="/dashboard/episodes/new" className="text-xs font-bold px-3 py-1.5 rounded-lg bg-[#C9A84C] text-[#0D0D0D]">
                         {tCommon('publish')}
                     </Link>}
                     <UserMenu
@@ -140,29 +140,29 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 <header className="hidden md:flex h-16 flex-shrink-0 border-b border-[#262626] px-8 items-center justify-between sticky top-0 bg-[#0A0A0A]/95 backdrop-blur-md z-30">
                     <div className="relative w-full max-w-xl group">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <Search size={16} className="text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                            <Search size={16} className="text-gray-500 group-focus-within:text-[#C9A84C] transition-colors" />
                         </span>
                         <input 
                             type="text" 
-                            className="block w-full bg-[#1E1E1E] border border-transparent rounded-lg pl-10 pr-3 py-2 text-sm focus:border-blue-500/50 focus:bg-[#1E1E1E] focus:ring-1 focus:ring-blue-500 text-white placeholder-gray-500 transition-all outline-none" 
+                            className="block w-full bg-[#1E1E1E] border border-transparent rounded-lg pl-10 pr-3 py-2 text-sm focus:border-[#C9A84C]/50 focus:bg-[#1E1E1E] focus:ring-1 focus:ring-[#C9A84C] text-white placeholder-gray-500 transition-all outline-none"
                             placeholder={tDash('topbar_search')}
                         />
                     </div>
                     <div className="flex items-center space-x-6 pl-4">
                         <Link href="/dashboard/notifications" className="relative text-gray-400 hover:text-white transition group">
-                            <Bell size={20} className="group-hover:text-blue-400 transition" />
+                            <Bell size={20} className="group-hover:text-[#C9A84C] transition" />
                             {/* Unread badge indicator */}
                             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-[#0A0A0A]">
                                 1
                             </span>
                         </Link>
                         {isCreator ? (
-                            <Link href="/dashboard/episodes/new" className="bg-[#1e40af] text-blue-400 border border-blue-500/20 px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-medium hover:bg-[#24634c] transition shadow-lg shadow-blue-500/10">
+                            <Link href="/dashboard/episodes/new" className="bg-[#C9A84C] text-[#0D0D0D] px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-black hover:bg-[#E2C96E] transition">
                                 <Edit3 size={16} />
                                 <span>{tCommon('publish')}</span>
                             </Link>
                         ) : (
-                            <Link href="/discover" className="bg-[#1e40af] text-blue-400 border border-blue-500/20 px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-medium hover:bg-[#24634c] transition shadow-lg shadow-blue-500/10">
+                            <Link href="/discover" className="bg-[#C9A84C] text-[#0D0D0D] px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-black hover:bg-[#E2C96E] transition">
                                 <Edit3 size={16} />
                                 <span>{tCommon('explore')}</span>
                             </Link>

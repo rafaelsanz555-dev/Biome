@@ -1,15 +1,15 @@
+import Link from 'next/link'
 import { login, signup } from '@/app/auth/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Link from 'next/link'
 
 const ERROR_MESSAGES: Record<string, string> = {
-    credenciales: 'Email o contraseña incorrectos.',
+    credenciales: 'Email o contrasena incorrectos.',
     campos: 'Completa todos los campos.',
-    existe: 'Ya existe una cuenta con ese email. Inicia sesión.',
+    existe: 'Ya existe una cuenta con ese email. Inicia sesion.',
     registro: 'No se pudo crear la cuenta. Intenta de nuevo.',
-    password_corto: 'La contraseña debe tener al menos 6 caracteres.',
+    password_corto: 'La contrasena debe tener al menos 6 caracteres.',
 }
 
 export default async function LoginPage({
@@ -24,101 +24,108 @@ export default async function LoginPage({
     const errorMsg = errorKey ? ERROR_MESSAGES[errorKey] || `Error: ${debugMsg || 'Intenta de nuevo.'}` : null
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0A0B0E] text-white">
-            <div className="w-full max-w-sm flex flex-col items-center space-y-8 relative z-10">
-
-                {/* Logo */}
-                <div className="text-center space-y-2">
-                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-blue-500">
-                        b<span className="text-white">.</span>me
+        <div className="min-h-screen bg-[#FAF7F0] text-[#0D0D0D]">
+            <div className="grid min-h-screen md:grid-cols-[1fr_520px]">
+                <section className="hidden border-r border-[#0D0D0D]/10 bg-[#0D0D0D] p-10 text-[#FAF7F0] md:flex md:flex-col md:justify-between">
+                    <Link href="/" className="text-3xl font-black tracking-tight">
+                        bio<span className="text-[#C9A84C]">.me</span>
                     </Link>
-                    <p className="text-gray-500 font-medium tracking-wide text-sm">
-                        Tu historia. Tu ingreso.
-                    </p>
-                </div>
-
-                {/* Card */}
-                <div className="w-full rounded-2xl p-8 bg-[#15171C] border border-gray-800 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full pointer-events-none"></div>
-
-                    <div className="mb-8 space-y-2 text-center relative z-10">
-                        <h1 className="text-2xl font-bold text-white tracking-tight">
-                            {isRegistro ? 'Crea tu cuenta' : 'Bienvenido de vuelta'}
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#C9A84C]">Your story. Your income.</p>
+                        <h1 className="mt-4 max-w-xl font-serif text-6xl font-black leading-tight">
+                            Entra al estudio donde tu historia empieza a vender.
                         </h1>
-                        <p className="text-sm text-gray-400">
-                            {isRegistro
-                                ? 'Ingresa tu email y elige una contraseña.'
-                                : 'Ingresa con tu email y contraseña.'}
+                        <p className="mt-5 max-w-lg text-sm leading-7 text-[#FAF7F0]/64">
+                            Publica el primer capitulo gratis, crea una serie, mide lectores y convierte apoyo en ingresos dignos.
                         </p>
                     </div>
+                    <p className="text-xs font-bold text-[#FAF7F0]/42">$5/mes para escritores. Lectores siguen gratis.</p>
+                </section>
 
-                    <form action={isRegistro ? signup : login} className="space-y-5 relative z-10">
-                        <div className="space-y-2 text-left">
-                            <Label htmlFor="email" className="text-sm font-bold text-gray-300">
-                                Correo electrónico
-                            </Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="tu@correo.com"
-                                required
-                                autoFocus
-                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-blue-500"
-                            />
+                <main className="flex items-center justify-center px-4 py-10">
+                    <div className="w-full max-w-md">
+                        <div className="mb-8 text-center md:hidden">
+                            <Link href="/" className="text-4xl font-black tracking-tight">
+                                bio<span className="text-[#C9A84C]">.me</span>
+                            </Link>
+                            <p className="mt-2 text-sm font-bold text-[#0D0D0D]/50">Tu historia. Tu ingreso.</p>
                         </div>
 
-                        <div className="space-y-2 text-left">
-                            <Label htmlFor="password" className="text-sm font-bold text-gray-300">
-                                Contraseña
-                            </Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder={isRegistro ? 'Mínimo 6 caracteres' : '••••••••'}
-                                required
-                                minLength={6}
-                                className="h-12 text-sm border-gray-700 bg-[#1A1C23] text-white placeholder:text-gray-600 focus-visible:ring-blue-500"
-                            />
-                        </div>
-
-                        {errorMsg && (
-                            <div className="text-sm p-3 rounded-xl text-red-400 bg-red-500/10 border border-red-500/20">
-                                {errorMsg}
+                        <div className="rounded-3xl border border-[#0D0D0D]/10 bg-white p-7 shadow-xl md:p-9">
+                            <div className="mb-8 text-center">
+                                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8A6A1C]">
+                                    {isRegistro ? 'Crear cuenta' : 'Bienvenido'}
+                                </p>
+                                <h2 className="mt-3 font-serif text-3xl font-black text-[#0D0D0D]">
+                                    {isRegistro ? 'Empieza tu historia' : 'Bienvenido de vuelta'}
+                                </h2>
+                                <p className="mt-2 text-sm leading-6 text-[#0D0D0D]/58">
+                                    {isRegistro ? 'Crea tu acceso con email y contrasena.' : 'Ingresa con tu email y contrasena.'}
+                                </p>
                             </div>
-                        )}
 
-                        <Button
-                            type="submit"
-                            className="w-full h-12 font-bold text-base transition-all bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-[0_0_20px_-5px_rgba(37, 99, 235,0.4)]"
-                        >
-                            {isRegistro ? 'Crear cuenta' : 'Entrar'}
-                        </Button>
-                    </form>
+                            <form action={isRegistro ? signup : login} className="space-y-5">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email" className="text-sm font-black text-[#0D0D0D]">
+                                        Correo electronico
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder="tu@correo.com"
+                                        required
+                                        autoFocus
+                                        className="h-12 rounded-xl border-[#0D0D0D]/12 bg-[#FAF7F0] text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus-visible:ring-[#C9A84C]"
+                                    />
+                                </div>
 
-                    <div className="text-center mt-6 relative z-10">
-                        {isRegistro ? (
-                            <p className="text-sm text-gray-500">
-                                ¿Ya tienes cuenta?{' '}
-                                <Link href="/login" className="font-bold text-blue-500 hover:text-blue-400 hover:underline">
-                                    Inicia sesión
-                                </Link>
-                            </p>
-                        ) : (
-                            <p className="text-sm text-gray-500">
-                                ¿No tienes cuenta?{' '}
-                                <Link href="/login?mode=registro" className="font-bold text-blue-500 hover:text-blue-400 hover:underline">
-                                    Regístrate gratis
-                                </Link>
-                            </p>
-                        )}
+                                <div className="space-y-2">
+                                    <Label htmlFor="password" className="text-sm font-black text-[#0D0D0D]">
+                                        Contrasena
+                                    </Label>
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        placeholder={isRegistro ? 'Minimo 6 caracteres' : '••••••••'}
+                                        required
+                                        minLength={6}
+                                        className="h-12 rounded-xl border-[#0D0D0D]/12 bg-[#FAF7F0] text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus-visible:ring-[#C9A84C]"
+                                    />
+                                </div>
+
+                                {errorMsg && (
+                                    <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm font-bold text-red-700">
+                                        {errorMsg}
+                                    </div>
+                                )}
+
+                                <Button type="submit" className="h-12 w-full rounded-xl bg-[#0D0D0D] text-base font-black text-[#FAF7F0] hover:bg-[#2A2418]">
+                                    {isRegistro ? 'Crear cuenta' : 'Entrar'}
+                                </Button>
+                            </form>
+
+                            <div className="mt-6 text-center">
+                                {isRegistro ? (
+                                    <p className="text-sm text-[#0D0D0D]/55">
+                                        Ya tienes cuenta?{' '}
+                                        <Link href="/login" className="font-black text-[#8A6A1C] hover:underline">
+                                            Inicia sesion
+                                        </Link>
+                                    </p>
+                                ) : (
+                                    <p className="text-sm text-[#0D0D0D]/55">
+                                        No tienes cuenta?{' '}
+                                        <Link href="/login?mode=registro" className="font-black text-[#8A6A1C] hover:underline">
+                                            Registrate
+                                        </Link>
+                                    </p>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <p className="text-center text-xs text-gray-600 font-medium">
-                    Gratis para leer · gratis para publicar (Founding Storytellers)
-                </p>
+                </main>
             </div>
         </div>
     )

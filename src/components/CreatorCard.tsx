@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ArrowRight, BookOpen, Sparkles } from 'lucide-react'
 
 interface CreatorCardProps {
     creator: {
@@ -7,16 +8,28 @@ interface CreatorCardProps {
         full_name: string | null
         avatar_url: string | null
         bio: string | null
-        creators?: { subscription_price: number | null } | null
+        story_themes?: string[] | null
+        creators?: {
+            subscription_price: number | null
+            brand_tagline?: string | null
+            posting_frequency?: string | null
+            series_status?: string | null
+            is_verified_storyteller?: boolean | null
+        } | Array<{
+            subscription_price: number | null
+            brand_tagline?: string | null
+            posting_frequency?: string | null
+            series_status?: string | null
+            is_verified_storyteller?: boolean | null
+        }> | null
     }
 }
 
-// Sleek dark gradients for "Social" feeling covers
-const COVER_GRADIENTS = [
-    'linear-gradient(135deg, #1A1C29 0%, #0D0E15 100%)',   // Night Sky
-    'linear-gradient(135deg, #1D1525 0%, #0F0A14 100%)',   // Deep Purple
-    'linear-gradient(135deg, #0A1929 0%, #050B14 100%)',   // Ocean Dark
-    'linear-gradient(135deg, #241A1A 0%, #170A0A 100%)',   // Maroon Dark
+const COVER_PALETTES = [
+    'from-[#0D0D0D] via-[#2A2418] to-[#C9A84C]',
+    'from-[#1B1711] via-[#553B21] to-[#FAF7F0]',
+    'from-[#0D0D0D] via-[#243128] to-[#C9A84C]',
+    'from-[#2A1612] via-[#4B3022] to-[#C9A84C]',
 ]
 
 function hashUsername(username: string): number {
@@ -28,64 +41,69 @@ function hashUsername(username: string): number {
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
-    const gradient = COVER_GRADIENTS[hashUsername(creator.username) % COVER_GRADIENTS.length]
-    const initial = (creator.full_name || creator.username).charAt(0).toUpperCase()
-    const price = creator.creators?.subscription_price || 4.99
+    const palette = COVER_PALETTES[hashUsername(creator.username) % COVER_PALETTES.length]
+    const name = creator.full_name || creator.username
+    const initial = name.charAt(0).toUpperCase()
+    const creatorMeta = Array.isArray(creator.creators) ? creator.creators[0] : creator.creators
+    const price = creatorMeta?.subscription_price || 5
+    const tagline = creatorMeta?.brand_tagline || creator.bio || 'Construyendo una audiencia alrededor de una historia real.'
+    const themes = creator.story_themes?.slice(0, 2) || []
 
     return (
-        <Link href={`/${creator.username}`} className="group block">
-            <div className="bg-[#15171C] rounded-2xl overflow-hidden border border-gray-800 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(37, 99, 235,0.15)] group-hover:border-blue-500/30">
-                {/* Cover Header */}
-                <div
-                    className="relative h-28 flex flex-col justify-end p-4"
-                    style={{ background: gradient }}
-                >
-                    {/* Badge */}
-                    <div className="absolute top-3 right-3">
-                        <div className="text-[10px] font-bold px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/20 backdrop-blur-sm shadow-sm">
-                            Primer post Gratis
+        <Link href={`/${creator.username}`} className="group block h-full">
+            <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#0D0D0D]/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#C9A84C]/55 hover:shadow-xl">
+                <div className={`relative h-32 bg-gradient-to-br ${palette}`}>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(250,247,240,0.36),transparent_32%),linear-gradient(180deg,transparent,rgba(13,13,13,0.45))]" />
+                    <div className="absolute right-3 top-3 rounded-full border border-[#FAF7F0]/25 bg-[#0D0D0D]/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#FAF7F0] backdrop-blur">
+                        Capitulo 1 gratis
+                    </div>
+                </div>
+
+                <div className="relative flex flex-1 flex-col p-5 pt-0">
+                    <div className="-mt-9 mb-4 flex items-end justify-between gap-3">
+                        <div className="h-18 w-18 overflow-hidden rounded-2xl border-4 border-white bg-[#0D0D0D] shadow-lg">
+                            {creator.avatar_url ? (
+                                <img src={creator.avatar_url} alt={creator.username} className="h-full w-full object-cover" />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center text-2xl font-black text-[#C9A84C]">
+                                    {initial}
+                                </div>
+                            )}
                         </div>
-                    </div>
-                </div>
-
-                {/* Avatar positioning */}
-                <div className="relative px-4 pb-0 -mt-10 flex justify-between items-end">
-                    <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 border-4 border-[#15171C] bg-[#0A0B0E] shadow-xl z-10 transition-transform group-hover:scale-105">
-                        {creator.avatar_url ? (
-                            <img src={creator.avatar_url} alt={creator.username} className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center font-bold text-xl bg-blue-600/20 text-blue-500">
-                                {initial}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Card Body */}
-                <div className="p-5 pt-3">
-                    <div className="mb-3">
-                        <p className="font-bold text-white leading-tight truncate text-lg group-hover:text-blue-400 transition-colors">
-                            {creator.full_name || creator.username}
-                        </p>
-                        <p className="text-xs font-medium text-gray-500">
-                            @{creator.username}
-                        </p>
-                    </div>
-
-                    <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 min-h-[2.5rem] mb-5">
-                        {creator.bio || 'Compartiendo contenido exclusivo en bio.me.'}
-                    </p>
-
-                    <div className="flex items-center justify-between border-t border-gray-800 pt-4">
-                        <span className="text-xs font-bold px-3 py-1.5 rounded-lg bg-white/5 text-gray-300">
+                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-[#C9A84C]/14 px-3 py-1 text-[11px] font-black text-[#765B15]">
+                            <Sparkles size={12} />
                             ${price}/mes
                         </span>
-                        <span className="text-xs font-bold text-blue-500 transition-all group-hover:translate-x-1">
-                            Ver Feed →
+                    </div>
+
+                    <div>
+                        <h3 className="line-clamp-1 font-serif text-2xl font-black leading-tight text-[#0D0D0D] group-hover:text-[#8A6A1C]">
+                            {name}
+                        </h3>
+                        <p className="mt-1 text-xs font-bold text-[#0D0D0D]/45">@{creator.username}</p>
+                    </div>
+
+                    <p className="mt-4 line-clamp-3 min-h-[4.5rem] text-sm leading-6 text-[#0D0D0D]/64">
+                        {tagline}
+                    </p>
+
+                    <div className="mt-5 flex flex-wrap gap-2">
+                        {(themes.length ? themes : ['Story-first']).map((theme) => (
+                            <span key={theme} className="rounded-full border border-[#0D0D0D]/10 bg-[#FAF7F0] px-3 py-1 text-[11px] font-bold text-[#0D0D0D]/62">
+                                {theme}
+                            </span>
+                        ))}
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between border-t border-[#0D0D0D]/8 pt-5">
+                        <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-[#8A6A1C]">
+                            <BookOpen size={14} />
+                            Perfil escritor
                         </span>
+                        <ArrowRight size={17} className="text-[#0D0D0D]/38 transition group-hover:translate-x-1 group-hover:text-[#C9A84C]" />
                     </div>
                 </div>
-            </div>
+            </article>
         </Link>
     )
 }

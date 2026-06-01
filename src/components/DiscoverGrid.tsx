@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { CreatorCard } from '@/components/CreatorCard'
 import Link from 'next/link'
+import { ArrowRight, PenLine } from 'lucide-react'
+import { CreatorCard } from '@/components/CreatorCard'
 
 interface Creator {
     id: string
@@ -10,7 +11,20 @@ interface Creator {
     full_name: string | null
     avatar_url: string | null
     bio: string | null
-    creators?: { subscription_price: number | null } | null
+    story_themes?: string[] | null
+    creators?: {
+        subscription_price: number | null
+        brand_tagline?: string | null
+        posting_frequency?: string | null
+        series_status?: string | null
+        is_verified_storyteller?: boolean | null
+    } | Array<{
+        subscription_price: number | null
+        brand_tagline?: string | null
+        posting_frequency?: string | null
+        series_status?: string | null
+        is_verified_storyteller?: boolean | null
+    }> | null
 }
 
 interface DiscoverGridProps {
@@ -19,239 +33,98 @@ interface DiscoverGridProps {
 
 const FILTERS = [
     { label: 'Todos', key: 'all', keywords: [] },
-    { label: 'Migración', key: 'migration', keywords: ['migra', 'immigra', 'moving', 'moved', 'leaving', 'left my country', 'expat', 'border', 'venezuel', 'barcelona', 'emigr', 'país', 'extranjero', 'frontera'] },
-    { label: 'Supervivencia', key: 'survival', keywords: ['surviv', 'cancer', 'trauma', 'abuse', 'escap', 'disease', 'illness', 'addict', 'recover', 'diagnós', 'quimio', 'depresión', 'sobreviv', 'enferm'] },
-    { label: 'Amor y Pérdida', key: 'love', keywords: ['love', 'loss', 'grief', 'heartbreak', 'divorce', 'mourn', 'widow', 'breakup', 'relationship', 'divorci', 'pérdida', 'duelo', 'amor', 'corazón'] },
-    { label: 'Negocios', key: 'business', keywords: ['business', 'startup', 'entrepreneur', 'founder', 'built', 'company', 'brand', 'hustle', 'freelan', 'negocio', 'empren', 'fundé', 'empresa', 'cliente'] },
-    { label: 'Maternidad', key: 'motherhood', keywords: ['mother', ' mom', 'mama', 'parent', 'child', 'baby', 'pregnan', 'daughter', 'son', 'family', 'mamá', 'madre', 'hijo', 'hija', 'bebé', 'familia'] },
-    { label: 'Comenzar de Nuevo', key: 'starting', keywords: ['start over', 'restart', 'rebuild', 'new life', 'new chapter', 'after divorce', 'after loss', 'second chance', 'reinvent', 'empezar de cero', 'nueva vida', 'nuevo comienzo', 'volver a empezar'] },
-]
-
-const CATEGORY_CARDS = [
-    {
-        key: 'migration',
-        label: 'Migración',
-        desc: 'Historias de quienes cruzaron fronteras buscando una vida mejor.',
-        gradient: 'linear-gradient(170deg, #0A0A1A 0%, #1A2A4A 50%, #2A4A7A 100%)',
-        icon: '✈',
-    },
-    {
-        key: 'survival',
-        label: 'Supervivencia',
-        desc: 'Enfermedades, traumas, adicciones. El viaje de volver a estar entero.',
-        gradient: 'linear-gradient(170deg, #140402 0%, #4A1208 50%, #8A2A10 100%)',
-        icon: '🔥',
-    },
-    {
-        key: 'love',
-        label: 'Amor y Pérdida',
-        desc: 'Divorcios, duelos, corazones rotos — y lo que aprendiste de ellos.',
-        gradient: 'linear-gradient(170deg, #0E040C 0%, #3A0A32 50%, #7A1460 100%)',
-        icon: '♡',
-    },
-    {
-        key: 'business',
-        label: 'Negocios',
-        desc: 'Fundaste algo. Fracasaste. Volviste a intentar. Esa historia importa.',
-        gradient: 'linear-gradient(170deg, #0A0C02 0%, #2A3A0A 50%, #5A7A14 100%)',
-        icon: '◈',
-    },
-    {
-        key: 'motherhood',
-        label: 'Maternidad',
-        desc: 'La crianza sin filtros. El amor más grande y más complicado.',
-        gradient: 'linear-gradient(170deg, #100804 0%, #3A200A 50%, #7A4A14 100%)',
-        icon: '◉',
-    },
-    {
-        key: 'starting',
-        label: 'Comenzar de Nuevo',
-        desc: 'A los 30, 40, 50. Después de todo. Nuevos comienzos reales.',
-        gradient: 'linear-gradient(170deg, #04100E 0%, #0A3A30 50%, #146A54 100%)',
-        icon: '◆',
-    },
+    { label: 'Migracion', key: 'migration', keywords: ['migra', 'emigr', 'pais', 'frontera', 'venezuel', 'extranjero'] },
+    { label: 'Supervivencia', key: 'survival', keywords: ['surviv', 'cancer', 'trauma', 'recover', 'sobreviv', 'enferm'] },
+    { label: 'Amor y perdida', key: 'love', keywords: ['love', 'loss', 'duelo', 'amor', 'divorci', 'relationship'] },
+    { label: 'Negocios', key: 'business', keywords: ['business', 'startup', 'negocio', 'empren', 'empresa', 'founder'] },
+    { label: 'Maternidad', key: 'motherhood', keywords: ['mother', 'mama', 'madre', 'hijo', 'familia', 'baby'] },
+    { label: 'Nuevo comienzo', key: 'starting', keywords: ['start over', 'restart', 'nuevo comienzo', 'nueva vida', 'reinvent'] },
 ]
 
 function matchesFilter(creator: Creator, filterKey: string): boolean {
     if (filterKey === 'all') return true
-    const filter = FILTERS.find(f => f.key === filterKey)
-    if (!filter || filter.keywords.length === 0) return true
-    const bio = (creator.bio || '').toLowerCase()
-    const name = (creator.full_name || creator.username || '').toLowerCase()
-    const text = bio + ' ' + name
-    return filter.keywords.some(kw => text.includes(kw.toLowerCase()))
+    const filter = FILTERS.find((f) => f.key === filterKey)
+    if (!filter) return true
+    const text = [
+        creator.bio,
+        creator.full_name,
+        creator.username,
+        ...(Array.isArray(creator.creators)
+            ? creator.creators.map((meta) => meta.brand_tagline)
+            : [creator.creators?.brand_tagline]),
+        ...(creator.story_themes || []),
+    ].filter(Boolean).join(' ').toLowerCase()
+
+    return filter.keywords.some((keyword) => text.includes(keyword.toLowerCase()))
 }
 
 export function DiscoverGrid({ creators }: DiscoverGridProps) {
     const [active, setActive] = useState('all')
+    const filtered = creators.filter((creator) => matchesFilter(creator, active))
 
-    const filtered = creators.filter(c => matchesFilter(c, active))
-    const hasWriters = creators.length > 0
-
-    // ── Empty state: no writers in DB at all ───────────────────────────────
-    if (!hasWriters) {
+    if (creators.length === 0) {
         return (
-            <div className="mt-12">
-                {/* Founding Writers Banner */}
-                <div className="rounded-2xl p-8 md:p-10 mb-10 text-center bg-gradient-to-br from-blue-600/10 via-[#0F1114] to-[#0A0B0E] border border-blue-500/20 relative overflow-hidden">
-                    <div className="absolute top-0 right-1/4 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none" />
-                    <div className="relative z-10">
-                        <p className="text-xs font-bold tracking-widest uppercase mb-3 text-blue-400">
-                            ◆  Escritores fundadores
-                        </p>
-                        <h2 className="font-bold text-2xl md:text-3xl mb-3 text-white" style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}>
-                            Los primeros escritores están llegando
-                        </h2>
-                        <p className="text-sm leading-relaxed mb-6 max-w-md mx-auto text-gray-300">
-                            Sé parte de los primeros 300 Founding Storytellers de bio.me. Plan gratuito de por vida + badge permanente. Tu historia empieza aquí.
-                        </p>
-                        <Link href="/login">
-                            <button className="font-bold px-8 py-3 rounded-xl text-sm transition bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20">
-                                Únete como Founding Storyteller →
-                            </button>
-                        </Link>
-                    </div>
+            <div className="rounded-3xl border border-[#0D0D0D]/10 bg-white p-8 text-center shadow-sm md:p-12">
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#C9A84C]/15 text-[#8A6A1C]">
+                    <PenLine size={22} />
                 </div>
-
-                {/* Category Cards Grid */}
-                <p
-                    className="text-xs font-bold tracking-widest uppercase text-center mb-6"
-                    style={{ color: 'var(--ink-light)' }}
-                >
-                    Categorías que pronto tendrán historias
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8A6A1C]">Founding storytellers</p>
+                <h2 className="mx-auto mt-3 max-w-2xl font-serif text-3xl font-black text-[#0D0D0D] md:text-4xl">
+                    Los primeros escritores estan construyendo sus historias.
+                </h2>
+                <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#0D0D0D]/62">
+                    Discovery se llena con perfiles reales: escritor, promesa de historia, primer capitulo gratis y precio mensual.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {CATEGORY_CARDS.map((cat) => (
-                        <div
-                            key={cat.key}
-                            className="rounded-2xl overflow-hidden"
-                            style={{
-                                background: cat.gradient,
-                                border: '1px solid rgba(255,255,255,0.06)',
-                                minHeight: '160px',
-                            }}
-                        >
-                            <div className="p-6 h-full flex flex-col justify-between" style={{ minHeight: '160px' }}>
-                                <div>
-                                    <p
-                                        className="text-2xl mb-3"
-                                        style={{ color: 'rgba(255,255,255,0.7)' }}
-                                    >
-                                        {cat.icon}
-                                    </p>
-                                    <h3
-                                        className="font-serif font-bold text-lg mb-2"
-                                        style={{ color: 'rgba(255,255,255,0.95)' }}
-                                    >
-                                        {cat.label}
-                                    </h3>
-                                    <p
-                                        className="text-sm leading-relaxed"
-                                        style={{ color: 'rgba(255,255,255,0.55)' }}
-                                    >
-                                        {cat.desc}
-                                    </p>
-                                </div>
-                                <div className="mt-4">
-                                    <span
-                                        className="text-xs font-bold tracking-wide uppercase px-3 py-1 rounded-full"
-                                        style={{
-                                            backgroundColor: 'rgba(201,168,76,0.15)',
-                                            color: 'rgba(201,168,76,0.8)',
-                                            border: '1px solid rgba(201,168,76,0.2)',
-                                        }}
-                                    >
-                                        Próximamente
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <Link href="/login?mode=registro" className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0D0D0D] px-6 text-sm font-black text-[#FAF7F0] transition hover:bg-[#2A2418]">
+                    Unirme como escritor
+                    <ArrowRight size={16} />
+                </Link>
             </div>
         )
     }
 
-    // ── Normal state: writers exist ────────────────────────────────────────
     return (
-        <>
-            {/* Filter pills */}
-            <div className="flex flex-wrap justify-center gap-2 mt-8">
-                {FILTERS.map((f) => (
-                    <button
-                        key={f.key}
-                        onClick={() => setActive(f.key)}
-                        className="text-xs font-semibold px-4 py-2 rounded-full transition-all"
-                        style={
-                            active === f.key
-                                ? {
-                                    backgroundColor: 'var(--ink)',
-                                    color: 'var(--cream)',
-                                    border: '1px solid var(--ink)',
-                                }
-                                : {
-                                    backgroundColor: 'transparent',
-                                    color: 'var(--ink-light)',
-                                    border: '1px solid var(--cream-mid)',
-                                }
-                        }
-                    >
-                        {f.label}
-                    </button>
-                ))}
+        <div>
+            <div className="flex gap-2 overflow-x-auto pb-2 md:flex-wrap md:justify-center">
+                {FILTERS.map((filter) => {
+                    const selected = active === filter.key
+                    return (
+                        <button
+                            key={filter.key}
+                            type="button"
+                            onClick={() => setActive(filter.key)}
+                            className={`h-10 shrink-0 rounded-full border px-4 text-xs font-black transition ${
+                                selected
+                                    ? 'border-[#0D0D0D] bg-[#0D0D0D] text-[#FAF7F0]'
+                                    : 'border-[#0D0D0D]/12 bg-white/60 text-[#0D0D0D]/58 hover:border-[#C9A84C]/60 hover:text-[#0D0D0D]'
+                            }`}
+                        >
+                            {filter.label}
+                        </button>
+                    )
+                })}
             </div>
 
-            {/* Count indicator */}
             {active !== 'all' && (
-                <p
-                    className="text-center text-xs mt-3"
-                    style={{ color: 'var(--ink-light)', opacity: 0.7 }}
-                >
-                    {filtered.length === 0
-                        ? 'Sin escritores en esta categoría todavía'
-                        : `${filtered.length} escritor${filtered.length !== 1 ? 'es' : ''} encontrado${filtered.length !== 1 ? 's' : ''}`}
+                <p className="mt-4 text-center text-xs font-bold text-[#0D0D0D]/45">
+                    {filtered.length === 0 ? 'Todavia no hay escritores en esta categoria.' : `${filtered.length} escritor${filtered.length === 1 ? '' : 'es'} encontrado${filtered.length === 1 ? '' : 's'}.`}
                 </p>
             )}
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-10">
-                {filtered.map(creator => (
-                    <CreatorCard key={creator.id} creator={creator} />
-                ))}
-
-                {filtered.length === 0 && (
-                    <div className="col-span-full py-28 text-center">
-                        <p
-                            className="font-serif text-2xl font-semibold mb-3"
-                            style={{ color: 'var(--ink)' }}
-                        >
-                            {active === 'all'
-                                ? 'Sin escritores todavía.'
-                                : `Sin escritores de ${FILTERS.find(f => f.key === active)?.label} todavía.`}
-                        </p>
-                        <p
-                            className="text-base mb-8"
-                            style={{ color: 'var(--ink-light)' }}
-                        >
-                            {active === 'all'
-                                ? 'Sé el primero en compartir tu historia.'
-                                : 'Sé el primer escritor de esta categoría.'}
-                        </p>
-                        <Link href="/login">
-                            <button
-                                className="font-bold px-8 py-3 rounded-xl text-sm transition-all hover:opacity-85"
-                                style={{
-                                    backgroundColor: 'var(--ink)',
-                                    color: 'var(--cream)',
-                                    border: 'none',
-                                }}
-                            >
-                                Únete como escritor
-                            </button>
-                        </Link>
-                    </div>
-                )}
-            </div>
-        </>
+            {filtered.length > 0 ? (
+                <div className="mt-9 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {filtered.map((creator) => (
+                        <CreatorCard key={creator.id} creator={creator} />
+                    ))}
+                </div>
+            ) : (
+                <div className="mt-9 rounded-3xl border border-dashed border-[#0D0D0D]/12 bg-white/70 p-10 text-center">
+                    <p className="font-serif text-2xl font-black text-[#0D0D0D]">Ese estante aun esta vacio.</p>
+                    <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#0D0D0D]/58">
+                        Cuando un escritor use esas palabras en su bio, tagline o temas, aparecera aqui automaticamente.
+                    </p>
+                </div>
+            )}
+        </div>
     )
 }

@@ -1,75 +1,52 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { CreatorCard } from '@/components/CreatorCard'
-import { Compass, TrendingUp, Flame } from 'lucide-react'
+import { Compass, ArrowRight } from 'lucide-react'
 
 export default async function DashboardDiscoveryPage() {
     const supabase = await createClient()
 
     const { data: creators } = await supabase
         .from('profiles')
-        .select('*, creators!inner(subscription_price)')
+        .select('id, username, full_name, avatar_url, bio, story_themes, creators!inner(subscription_price, brand_tagline, posting_frequency, series_status, is_verified_storyteller)')
         .eq('role', 'creator')
         .limit(50)
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold mb-1 text-white flex items-center gap-2">
-                    <Compass size={22} className="text-blue-500" />
+        <div className="space-y-7">
+            <div className="rounded-3xl border border-[#C9A84C]/18 bg-[#11100E] p-6 text-[#FAF7F0]">
+                <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-[#C9A84C]">
+                    <Compass size={16} />
                     Discovery
+                </p>
+                <h1 className="mt-3 font-serif text-4xl font-black leading-tight">
+                    Escritores que el lector puede seguir hoy.
                 </h1>
-                <p className="text-sm text-gray-500">Descubre escritores nuevos y voces destacadas.</p>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-[#FAF7F0]/58">
+                    Este grid usa perfiles reales. La siguiente version debe rankear por retencion, follows y capitulos completados.
+                </p>
             </div>
 
-            {/* Filter tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-2">
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1.5">
-                    <Flame size={12} />
-                    Trending
-                </button>
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#15171C] text-gray-400 border border-gray-800 hover:bg-[#1A1C23] transition">
-                    Nuevas voces
-                </button>
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#15171C] text-gray-400 border border-gray-800 hover:bg-[#1A1C23] transition">
-                    <TrendingUp size={12} className="inline mr-1" />
-                    Más leídos
-                </button>
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#15171C] text-gray-400 border border-gray-800 hover:bg-[#1A1C23] transition">
-                    Migración
-                </button>
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#15171C] text-gray-400 border border-gray-800 hover:bg-[#1A1C23] transition">
-                    Supervivencia
-                </button>
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#15171C] text-gray-400 border border-gray-800 hover:bg-[#1A1C23] transition">
-                    Amor y Pérdida
-                </button>
-                <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-[#15171C] text-gray-400 border border-gray-800 hover:bg-[#1A1C23] transition">
-                    Maternidad
-                </button>
-            </div>
-
-            {/* Grid */}
             {!creators || creators.length === 0 ? (
-                <div className="p-14 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-blue-500/10">
-                        <Compass size={22} className="text-blue-500" />
+                <div className="rounded-3xl border border-dashed border-gray-800 bg-[#15171C] p-14 text-center">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#C9A84C]/10">
+                        <Compass size={22} className="text-[#C9A84C]" />
                     </div>
-                    <p className="text-xl font-bold mb-2 text-white">Sin escritores todavía</p>
-                    <p className="text-sm text-gray-400">Vuelve pronto — los escritores fundadores están llegando.</p>
+                    <p className="mb-2 text-xl font-black text-white">Sin escritores todavia</p>
+                    <p className="text-sm text-gray-400">Cuando existan creadores reales, apareceran aqui.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {creators.map(creator => (
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    {creators.map((creator) => (
                         <CreatorCard key={creator.id} creator={creator} />
                     ))}
                 </div>
             )}
 
-            {/* See all link */}
-            <div className="text-center pt-4">
-                <Link href="/discover" className="text-sm font-bold text-blue-500 hover:text-blue-400 transition-colors">
-                    Ver todos los escritores →
+            <div className="text-center pt-2">
+                <Link href="/discover" className="inline-flex items-center gap-2 text-sm font-black text-[#C9A84C] hover:text-[#E2C96E]">
+                    Ver discovery publico
+                    <ArrowRight size={15} />
                 </Link>
             </div>
         </div>
