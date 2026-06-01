@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
 
-const VALID_EMOJIS = ['❤️', '🔥', '😢', '😡', '🤯', '😂']
+const VALID_EMOJIS = ['â¤ï¸', 'ðŸ”¥', 'ðŸ˜¢', 'ðŸ˜¡', 'ðŸ¤¯', 'ðŸ˜‚']
+const reactionSchema = z.object({
+    episode_id: z.string().uuid(),
+    emoji: z.string().refine((emoji) => VALID_EMOJIS.includes(emoji), 'invalid_emoji'),
+})
 
 export async function POST(req: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const body = await req.json()
-    const { episode_id, emoji } = body
+    const parsed = parseJsonBody(reactionSchema, await req.json().catch(() => null))
+    if (!parsed.ok) return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+    const { episode_id, emoji } = parsed.data
 
-    if (!episode_id || !emoji || !VALID_EMOJIS.includes(emoji)) {
-        return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
-    }
-
-    // Upsert (one reaction per user per episode)
     const { data: existing } = await supabase
         .from('reactions')
         .select('id, emoji')
@@ -25,16 +27,14 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
         if (existing.emoji === emoji) {
-            // Toggle off
             await supabase.from('reactions').delete().eq('id', existing.id)
             return NextResponse.json({ ok: true, action: 'removed' })
         }
-        // Change emoji
+
         await supabase.from('reactions').update({ emoji }).eq('id', existing.id)
         return NextResponse.json({ ok: true, action: 'updated' })
     }
 
-    // New reaction
     const { error } = await supabase
         .from('reactions')
         .insert({ episode_id, user_id: user.id, emoji })

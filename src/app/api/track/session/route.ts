@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
+
+const sessionSchema = z.object({
+    view_id: z.string().uuid(),
+    reached_percent: z.coerce.number().min(0).max(100).default(0),
+    time_spent_seconds: z.coerce.number().min(0).max(24 * 3600).default(0),
+    completed: z.boolean().optional().default(false),
+})
 
 async function handler(req: Request) {
     const supabase = await createClient()
-    const body = await req.json().catch(() => null)
-    if (!body?.view_id) return NextResponse.json({ error: 'invalid' }, { status: 400 })
-
-    const pct = Math.max(0, Math.min(100, Number(body.reached_percent ?? 0)))
-    const sec = Math.max(0, Math.min(24 * 3600, Number(body.time_spent_seconds ?? 0)))
+    const parsed = parseJsonBody(sessionSchema, await req.json().catch(() => null))
+    if (!parsed.ok) return NextResponse.json({ error: 'invalid_body', details: parsed.error }, { status: 400 })
+    const body = parsed.data
 
     await supabase
         .from('reading_sessions')
         .update({
-            reached_percent: pct,
-            time_spent_seconds: sec,
-            completed: !!body.completed,
+            reached_percent: body.reached_percent,
+            time_spent_seconds: body.time_spent_seconds,
+            completed: body.completed,
             updated_at: new Date().toISOString(),
         })
         .eq('view_id', body.view_id)

@@ -2,8 +2,21 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const themeIdSchema = z.string().uuid()
+const customThemeSchema = z.object({
+    name: z.string().trim().min(1).max(50),
+    accent_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    font: z.enum(['inter', 'playfair', 'crimson', 'ibm-plex']),
+    background_image: z.string().url(),
+    background_overlay: z.string().trim().max(500),
+})
 
 export async function selectTheme(themeId: string) {
+    const parsedId = themeIdSchema.safeParse(themeId)
+    if (!parsedId.success) return { error: 'invalid_theme' }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'unauthorized' }
@@ -12,7 +25,7 @@ export async function selectTheme(themeId: string) {
     const { data: theme } = await supabase
         .from('themes')
         .select('id, type, creator_id, config')
-        .eq('id', themeId)
+        .eq('id', parsedId.data)
         .single()
 
     if (!theme) return { error: 'theme_not_found' }
@@ -23,7 +36,7 @@ export async function selectTheme(themeId: string) {
     const { error } = await supabase
         .from('creators')
         .update({
-            theme_id: themeId,
+            theme_id: parsedId.data,
             accent_color: cfg.accent_color || null,
             font_family: cfg.font || null,
         })
@@ -32,7 +45,7 @@ export async function selectTheme(themeId: string) {
     if (error) return { error: error.message }
 
     // Incrementar use_count
-    await supabase.rpc('increment_theme_use', { theme_id: themeId }).then(() => null, () => null)
+    await supabase.rpc('increment_theme_use', { theme_id: parsedId.data }).then(() => null, () => null)
 
     // Revalidar perfil público del creator
     const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single()
@@ -49,6 +62,10 @@ export async function uploadCustomBackground(input: {
     background_image: string
     background_overlay: string
 }) {
+    const parsed = customThemeSchema.safeParse(input)
+    if (!parsed.success) return { error: 'invalid_theme_payload' }
+    input = parsed.data
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'unauthorized' }

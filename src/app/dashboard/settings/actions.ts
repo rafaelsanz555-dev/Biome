@@ -2,6 +2,14 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
+
+const profileSettingsSchema = z.object({
+    full_name: z.string().trim().max(100).optional().default(''),
+    bio: z.string().trim().max(500).optional().default(''),
+    avatar_url: z.string().url().optional().or(z.literal('')),
+    subscription_price: z.coerce.number().min(2).max(999).optional().nullable(),
+})
 
 export async function updateProfileSettings(formData: FormData) {
     const supabase = await createClient()
@@ -11,10 +19,14 @@ export async function updateProfileSettings(formData: FormData) {
         return { error: 'Not authenticated.' }
     }
 
-    const full_name = formData.get('full_name') as string
-    const bio = formData.get('bio') as string
-    const avatar_url = formData.get('avatar_url') as string
-    const subscription_price = formData.get('subscription_price') as string
+    const parsed = profileSettingsSchema.safeParse({
+        full_name: formData.get('full_name') || '',
+        bio: formData.get('bio') || '',
+        avatar_url: formData.get('avatar_url') || '',
+        subscription_price: formData.get('subscription_price') || null,
+    })
+    if (!parsed.success) return { error: 'Invalid settings.' }
+    const { full_name, bio, avatar_url, subscription_price } = parsed.data
 
     // Update Profile
     const profileUpdates: any = {
@@ -39,7 +51,7 @@ export async function updateProfileSettings(formData: FormData) {
     if (subscription_price) {
         const { error: creatorError } = await supabase
             .from('creators')
-            .update({ subscription_price: parseFloat(subscription_price) })
+            .update({ subscription_price })
             .eq('profile_id', user.id)
 
         if (creatorError) {

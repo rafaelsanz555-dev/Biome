@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
+import { slugify } from '@/lib/slugs'
+
+const seasonSchema = z.object({
+    title: z.string().trim().min(1).max(120),
+    description: z.string().trim().max(500).optional().default(''),
+    format: z.enum(['series', 'thread']).optional().default('series'),
+})
 
 // POST /api/seasons — crear una serie inline desde el form de publicar
 export async function POST(req: NextRequest) {
@@ -7,15 +16,9 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-    const body = await req.json().catch(() => null)
-    const title = typeof body?.title === 'string' ? body.title.trim() : ''
-    const description = typeof body?.description === 'string' ? body.description.trim() : ''
-    const formatRaw = typeof body?.format === 'string' ? body.format : 'series'
-    const format = formatRaw === 'thread' ? 'thread' : 'series'
-
-    if (title.length < 1 || title.length > 120) {
-        return NextResponse.json({ error: 'invalid_title' }, { status: 400 })
-    }
+    const parsed = parseJsonBody(seasonSchema, await req.json().catch(() => null))
+    if (!parsed.ok) return NextResponse.json({ error: 'invalid_body', details: parsed.error }, { status: 400 })
+    const { title, description, format } = parsed.data
 
     const { data, error } = await supabase
         .from('seasons')
@@ -23,10 +26,11 @@ export async function POST(req: NextRequest) {
             creator_id: user.id,
             title,
             description: description || null,
+            slug: `${slugify(title)}-${Date.now().toString(36).slice(-4)}`,
             sort_order: 1,
             format,
         })
-        .select('id, title, format')
+        .select('id, title, format, slug')
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

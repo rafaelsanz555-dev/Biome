@@ -21,6 +21,7 @@ import { EpisodeRecap } from '@/components/reader/EpisodeRecap'
 import { HonestPaywall } from '@/components/reader/HonestPaywall'
 import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
 import { CommentSection } from '@/components/comments/CommentSection'
+import { ChapterEndCTA } from '@/components/reader/ChapterEndCTA'
 
 interface EpisodePageProps {
     params: Promise<{
@@ -55,13 +56,15 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
     // Cargar season aparte si existe
     let seasonTitle: string | null = null
+    let seasonSlug: string | null = null
     if (episode.season_id) {
         const { data: season } = await supabase
             .from('seasons')
-            .select('title')
+            .select('title, slug')
             .eq('id', episode.season_id)
             .maybeSingle()
         seasonTitle = season?.title ?? null
+        seasonSlug = season?.slug ?? null
     }
     ;(episode as any).seasons = seasonTitle ? { title: seasonTitle } : null
 
@@ -113,6 +116,17 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     const initial = (creatorProfile.full_name || creatorProfile.username).charAt(0).toUpperCase()
     const subPrice = creatorProfile.creators?.subscription_price || 5
     const creatorIdForSub = creatorProfile.creators?.profile_id || creatorProfile.id
+
+    let isFollowingCreator = false
+    if (user && !isOwnProfile) {
+        const { data: followRow } = await supabase
+            .from('follows')
+            .select('creator_id')
+            .eq('follower_id', user.id)
+            .eq('creator_id', creatorProfile.id)
+            .maybeSingle()
+        isFollowingCreator = !!followRow
+    }
 
     // Continuity context: previous + next episodes, total count, last activity
     // Continuity context: previous + next episodes within the SAME story (season)
@@ -384,6 +398,19 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 {/* Engagement bar (sticky footer-like) */}
                 {hasAccess && (
                     <>
+                        <ChapterEndCTA
+                            creatorId={creatorProfile.id}
+                            creatorUsername={creatorProfile.username}
+                            creatorName={creatorProfile.full_name || creatorProfile.username}
+                            isAuthenticated={!!user}
+                            isOwnProfile={isOwnProfile}
+                            initialFollowing={isFollowingCreator}
+                            nextEpisode={nextEp ? { id: nextEp.id, title: nextEp.title } : null}
+                            subscriptionPrice={subPrice}
+                            creatorIdForSub={creatorIdForSub}
+                            storyHref={episode.season_id ? `/${creatorProfile.username}/stories/${seasonSlug || episode.season_id}` : null}
+                        />
+
                         <div className="mt-16 py-2 border-y border-gray-800 flex items-center justify-between">
                             <EpisodeFeedActions
                                 episodeId={episode.id}

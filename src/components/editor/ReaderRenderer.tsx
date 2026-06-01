@@ -13,6 +13,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { PullQuote } from './PullQuote'
+import { sanitizeTipTapContent } from '@/lib/content-security'
 
 interface ReaderRendererProps {
     content: any
@@ -20,10 +21,12 @@ interface ReaderRendererProps {
 
 export function ReaderRenderer({ content }: ReaderRendererProps) {
     if (!content) return null
+    const safeContent = sanitizeTipTapContent(content)
+    if (!safeContent) return null
 
     let html = ''
     try {
-        html = generateHTML(content, [
+        html = generateHTML(safeContent, [
             StarterKit.configure({ heading: { levels: [2, 3] }, codeBlock: false, code: false }),
             Image.configure({ inline: false, HTMLAttributes: { class: 'bio-reader-img' } }),
             Link.configure({ openOnClick: true, HTMLAttributes: { class: 'bio-reader-link', rel: 'noopener noreferrer', target: '_blank' } }),

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 
 interface IdentityPayload {
     country_code?: string | null
@@ -23,6 +24,21 @@ const VALID_THEMES = [
 ]
 
 const VALID_LANGUAGES = ['es', 'en', 'pt', 'fr', 'it', 'de']
+const identitySchema = z.object({
+    country_code: z.string().max(2).nullable().optional(),
+    pronouns: z.string().max(30).nullable().optional(),
+    languages: z.array(z.enum(['es', 'en', 'pt', 'fr', 'it', 'de'])).max(5).nullable().optional(),
+    interests: z.array(z.string().trim().max(25)).max(10).nullable().optional(),
+    story_themes: z.array(z.enum([
+        'migracion', 'supervivencia', 'amor_perdida', 'negocios',
+        'maternidad', 'comenzar_de_nuevo', 'identidad', 'salud_mental',
+        'familia', 'viajes', 'carrera', 'espiritualidad',
+    ])).max(6).nullable().optional(),
+    website_url: z.string().max(300).nullable().optional(),
+    instagram_handle: z.string().max(60).nullable().optional(),
+    twitter_handle: z.string().max(60).nullable().optional(),
+    cover_image_url: z.string().url().nullable().optional().or(z.literal('')),
+})
 
 function sanitizeHandle(val: string | null | undefined): string | null {
     if (!val) return null
@@ -43,6 +59,10 @@ function sanitizeUrl(val: string | null | undefined): string | null {
 }
 
 export async function updateIdentity(payload: IdentityPayload) {
+    const parsed = identitySchema.safeParse(payload)
+    if (!parsed.success) return { error: 'invalid_identity' }
+    payload = parsed.data
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'unauthorized' }

@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getStripe } from '@/lib/stripe'
+import { z } from 'zod'
+
+const checkoutQuerySchema = z.discriminatedUnion('type', [
+    z.object({ type: z.literal('ppv'), episodeId: z.string().uuid() }),
+    z.object({ type: z.literal('subscription'), creatorId: z.string().uuid() }),
+    z.object({ type: z.literal('tip'), creatorId: z.string().uuid(), amount: z.coerce.number().min(1).max(500).default(5) }),
+])
 
 export async function POST(req: Request) {
     try {
@@ -11,36 +18,38 @@ export async function POST(req: Request) {
             return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/login`)
         }
 
-        // Check Stripe is configured
         if (!process.env.STRIPE_SECRET_KEY) {
-            return new NextResponse(
-                JSON.stringify({ error: 'Pagos no configurados aún. Pronto estará disponible.' }),
-                { status: 503, headers: { 'Content-Type': 'application/json' } }
-            )
+            return NextResponse.json({ error: 'Pagos no configurados aun. Pronto estara disponible.' }, { status: 503 })
         }
 
         const { searchParams } = new URL(req.url)
-        const type = searchParams.get('type') // 'ppv' | 'subscription' | 'tip'
-        const episodeId = searchParams.get('episodeId')
-        const creatorId = searchParams.get('creatorId')
+        const parsedQuery = checkoutQuerySchema.safeParse({
+            type: searchParams.get('type'),
+            episodeId: searchParams.get('episodeId') || undefined,
+            creatorId: searchParams.get('creatorId') || undefined,
+            amount: searchParams.get('amount') || undefined,
+        })
 
+        if (!parsedQuery.success) return new NextResponse('Solicitud invalida', { status: 400 })
+
+        const query = parsedQuery.data
         const stripe = getStripe()
         let line_items: any[] = []
-        let metadata: any = { userId: user.id, type }
+        let metadata: any = { userId: user.id, type: query.type }
         let mode: 'payment' | 'subscription' = 'payment'
 
-        if (type === 'ppv' && episodeId) {
+        if (query.type === 'ppv') {
             const { data: episode } = await supabase
                 .from('episodes')
                 .select('title, ppv_price')
-                .eq('id', episodeId)
+                .eq('id', query.episodeId)
                 .single()
 
             if (!episode || !episode.ppv_price) {
-                return new NextResponse('Episodio inválido', { status: 400 })
+                return new NextResponse('Episodio invalido', { status: 400 })
             }
 
-            metadata.episodeId = episodeId
+            metadata.episodeId = query.episodeId
             line_items = [{
                 price_data: {
                     currency: 'usd',
@@ -49,52 +58,44 @@ export async function POST(req: Request) {
                 },
                 quantity: 1,
             }]
-        }
-        else if (type === 'subscription' && creatorId) {
+        } else if (query.type === 'subscription') {
             const { data: creator } = await supabase
                 .from('creators')
                 .select('subscription_price, profiles(username)')
-                .eq('profile_id', creatorId)
+                .eq('profile_id', query.creatorId)
                 .single() as any
 
             if (!creator || !creator.subscription_price) {
-                return new NextResponse('Escritor inválido', { status: 400 })
+                return new NextResponse('Escritor invalido', { status: 400 })
             }
 
-            metadata.creatorId = creatorId
+            metadata.creatorId = query.creatorId
             mode = 'subscription'
             line_items = [{
                 price_data: {
                     currency: 'usd',
-                    product_data: { name: `Suscripción mensual a @${creator.profiles?.username}` },
+                    product_data: { name: `Suscripcion mensual a @${creator.profiles?.username}` },
                     unit_amount: Math.round(creator.subscription_price * 100),
-                    recurring: { interval: 'month' }
+                    recurring: { interval: 'month' },
                 },
                 quantity: 1,
             }]
-        }
-        else if (type === 'tip' && creatorId) {
-            const amountStr = searchParams.get('amount') || '5.00'
-            const amount = parseFloat(amountStr)
-
+        } else {
             const { data: creator } = await supabase
                 .from('creators')
                 .select('profiles(username)')
-                .eq('profile_id', creatorId)
+                .eq('profile_id', query.creatorId)
                 .single() as any
 
-            metadata.creatorId = creatorId
+            metadata.creatorId = query.creatorId
             line_items = [{
                 price_data: {
                     currency: 'usd',
                     product_data: { name: `Propina para @${creator?.profiles?.username}` },
-                    unit_amount: Math.round(amount * 100),
+                    unit_amount: Math.round(query.amount * 100),
                 },
                 quantity: 1,
             }]
-        }
-        else {
-            return new NextResponse('Solicitud inválida', { status: 400 })
         }
 
         const session = await stripe.checkout.sessions.create({
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
             mode,
             metadata,
             success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/dashboard/billing?success=true`,
-            cancel_url: req.headers.get('referer') || `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/descubrir`,
+            cancel_url: req.headers.get('referer') || `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/discover`,
         })
 
         return NextResponse.redirect(session.url!, { status: 303 })

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 
 const VALID_FREQUENCIES = ['weekly', 'biweekly', 'monthly', 'irregular'] as const
 const VALID_STATUSES = ['active', 'paused', 'completed', 'planning'] as const
@@ -12,16 +13,24 @@ interface Input {
     series_status: string
     why_i_write: string | null
 }
+const trustSchema = z.object({
+    posting_frequency: z.enum(VALID_FREQUENCIES).default('irregular'),
+    frequency_promise: z.string().trim().max(60).nullable().optional(),
+    series_status: z.enum(VALID_STATUSES).default('active'),
+    why_i_write: z.string().trim().max(280).nullable().optional(),
+})
 
 export async function saveTrustSettings(input: Input) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
-    const freq = VALID_FREQUENCIES.includes(input.posting_frequency as any) ? input.posting_frequency : 'irregular'
-    const status = VALID_STATUSES.includes(input.series_status as any) ? input.series_status : 'active'
-    const promise = input.frequency_promise ? input.frequency_promise.slice(0, 60) : null
-    const whyIWrite = input.why_i_write ? input.why_i_write.slice(0, 280) : null
+    const parsed = trustSchema.safeParse(input)
+    if (!parsed.success) return { error: 'invalid_trust_settings' }
+    const freq = parsed.data.posting_frequency
+    const status = parsed.data.series_status
+    const promise = parsed.data.frequency_promise || null
+    const whyIWrite = parsed.data.why_i_write || null
 
     const { error } = await supabase
         .from('creators')

@@ -9,6 +9,7 @@ import { CreatorBioCard } from '@/components/trust/CreatorBioCard'
 import Link from 'next/link'
 import { Lock, Heart, Gift, MessageCircle } from 'lucide-react'
 import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
+import { FollowButton } from '@/components/FollowButton'
 
 interface ProfilePageProps {
     params: Promise<{ username: string }>
@@ -28,7 +29,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const { data: episodes } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, full_text, cover_image_url, is_subscription_only, ppv_price, created_at, season_id, seasons(id, title, description)')
+        .select('id, title, preview_text, full_text, cover_image_url, is_subscription_only, ppv_price, created_at, season_id, seasons(id, title, description, slug, tagline, promise, central_question, audience, transformation, tone)')
         .eq('creator_id', profile.id)
         .eq('is_published', true)
         .order('created_at', { ascending: true })
@@ -80,6 +81,17 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
         .from('follows')
         .select('*', { count: 'exact', head: true })
         .eq('creator_id', profile.id)
+
+    let isFollowingCreator = false
+    if (user && !isOwnProfile) {
+        const { data: followRow } = await supabase
+            .from('follows')
+            .select('creator_id')
+            .eq('follower_id', user.id)
+            .eq('creator_id', profile.id)
+            .maybeSingle()
+        isFollowingCreator = !!followRow
+    }
 
     const freePostIds = new Set((episodes || [])
         .slice()
@@ -184,9 +196,13 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                 ✓ Suscrito
                                             </span>
                                         )}
-                                        <Button variant="outline" className="w-full sm:w-auto h-11 rounded-xl font-bold border-gray-700 bg-[#1A1C23] text-gray-300 hover:text-white hover:bg-gray-800">
-                                            Seguir
-                                        </Button>
+                                        <FollowButton
+                                            targetType="creator"
+                                            targetId={profile.id}
+                                            initialFollowing={isFollowingCreator}
+                                            isAuthenticated={!!user}
+                                            className="inline-flex w-full sm:w-auto h-11 items-center justify-center gap-2 rounded-xl border border-gray-700 bg-[#1A1C23] px-5 text-sm font-bold text-gray-300 transition hover:bg-gray-800 hover:text-white"
+                                        />
                                     </>
                                 ) : (
                                     <Link href="/dashboard" className="w-full sm:w-auto">
@@ -242,9 +258,22 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                 {/* Encabezado de la Historia */}
                                 {group.season ? (
                                     <div className="mb-6 pl-4 border-l-4 border-[var(--brand-accent)]">
-                                        <h2 className="text-2xl font-serif font-bold text-white mb-2">{group.season.title}</h2>
+                                        <Link href={`/${profile.username}/stories/${group.season.slug || group.season.id}`} className="group inline-block">
+                                            <h2 className="text-2xl font-serif font-bold text-white mb-2 transition group-hover:text-[var(--brand-accent)]">{group.season.title}</h2>
+                                        </Link>
+                                        {(group.season.tagline || group.season.promise) && (
+                                            <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--brand-accent)]">
+                                                {group.season.tagline || group.season.promise}
+                                            </p>
+                                        )}
                                         {group.season.description && (
                                             <p className="text-sm text-gray-400 max-w-2xl leading-relaxed">{group.season.description}</p>
+                                        )}
+                                        {(group.season.central_question || group.season.audience) && (
+                                            <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-bold text-gray-300">
+                                                {group.season.central_question && <span className="rounded-full border border-gray-800 bg-[#15171C] px-3 py-1">{group.season.central_question}</span>}
+                                                {group.season.audience && <span className="rounded-full border border-gray-800 bg-[#15171C] px-3 py-1">Para {group.season.audience}</span>}
+                                            </div>
                                         )}
                                     </div>
                                 ) : (

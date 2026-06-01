@@ -12,6 +12,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { PullQuote } from '@/components/editor/PullQuote'
+import { sanitizeTipTapContent } from '@/lib/content-security'
 import { WritingCoach } from '@/components/writer/WritingCoach'
 import { AIAssistant } from '@/components/writer/AIAssistant'
 import { SeasonPicker } from '@/components/writer/SeasonPicker'
@@ -454,9 +455,10 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
 
 // Helper to render TipTap JSON → HTML for the preview modal
 function renderPreviewHtml(json: any): string {
-    if (!json) return ''
+    const safeJson = sanitizeTipTapContent(json)
+    if (!safeJson) return ''
     try {
-        return generateHTML(json, [
+        return generateHTML(safeJson, [
             StarterKit.configure({ heading: { levels: [2, 3] }, codeBlock: false, code: false }),
             Image,
             Link,

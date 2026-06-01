@@ -1,16 +1,23 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
+
+const bookmarkSchema = z.object({
+    episode_id: z.string().uuid(),
+    reached_percent: z.coerce.number().min(0).max(100).default(0),
+    completed: z.boolean().optional().default(false),
+    last_position_text: z.string().max(500).nullable().optional(),
+})
 
 export async function POST(req: Request) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-    const body = await req.json().catch(() => null)
-    if (!body?.episode_id) return NextResponse.json({ error: 'invalid' }, { status: 400 })
-
-    const pct = Math.max(0, Math.min(100, Number(body.reached_percent ?? 0)))
-    const completed = !!body.completed
+    const parsed = parseJsonBody(bookmarkSchema, await req.json().catch(() => null))
+    if (!parsed.ok) return NextResponse.json({ error: 'invalid_body', details: parsed.error }, { status: 400 })
+    const body = parsed.data
 
     const { error } = await supabase
         .from('reading_bookmarks')
@@ -18,9 +25,9 @@ export async function POST(req: Request) {
             {
                 user_id: user.id,
                 episode_id: body.episode_id,
-                reached_percent: pct,
-                completed,
-                last_position_text: typeof body.last_position_text === 'string' ? body.last_position_text.slice(0, 500) : null,
+                reached_percent: body.reached_percent,
+                completed: body.completed,
+                last_position_text: body.last_position_text || null,
                 updated_at: new Date().toISOString(),
             },
             { onConflict: 'user_id,episode_id' }

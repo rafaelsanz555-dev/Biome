@@ -3,16 +3,19 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const credentialsSchema = z.object({
+    email: z.string().trim().email(),
+    password: z.string().min(6).max(128),
+})
 
 export async function login(formData: FormData) {
     const supabase = await createClient()
 
-    const email = (formData.get('email') as string || '').trim()
-    const password = formData.get('password') as string
-
-    if (!email || !password) {
-        redirect('/login?error=campos')
-    }
+    const parsed = credentialsSchema.safeParse({ email: formData.get('email'), password: formData.get('password') })
+    if (!parsed.success) redirect('/login?error=campos')
+    const { email, password } = parsed.data
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -43,16 +46,9 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
     const supabase = await createClient()
 
-    const email = (formData.get('email') as string || '').trim()
-    const password = formData.get('password') as string
-
-    if (!email || !password) {
-        redirect('/login?mode=registro&error=campos')
-    }
-
-    if (password.length < 6) {
-        redirect('/login?mode=registro&error=password_corto')
-    }
+    const parsed = credentialsSchema.safeParse({ email: formData.get('email'), password: formData.get('password') })
+    if (!parsed.success) redirect('/login?mode=registro&error=campos')
+    const { email, password } = parsed.data
 
     const { data, error } = await supabase.auth.signUp({
         email,

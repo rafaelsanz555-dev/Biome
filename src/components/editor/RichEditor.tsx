@@ -7,6 +7,7 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
 import { PullQuote } from './PullQuote'
+import { isSafeUserUrl } from '@/lib/content-security'
 import { useEffect, useImperativeHandle, forwardRef, useRef } from 'react'
 import {
     Bold, Italic, Heading2, Heading3, Quote, Minus, List, ListOrdered,
@@ -85,11 +86,11 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
 
     function addImage() {
         const url = window.prompt('URL de la imagen:')
-        if (url) editor?.chain().focus().setImage({ src: url }).run()
+        if (url && isSafeUserUrl(url)) editor?.chain().focus().setImage({ src: url }).run()
     }
     function addLink() {
         const url = window.prompt('URL del link:')
-        if (url) editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+        if (url && isSafeUserUrl(url)) editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
     }
 
     return (

@@ -3,14 +3,14 @@ import { redirect } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createSeason } from './actions'
-import { Library, PlusCircle } from 'lucide-react'
+import { Library, PlusCircle, Sparkles } from 'lucide-react'
 
 export default async function SeasonsPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    const { data: _p } = await supabase.from('profiles').select('role').eq('id', user?.id ?? '').maybeSingle()
-    if (_p?.role !== 'creator') redirect('/dashboard')
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id ?? '').maybeSingle()
+    if (profile?.role !== 'creator') redirect('/dashboard')
 
     const { data: seasons } = await supabase
         .from('seasons')
@@ -21,51 +21,58 @@ export default async function SeasonsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold mb-1 text-white">Galerías / Series</h1>
-                <p className="text-sm text-gray-500">Agrupa tus posts exclusivos en series o galerías temáticas.</p>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C9A84C]">Story DNA</p>
+                <h1 className="mt-2 text-2xl font-black text-white">Historias / Series</h1>
+                <p className="text-sm text-gray-500">Define la promesa, tono y pregunta central de cada historia.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div className="md:col-span-1">
-                    <div className="rounded-2xl p-6 sticky top-6 bg-[#15171C] border border-gray-800 shadow-md">
-                        <h2 className="font-bold text-white text-base mb-1">Nueva Galería</h2>
-                        <p className="text-xs text-gray-500 mb-5">Crea un álbum para agrupar posts.</p>
+                    <div className="sticky top-6 rounded-2xl border border-gray-800 bg-[#15171C] p-6 shadow-md">
+                        <h2 className="text-base font-black text-white">Nueva historia</h2>
+                        <p className="mb-5 text-xs text-gray-500">Crea una serie vendible antes de escribir capitulos.</p>
                         <form action={createSeason} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label className="text-sm font-bold text-gray-400">Título</Label>
-                                <Input id="title" name="title" required placeholder="ej. Sesión en la playa" className="h-10 text-sm bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-blue-500" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-sm font-bold text-gray-400">Descripción (opcional)</Label>
-                                <Input id="description" name="description" placeholder="Un breve resumen..." className="h-10 text-sm bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-blue-500" />
-                            </div>
-                            <button type="submit" className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-lg shadow-blue-500/20">
+                            <Field name="title" label="Titulo" placeholder="ej. De cero a mi primera libertad" required />
+                            <Field name="tagline" label="Linea vendible" placeholder="Una frase que haga abrir el capitulo 1..." />
+                            <Field name="description" label="Sinopsis" placeholder="De que trata esta historia..." />
+                            <Field name="promise" label="Promesa al lector" placeholder="Lo que el lector se lleva..." />
+                            <Field name="central_question" label="Pregunta central" placeholder="Que pregunta mantiene viva la serie..." />
+                            <Field name="audience" label="Audiencia ideal" placeholder="Para quien es esta historia..." />
+                            <Field name="transformation" label="Transformacion" placeholder="Como cambia el lector al final..." />
+                            <Field name="tone" label="Tono" placeholder="confesional, inspirador, oscuro..." />
+                            <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C9A84C] py-2.5 text-sm font-black text-[#0D0D0D] transition hover:bg-[#D8BA63]">
                                 <PlusCircle size={16} />
-                                Crear Galería
+                                Crear historia
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <div className="md:col-span-2 space-y-3">
+                <div className="space-y-3 md:col-span-2">
                     {!seasons || seasons.length === 0 ? (
-                        <div className="p-12 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 bg-blue-500/10">
-                                <Library size={20} className="text-blue-500" />
+                        <div className="rounded-2xl border border-dashed border-gray-800 bg-[#15171C] p-12 text-center">
+                            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#C9A84C]/10">
+                                <Library size={20} className="text-[#C9A84C]" />
                             </div>
-                            <p className="text-lg font-bold text-white mb-1">Sin galerías todavía</p>
-                            <p className="text-sm text-gray-500">Crea tu primera serie en el panel izquierdo.</p>
+                            <p className="mb-1 text-lg font-bold text-white">Sin historias todavia</p>
+                            <p className="text-sm text-gray-500">Crea tu primera historia en el panel izquierdo.</p>
                         </div>
                     ) : (
                         seasons.map((season) => (
-                            <div key={season.id} className="rounded-2xl p-5 bg-[#15171C] border border-gray-800 hover:border-gray-700 transition-colors">
+                            <div key={season.id} className="rounded-2xl border border-gray-800 bg-[#15171C] p-5 transition-colors hover:border-gray-700">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500/10 border border-blue-500/20">
-                                        <Library size={18} className="text-blue-400" />
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#C9A84C]/20 bg-[#C9A84C]/10">
+                                        <Sparkles size={18} className="text-[#C9A84C]" />
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-white text-base mb-1">{season.title}</h3>
-                                        {season.description && <p className="text-sm text-gray-500">{season.description}</p>}
+                                    <div className="min-w-0">
+                                        <h3 className="text-base font-black text-white">{season.title}</h3>
+                                        {season.description && <p className="mt-1 text-sm text-gray-500">{season.description}</p>}
+                                        <div className="mt-3 grid gap-2 text-xs text-gray-400 md:grid-cols-2">
+                                            {season.promise && <p><span className="font-bold text-[#C9A84C]">Promesa:</span> {season.promise}</p>}
+                                            {season.central_question && <p><span className="font-bold text-[#C9A84C]">Pregunta:</span> {season.central_question}</p>}
+                                            {season.audience && <p><span className="font-bold text-[#C9A84C]">Para:</span> {season.audience}</p>}
+                                            {season.tone && <p><span className="font-bold text-[#C9A84C]">Tono:</span> {season.tone}</p>}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -73,6 +80,15 @@ export default async function SeasonsPage() {
                     )}
                 </div>
             </div>
+        </div>
+    )
+}
+
+function Field({ name, label, placeholder, required = false }: { name: string; label: string; placeholder: string; required?: boolean }) {
+    return (
+        <div className="space-y-2">
+            <Label htmlFor={name} className="text-sm font-bold text-gray-400">{label}</Label>
+            <Input id={name} name={name} required={required} placeholder={placeholder} className="h-10 border-gray-800 bg-[#0A0B0E] text-sm text-white focus-visible:ring-[#C9A84C]" />
         </div>
     )
 }

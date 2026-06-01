@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getStripe } from '@/lib/stripe'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
 
-const PLATFORM_FEE_PCT = 0.12 // 12% a bio.me
+const PLATFORM_FEE_PCT = 0.12
+const giftSchema = z.object({
+    recipientId: z.string().uuid(),
+    postId: z.string().uuid().optional().nullable(),
+    amount: z.coerce.number().min(1).max(50),
+    emoji: z.string().trim().min(1).max(16),
+})
 
 export async function POST(req: Request) {
     try {
@@ -13,15 +21,15 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
         }
 
-        const { recipientId, postId, amount, emoji } = await req.json()
-
-        if (!recipientId || !amount || amount < 1 || amount > 50) {
-            return NextResponse.json({ error: 'Parámetros de regalo inválidos' }, { status: 400 })
+        const parsed = parseJsonBody(giftSchema, await req.json().catch(() => null))
+        if (!parsed.ok) {
+            return NextResponse.json({ error: 'Parametros de regalo invalidos', details: parsed.error }, { status: 400 })
         }
 
-        // Check Stripe is configured
+        const { recipientId, postId, amount, emoji } = parsed.data
+
         if (!process.env.STRIPE_SECRET_KEY) {
-            return NextResponse.json({ error: 'Pagos no configurados aún. Pronto estará disponible.' }, { status: 503 })
+            return NextResponse.json({ error: 'Pagos no configurados aun. Pronto estara disponible.' }, { status: 503 })
         }
 
         const { data: recipient } = await supabase
@@ -38,7 +46,6 @@ export async function POST(req: Request) {
         const totalCents = Math.round(amount * 100)
 
         const stripe = getStripe()
-
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             mode: 'payment',
@@ -64,7 +71,7 @@ export async function POST(req: Request) {
                 platformFee: String(platformFee / 100),
                 emoji,
             },
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/gift/success?emoji=${emoji}`,
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/gift/success?emoji=${encodeURIComponent(emoji)}`,
             cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}`,
         })
 

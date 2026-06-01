@@ -1,192 +1,133 @@
 import Link from 'next/link'
-import { getTranslations } from 'next-intl/server'
 import { Navbar } from '@/components/Navbar'
-import { Button } from '@/components/ui/button'
-import { EarningsCalculator } from '@/components/EarningsCalculator'
 import { createClient } from '@/lib/supabase/server'
 
-const CATEGORIES = [
-    { label: 'Exclusivos', icon: '💎', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
-    { label: 'Historias', icon: '🔥', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
-    { label: 'Comunidad', icon: '💬', gradient: 'linear-gradient(135deg, #1A1C23 0%, #0A0B0E 100%)' },
+const PRINCIPLES = [
+    {
+        title: 'Publish like a novelist',
+        text: 'Series, chapters, previews, paywalls and reader trust signals are built around narrative, not generic posts.',
+    },
+    {
+        title: 'Earn from day one',
+        text: 'Readers subscribe, unlock paid chapters, send gifts and support the writer directly.',
+    },
+    {
+        title: 'Discovery rewards story',
+        text: 'bio.me is designed to surface writers with emotional pull, consistency and reader connection.',
+    },
 ]
 
-const GIFTS = [
-    { emoji: '❤️', label: 'Amor', price: 1 },
-    { emoji: '🔥', label: 'Fuego', price: 2 },
-    { emoji: '👏', label: 'Aplauso', price: 3 },
-    { emoji: '⭐', label: 'Estrella', price: 5 },
-    { emoji: '💎', label: 'Diamante', price: 10 },
-    { emoji: '👑', label: 'Corona', price: 25 },
-    { emoji: '🚀', label: 'Cohete', price: 50 },
+const REVENUE = [
+    { label: 'Writer membership', value: '$5/mo', note: 'Publishing rights, profile, analytics and monetization tools.' },
+    { label: 'Reader subscriptions', value: '$2+ /mo', note: 'Writers set their own monthly price.' },
+    { label: 'Platform fee', value: '10-12%', note: 'Collected through Stripe Connect as writers earn.' },
 ]
 
 export default async function LandingPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    const tLanding = await getTranslations('landing')
-    // Si ya está logueado, los CTAs llevan al dashboard en lugar de /login
-    const ctaPrimary = user ? '/dashboard' : '/login'
-    const ctaPrimaryLabel = user ? 'Dashboard →' : tLanding('cta_start')
+    const ctaHref = user ? '/dashboard' : '/login?mode=registro'
+    const ctaLabel = user ? 'Open dashboard' : 'Start writing'
 
     return (
-        <div className="min-h-screen bg-[#0A0B0E] text-gray-100 font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-[#FAF7F0] text-[#0D0D0D] selection:bg-[#C9A84C]/30">
             <Navbar />
 
-            {/* ── HERO ──────────────────────────────────────────── */}
-            <section className="relative overflow-hidden border-b border-gray-800/60 pb-20 pt-24 md:pb-32 md:pt-36">
-                {/* Background ambient glow */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[400px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
+            <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden border-b border-[#0D0D0D]/10">
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: "url('/themes/golden_journal_bg.png')" }}
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(250,247,240,0.96)_0%,rgba(250,247,240,0.86)_46%,rgba(13,13,13,0.18)_100%)]" />
 
-                <div className="relative max-w-4xl mx-auto px-6 text-center">
-                    <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase mb-8 px-4 py-2 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                        {tLanding('badge_platform')}
-                    </div>
-
-                    <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 tracking-tight">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-400">{tLanding('hero_title_1')}</span><br />
-                        {tLanding('hero_title_2')}
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-                        {tLanding('hero_description')}
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <Link href={ctaPrimary} className="w-full sm:w-auto">
-                            <Button size="lg" className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 h-14 text-base rounded-xl shadow-[0_0_40px_-10px_rgba(37, 99, 235,0.5)] transition-all hover:scale-105 w-full">
-                                {ctaPrimaryLabel}
-                            </Button>
-                        </Link>
-                        <Link href="/discover" className="w-full sm:w-auto">
-                            <Button size="lg" variant="outline" className="border-gray-700 bg-[#15171C] text-gray-300 hover:bg-gray-800 hover:text-white font-bold px-10 h-14 text-base rounded-xl w-full">
-                                {tLanding('cta_explore')}
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* ── FEED PREVIEW (MOCK) ────────────────────────── */}
-            <section className="py-20 px-6 border-b border-gray-800/60 bg-[#0A0B0E]">
-                <div className="max-w-2xl mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-2xl md:text-3xl font-bold text-white">Un feed exclusivo para tus fans</h2>
-                        <p className="text-gray-500 mt-2">Fotos, textos largos y propinas en cada publicación.</p>
-                    </div>
-
-                    {/* Fake Post Card */}
-                    <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-5 shadow-2xl">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-blue-400 p-0.5">
-                                <div className="w-full h-full bg-[#15171C] rounded-full flex items-center justify-center font-bold text-lg">M</div>
-                            </div>
-                            <div>
-                                <p className="font-bold text-white leading-tight">Maria Stories</p>
-                                <p className="text-xs text-gray-500">Ayer a las 10:30 PM • Solo subscriptores</p>
-                            </div>
-                        </div>
-                        <p className="text-gray-300 mb-4 leading-relaxed">
-                            Hoy tomé la decisión más difícil de mi vida. Empaqué todo en dos maletas y dejé mi apartamento. Para todos los que estuvieron apoyándome en este proceso, aquí les cuento la historia completa y lo que viene...
+                <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-center px-6 py-20">
+                    <div className="max-w-3xl">
+                        <p className="mb-5 text-xs font-black uppercase tracking-[0.28em] text-[#8A6B1E]">
+                            The platform where storytellers become millionaires
                         </p>
-                        <div className="w-full h-48 bg-[#0A0B0E] rounded-xl flex items-center justify-center border border-gray-800 mb-4 overflow-hidden relative">
-                            {/* Blur mockup */}
-                            <div className="absolute inset-0 bg-blue-500/5 backdrop-blur-xl"></div>
-                            <span className="relative text-blue-400 font-bold flex items-center gap-2">
-                                🔒 Contenido bloqueado
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2 pt-4 border-t border-gray-800/80">
-                            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white hover:bg-white/5 font-bold">
-                                ❤️ Me gusta
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 font-bold ml-auto">
-                                🎁 Enviar propina
-                            </Button>
+                        <h1 className="font-serif text-5xl font-black leading-[0.98] tracking-normal text-[#0D0D0D] md:text-7xl">
+                            Your story. Your income.
+                        </h1>
+                        <p className="mt-7 max-w-2xl text-lg leading-8 text-[#3D3324] md:text-xl">
+                            bio.me helps writers turn life narrative into a paid audience: one free chapter,
+                            reader subscriptions, gifts, paid unlocks and discovery built for human connection.
+                        </p>
+
+                        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+                            <Link
+                                href={ctaHref}
+                                className="inline-flex h-13 items-center justify-center rounded-md bg-[#0D0D0D] px-7 text-sm font-black uppercase tracking-[0.14em] text-[#FAF7F0] transition hover:bg-[#2A2117]"
+                            >
+                                {ctaLabel}
+                            </Link>
+                            <Link
+                                href="/discover"
+                                className="inline-flex h-13 items-center justify-center rounded-md border border-[#0D0D0D]/20 bg-[#FAF7F0]/80 px-7 text-sm font-black uppercase tracking-[0.14em] text-[#0D0D0D] transition hover:border-[#C9A84C]"
+                            >
+                                Read stories
+                            </Link>
                         </div>
                     </div>
-                </div>
-            </section>
 
-            {/* ── EARNINGS CALCULATOR ──────────────────────────── */}
-            <EarningsCalculator />
-
-            {/* ── GIFTS ─────────────────────────────────────────── */}
-            <section className="py-24 px-6 border-b border-gray-800/60 bg-[#0A0B0E] relative overflow-hidden">
-                <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
-                
-                <div className="max-w-4xl mx-auto text-center relative z-10">
-                    <p className="text-xs font-bold tracking-widest uppercase text-blue-500 mb-3">
-                        Monetización Directa
-                    </p>
-                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                        Convierten su aprecio en ingresos
-                    </h2>
-                    <p className="text-gray-400 mb-14 text-lg leading-relaxed max-w-2xl mx-auto">
-                        Tus seguidores pueden enviarte regalos directamente en cualquier publicación. 
-                        Recibes el 88% de cada transacción de forma transparente.
-                    </p>
-
-                    <div className="flex flex-wrap justify-center gap-4">
-                        {GIFTS.map((g) => (
-                            <div
-                                key={g.label}
-                                className="flex flex-col items-center gap-2 px-6 py-5 rounded-2xl bg-[#15171C] border border-gray-800 hover:border-blue-500/50 hover:bg-[#1A1C23] transition-all cursor-default w-32"
-                            >
-                                <span className="text-4xl drop-shadow-lg mb-2">{g.emoji}</span>
-                                <span className="text-xs font-bold text-gray-500 tracking-wide uppercase">{g.label}</span>
-                                <span className="text-lg font-black text-white">${g.price}</span>
+                    <div className="mt-16 grid max-w-4xl grid-cols-1 border-y border-[#0D0D0D]/15 sm:grid-cols-3">
+                        {REVENUE.map((item) => (
+                            <div key={item.label} className="border-[#0D0D0D]/15 py-5 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0">
+                                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8A6B1E]">{item.label}</p>
+                                <p className="mt-2 text-3xl font-black text-[#0D0D0D]">{item.value}</p>
+                                <p className="mt-2 text-sm leading-6 text-[#5D5142]">{item.note}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* ── PRICING ───────────────────────────────────────── */}
-            <section className="py-24 px-6 bg-[#15171C]">
-                <div className="max-w-lg mx-auto text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Todo lo que necesitas.</h2>
-                    <p className="text-gray-400 mb-10 text-lg">Eres dueño de tu contenido y de tus ganancias.</p>
-
-                    <div className="bg-[#0A0B0E] border border-gray-800 rounded-[2rem] p-8 text-left shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full pointer-events-none"></div>
-                        
-                        <div className="flex items-end gap-2 mb-2">
-                            <span className="text-6xl font-black text-white">$5</span>
-                            <span className="text-gray-500 mb-2 text-xl font-medium">/ mes</span>
-                        </div>
-                        <p className="text-gray-400 text-sm mb-8 font-medium">Suscripción para creadores. 0% de comisión en tus subs.</p>
-
-                        <ul className="space-y-4 mb-10">
-                            {[
-                                'Perfil público estilo red social',
-                                'Publicaciones con fotos (hasta 10)',
-                                'Bloqueo de contenido para subs',
-                                'Recibe regalos y propinas ($1 - $50)',
-                                'Tú defines el precio de tu membresía',
-                                'Panel de control y ganancias',
-                            ].map(item => (
-                                <li key={item} className="flex items-start gap-4 text-gray-300 font-medium">
-                                    <span className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">✓</span>
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-
-                        <Link href="/login" className="block">
-                            <Button size="lg" className="w-full bg-white text-black hover:bg-gray-200 font-bold h-14 text-base rounded-xl transition-all">
-                                Crear mi cuenta →
-                            </Button>
-                        </Link>
+            <section className="border-b border-[#0D0D0D]/10 bg-[#0D0D0D] px-6 py-20 text-[#FAF7F0]">
+                <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-start">
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#C9A84C]">Writers first</p>
+                        <h2 className="mt-4 font-serif text-4xl font-black leading-tight md:text-5xl">
+                            The writer is the product. The story is the storefront.
+                        </h2>
+                    </div>
+                    <div className="grid gap-4">
+                        {PRINCIPLES.map((item) => (
+                            <article key={item.title} className="rounded-md border border-[#FAF7F0]/12 bg-[#FAF7F0]/5 p-5">
+                                <h3 className="text-lg font-black text-[#FAF7F0]">{item.title}</h3>
+                                <p className="mt-2 leading-7 text-[#D8D0C1]">{item.text}</p>
+                            </article>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            <footer className="bg-[#0A0B0E] py-12 px-6 border-t border-gray-800/60">
-                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-2xl font-bold text-white tracking-tight">bio<span className="text-blue-500">.me</span></p>
-                    <p className="text-sm font-medium text-gray-600">© 2026 bio.me · Premium Social Feed</p>
+            <section className="bg-[#FAF7F0] px-6 py-20">
+                <div className="mx-auto max-w-6xl">
+                    <div className="max-w-2xl">
+                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#8A6B1E]">The hook</p>
+                        <h2 className="mt-4 font-serif text-4xl font-black text-[#0D0D0D] md:text-5xl">
+                            One free chapter, always.
+                        </h2>
+                        <p className="mt-5 text-lg leading-8 text-[#4B4032]">
+                            Every story starts with a public chapter so readers can feel the voice before paying.
+                            Monetization should feel like appreciation, not pressure.
+                        </p>
+                    </div>
+
+                    <div className="mt-12 grid gap-4 md:grid-cols-3">
+                        {['Free first chapter', 'Paid continuation', 'Gifts with dignity'].map((label, index) => (
+                            <div key={label} className="rounded-md border border-[#0D0D0D]/12 bg-white/45 p-6">
+                                <p className="text-sm font-black uppercase tracking-[0.2em] text-[#C9A84C]">0{index + 1}</p>
+                                <p className="mt-5 text-2xl font-black text-[#0D0D0D]">{label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <footer className="border-t border-[#0D0D0D]/10 bg-[#0D0D0D] px-6 py-10 text-[#FAF7F0]">
+                <div className="mx-auto flex max-w-6xl flex-col justify-between gap-4 md:flex-row md:items-center">
+                    <p className="text-2xl font-black tracking-normal">bio<span className="text-[#C9A84C]">.me</span></p>
+                    <p className="text-sm text-[#B9AD98]">2026 bio.me. Built for storytellers who want ownership.</p>
                 </div>
             </footer>
         </div>

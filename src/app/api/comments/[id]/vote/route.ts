@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
+
+const voteSchema = z.object({ value: z.union([z.literal(1), z.literal(-1), z.literal(0)]) })
 
 // POST /api/comments/[id]/vote — body: { value: 1 | -1 | 0 }
 // 1 = upvote, -1 = downvote, 0 = quitar voto
@@ -9,11 +13,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-    const body = await req.json().catch(() => null)
-    const value = body?.value
-    if (value !== 1 && value !== -1 && value !== 0) {
-        return NextResponse.json({ error: 'invalid_value' }, { status: 400 })
-    }
+    const parsed = parseJsonBody(voteSchema, await req.json().catch(() => null))
+    if (!parsed.ok) return NextResponse.json({ error: 'invalid_value' }, { status: 400 })
+    const { value } = parsed.data
 
     if (value === 0) {
         // quitar voto

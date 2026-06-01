@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import Stripe from 'stripe'
+import { z } from 'zod'
 
 /**
  * Cancela una suscripción al final del período actual.
@@ -10,6 +11,9 @@ import Stripe from 'stripe'
  * No reembolsa el pago en curso.
  */
 export async function cancelSubscription(entitlementId: string) {
+    const parsed = z.string().uuid().safeParse(entitlementId)
+    if (!parsed.success) return { error: 'Suscripcion invalida' }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'No autenticado' }
@@ -18,7 +22,7 @@ export async function cancelSubscription(entitlementId: string) {
     const { data: entitlement, error: fetchErr } = await supabase
         .from('entitlements')
         .select('id, user_id, stripe_subscription_id, valid_until, creator_id')
-        .eq('id', entitlementId)
+        .eq('id', parsed.data)
         .maybeSingle()
 
     if (fetchErr || !entitlement) return { error: 'Suscripción no encontrada' }
@@ -51,7 +55,7 @@ export async function cancelSubscription(entitlementId: string) {
             cancel_at_period_end: true,
             updated_at: new Date().toISOString(),
         })
-        .eq('id', entitlementId)
+        .eq('id', parsed.data)
 
     if (updateErr) {
         // No es crítico — Stripe ya marcó cancel_at_period_end

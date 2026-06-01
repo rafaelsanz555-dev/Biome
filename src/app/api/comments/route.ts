@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { parseJsonBody } from '@/lib/validation'
+
+const createCommentSchema = z.object({
+    episode_id: z.string().uuid(),
+    parent_id: z.string().uuid().nullable().optional(),
+    body: z.string().trim().min(1).max(2000),
+})
 
 // POST /api/comments — crear comentario
 export async function POST(req: NextRequest) {
@@ -7,17 +15,10 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-    const body = await req.json().catch(() => null)
-    if (!body) return NextResponse.json({ error: 'invalid_json' }, { status: 400 })
+    const parsed = parseJsonBody(createCommentSchema, await req.json().catch(() => null))
+    if (!parsed.ok) return NextResponse.json({ error: 'invalid_body', details: parsed.error }, { status: 400 })
 
-    const episode_id = typeof body.episode_id === 'string' ? body.episode_id : null
-    const parent_id = typeof body.parent_id === 'string' ? body.parent_id : null
-    const text = typeof body.body === 'string' ? body.body.trim() : ''
-
-    if (!episode_id) return NextResponse.json({ error: 'missing_episode_id' }, { status: 400 })
-    if (text.length < 1 || text.length > 2000) {
-        return NextResponse.json({ error: 'body_length' }, { status: 400 })
-    }
+    const { episode_id, parent_id = null, body: text } = parsed.data
 
     // Anti-spam ligero: rate limit 5 / 60s
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString()

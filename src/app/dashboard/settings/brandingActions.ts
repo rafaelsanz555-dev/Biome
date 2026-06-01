@@ -2,18 +2,29 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 
 interface BrandingPayload {
     accent_color?: string
     font_family?: string
     card_style?: string
-    brand_tagline?: string
+    brand_tagline?: string | null
 }
 
 const VALID_FONTS = ['inter', 'playfair', 'crimson', 'ibm-plex']
 const VALID_CARDS = ['editorial', 'journal', 'minimal']
+const brandingSchema = z.object({
+    accent_color: z.string().regex(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/).optional(),
+    font_family: z.enum(['inter', 'playfair', 'crimson', 'ibm-plex']).optional(),
+    card_style: z.enum(['editorial', 'journal', 'minimal']).optional(),
+    brand_tagline: z.string().trim().max(80).optional().nullable(),
+})
 
 export async function updateBranding(payload: BrandingPayload) {
+    const parsed = brandingSchema.safeParse(payload)
+    if (!parsed.success) return { error: 'invalid_branding' }
+    payload = parsed.data
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'unauthorized' }
