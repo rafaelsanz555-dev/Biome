@@ -432,7 +432,7 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                     title={titleValue}
                     previewText={previewTextValue}
                     coverUrl={coverPreview}
-                    contentHtml={renderPreviewHtml(editorRef.current?.getJSON() || editorState.json)}
+                    contentHtml={renderPreviewHtml(editorState.json)}
                     readMinutes={editorState.readingTimeMin}
                     wordCount={editorState.wordCount}
                     onClose={() => setShowPreview(false)}

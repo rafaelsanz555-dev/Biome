@@ -260,7 +260,7 @@ export default async function DashboardHome() {
 
     // Profiles de los autores en una segunda query, mergeamos en JS
     const creatorIds = Array.from(new Set((episodesRaw || []).map((e) => e.creator_id).filter(Boolean)))
-    let profilesMap: Record<string, { username: string | null; full_name: string | null; avatar_url: string | null }> = {}
+    const profilesMap: Record<string, { username: string | null; full_name: string | null; avatar_url: string | null }> = {}
     if (creatorIds.length > 0) {
         const { data: profilesRows } = await supabase
             .from('profiles')

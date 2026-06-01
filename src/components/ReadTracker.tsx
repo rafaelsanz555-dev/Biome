@@ -25,12 +25,13 @@ function deviceType(): 'mobile' | 'tablet' | 'desktop' {
 
 export default function ReadTracker({ episodeId }: Props) {
     const viewIdRef = useRef<string | null>(null)
-    const startTsRef = useRef<number>(Date.now())
+    const startTsRef = useRef<number | null>(null)
     const maxPctRef = useRef<number>(0)
     const lastSentPctRef = useRef<number>(0)
 
     useEffect(() => {
         let cancelled = false
+        startTsRef.current = Date.now()
         ;(async () => {
             try {
                 const res = await fetch('/api/track/view', {
@@ -52,7 +53,8 @@ export default function ReadTracker({ episodeId }: Props) {
             const viewId = viewIdRef.current
             if (!viewId) return
             const pct = maxPctRef.current
-            const elapsed = Math.round((Date.now() - startTsRef.current) / 1000)
+            const startedAt = startTsRef.current ?? Date.now()
+            const elapsed = Math.round((Date.now() - startedAt) / 1000)
             const body = JSON.stringify({
                 view_id: viewId,
                 reached_percent: pct,

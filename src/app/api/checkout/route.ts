@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         const query = parsedQuery.data
         const stripe = getStripe()
         let line_items: any[] = []
-        let metadata: any = { userId: user.id, type: query.type }
+        const metadata: any = { userId: user.id, type: query.type }
         let mode: 'payment' | 'subscription' = 'payment'
 
         if (query.type === 'ppv') {

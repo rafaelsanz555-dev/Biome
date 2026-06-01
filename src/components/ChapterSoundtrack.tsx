@@ -24,7 +24,7 @@ function parseEmbed(url: string): { kind: 'spotify' | 'youtube' | 'none'; embedU
         }
         // YouTube: youtube.com/watch?v=ID or youtu.be/ID
         if (u.hostname.includes('youtube.com') || u.hostname.includes('youtu.be')) {
-            let videoId = u.searchParams.get('v') || u.pathname.slice(1).split('/')[0]
+            const videoId = u.searchParams.get('v') || u.pathname.slice(1).split('/')[0]
             if (videoId) {
                 return {
                     kind: 'youtube',
