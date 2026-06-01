@@ -87,7 +87,7 @@ export function CommentComposer({
     const placeholderText = placeholder || (parentId ? t('placeholder_reply') : t('placeholder_root'))
 
     return (
-        <div className="rounded-xl border border-gray-800 bg-[#0F1114] focus-within:border-blue-500/40 transition">
+        <div className="rounded-xl border border-gray-800 bg-[#0F1114] focus-within:border-[#C9A84C]/40 transition">
             <textarea
                 ref={ref}
                 value={body}
@@ -117,7 +117,7 @@ export function CommentComposer({
                         type="button"
                         onClick={handleSubmit}
                         disabled={busy || body.trim().length < 1 || overLimit}
-                        className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
+                        className="px-4 py-1.5 rounded-lg bg-[#C9A84C] hover:bg-[#C9A84C] disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
                     >
                         {busy ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
                         {editingId ? t('submit_save') : (parentId ? t('submit_reply') : t('submit_root'))}
@@ -128,3 +128,4 @@ export function CommentComposer({
         </div>
     )
 }
+

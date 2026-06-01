@@ -82,7 +82,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
     if (!editor) return null
 
     const btn = (active: boolean) =>
-        `p-2 rounded-lg transition text-sm ${active ? 'bg-blue-500/15 text-blue-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`
+        `p-2 rounded-lg transition text-sm ${active ? 'bg-[#C9A84C]/15 text-[#D8BA63]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`
 
     function addImage() {
         const url = window.prompt('URL de la imagen:')
@@ -197,7 +197,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     padding: 1.5em 1em;
                     margin: 2em 0;
                     color: #fff;
-                    background: linear-gradient(180deg, rgba(37, 99, 235,0.06), transparent);
+                    background: linear-gradient(180deg, rgba(201, 168, 76,0.06), transparent);
                     border-radius: 16px;
                     position: relative;
                 }
@@ -210,7 +210,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     transform: translateX(-50%) translateY(-30%);
                     font-size: 80px;
                     font-family: Georgia, serif;
-                    color: rgba(37, 99, 235,0.3);
+                    color: rgba(201, 168, 76,0.3);
                     line-height: 1;
                 }
                 .bio-editor-content hr {
@@ -254,3 +254,4 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
         </div>
     )
 })
+

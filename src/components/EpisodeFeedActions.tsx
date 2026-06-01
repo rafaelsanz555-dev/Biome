@@ -161,7 +161,7 @@ export function EpisodeFeedActions({
                 {!hideGift && !isOwner && (
                     <Link
                         href={episodeUrl}
-                        className="flex items-center gap-2 text-blue-500 hover:text-blue-400 font-medium text-sm transition-colors"
+                        className="flex items-center gap-2 text-[#C9A84C] hover:text-[#D8BA63] font-medium text-sm transition-colors"
                     >
                         <Gift size={18} />
                         <span>{t('action_gift')}</span>
@@ -182,3 +182,5 @@ export function EpisodeFeedActions({
         </div>
     )
 }
+
+

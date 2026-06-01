@@ -65,7 +65,7 @@ export function CancelButton({ entitlementId, creatorName, validUntil, cancelAtP
                     >
                         {done ? (
                             <div className="text-center py-4">
-                                <div className="text-blue-400 text-4xl mb-3">✓</div>
+                                <div className="text-[#D8BA63] text-4xl mb-3">✓</div>
                                 <h3 className="text-lg font-bold text-white mb-2">Suscripción cancelada</h3>
                                 <p className="text-sm text-gray-400">
                                     Mantienes acceso hasta el <strong className="text-white">{new Date(validUntil).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>. Después no se renovará.
@@ -115,3 +115,4 @@ export function CancelButton({ entitlementId, creatorName, validUntil, cancelAtP
         </>
     )
 }
+

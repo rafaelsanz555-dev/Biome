@@ -77,7 +77,7 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
     return (
         <section id="comments" className="mt-12 space-y-6 scroll-mt-20">
             <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
-                <MessageCircle className="text-blue-400" size={20} />
+                <MessageCircle className="text-[#D8BA63]" size={20} />
                 <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
                     {t('section_title')}
                 </h2>
@@ -94,7 +94,7 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
                 <CommentComposer episodeId={episodeId} parentId={null} />
             ) : (
                 <div className="rounded-xl border border-gray-800 bg-[#0F1114] p-5 text-sm text-gray-400">
-                    <Link href="/login" className="text-blue-400 hover:text-blue-300 font-semibold">Login</Link>
+                    <Link href="/login" className="text-[#D8BA63] hover:text-[#E2C96E] font-semibold">Login</Link>
                     {' '}{t('login_prompt')}
                 </div>
             )}
@@ -120,3 +120,4 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
         </section>
     )
 }
+

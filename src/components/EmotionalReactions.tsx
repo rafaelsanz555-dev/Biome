@@ -67,7 +67,7 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
     return (
         <div className="my-10 rounded-2xl border border-gray-800 bg-[#15171C] p-6">
             <div className="mb-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#D8BA63] mb-1">
                     ✦ Huella emocional
                 </p>
                 <h3 className="font-bold text-white text-lg">{t('emotional_title')}</h3>
@@ -94,19 +94,19 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
                             disabled={loading}
                             className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all overflow-hidden ${
                                 isSelected
-                                    ? 'border-blue-500 bg-blue-500/10 scale-105 shadow-lg shadow-blue-500/10'
+                                    ? 'border-[#C9A84C] bg-[#C9A84C]/10 scale-105 shadow-lg shadow-[#C9A84C]/10'
                                     : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700 hover:bg-[#101217]'
                             } ${loading ? 'opacity-60 cursor-wait' : ''}`}
                         >
                             {/* Progress bar */}
                             {pct > 0 && (
                                 <div
-                                    className={`absolute bottom-0 left-0 h-1 transition-all ${isSelected ? 'bg-blue-500' : 'bg-blue-500/30'}`}
+                                    className={`absolute bottom-0 left-0 h-1 transition-all ${isSelected ? 'bg-[#C9A84C]' : 'bg-[#C9A84C]/30'}`}
                                     style={{ width: `${pct}%` }}
                                 />
                             )}
                             <span className="text-2xl drop-shadow-md">{emoji}</span>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-blue-400' : 'text-gray-500'}`}>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-[#D8BA63]' : 'text-gray-500'}`}>
                                 {label}
                             </span>
                             <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-gray-600'}`}>
@@ -125,3 +125,5 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
         </div>
     )
 }
+
+

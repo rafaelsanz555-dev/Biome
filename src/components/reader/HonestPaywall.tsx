@@ -34,8 +34,8 @@ export function HonestPaywall(props: HonestPaywallProps) {
     return (
         <div className="rounded-2xl border border-gray-800 bg-gradient-to-b from-[#15171C] to-[#0F1114] overflow-hidden my-8">
             <div className="p-8 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-5">
-                    <Lock className="w-6 h-6 text-blue-400" />
+                <div className="w-14 h-14 rounded-2xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center mx-auto mb-5">
+                    <Lock className="w-6 h-6 text-[#D8BA63]" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
                     Continúa la historia
@@ -48,7 +48,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
                 <div className="bg-black/30 rounded-xl p-4 mb-6 max-w-sm mx-auto space-y-2.5 text-left">
                     {totalEpisodes && totalEpisodes > 0 && (
                         <div className="flex items-center gap-2.5 text-sm">
-                            <BookOpen className="text-blue-400" size={14} />
+                            <BookOpen className="text-[#D8BA63]" size={14} />
                             <span className="text-gray-300">
                                 <strong className="text-white">{totalEpisodes}</strong> episodios ya publicados
                             </span>
@@ -56,7 +56,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
                     )}
                     {(frequencyPromise || (postingFrequency && postingFrequency !== 'irregular')) && (
                         <div className="flex items-center gap-2.5 text-sm">
-                            <Calendar className="text-blue-400" size={14} />
+                            <Calendar className="text-[#D8BA63]" size={14} />
                             <span className="text-gray-300">
                                 Publica <strong className="text-white">{frequencyPromise || postingFrequency}</strong>
                             </span>
@@ -64,7 +64,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
                     )}
                     {seriesStatus === 'active' && (
                         <div className="flex items-center gap-2.5 text-sm">
-                            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                            <span className="w-2 h-2 rounded-full bg-[#D8BA63] animate-pulse"></span>
                             <span className="text-gray-300">Serie activa — historias en curso</span>
                         </div>
                     )}
@@ -76,7 +76,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
                     )}
                     {isVerified && (
                         <div className="flex items-center gap-2.5 text-sm">
-                            <ShieldCheck className="text-blue-400" size={14} />
+                            <ShieldCheck className="text-[#D8BA63]" size={14} />
                             <span className="text-gray-300">Storyteller verificado por bio.me</span>
                         </div>
                     )}
@@ -84,7 +84,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
 
                 {/* CTA */}
                 <Link href={`/api/checkout?type=subscription&creatorId=${creatorIdForSub}`} className="block">
-                    <Button className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-blue-500/20 w-full max-w-sm">
+                    <Button className="bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold h-12 px-8 rounded-xl shadow-lg shadow-[#C9A84C]/20 w-full max-w-sm">
                         Suscribirme — ${subPrice}/mes
                     </Button>
                 </Link>
@@ -118,3 +118,5 @@ export function HonestPaywall(props: HonestPaywallProps) {
         </div>
     )
 }
+
+

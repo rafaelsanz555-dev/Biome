@@ -71,8 +71,8 @@ export async function POST(req: Request) {
                 platformFee: String(platformFee / 100),
                 emoji,
             },
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/gift/success?emoji=${encodeURIComponent(emoji)}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}`,
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/dashboard/billing?gift=success`,
+            cancel_url: req.headers.get('referer') || `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}`,
         })
 
         return NextResponse.json({ url: session.url })

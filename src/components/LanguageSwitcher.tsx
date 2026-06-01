@@ -66,13 +66,13 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
                                 onClick={() => handleSelect(lang.code)}
                                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition text-left ${
                                     isActive
-                                        ? 'bg-blue-500/10 text-blue-400'
+                                        ? 'bg-[#C9A84C]/10 text-[#D8BA63]'
                                         : 'text-gray-300 hover:bg-white/5 hover:text-white'
                                 }`}
                             >
                                 <span className="font-mono text-[11px] tracking-wider uppercase w-6">{lang.code}</span>
                                 <span className="flex-1">{lang.label}</span>
-                                {isActive && <Check size={14} className="text-blue-500" />}
+                                {isActive && <Check size={14} className="text-[#C9A84C]" />}
                             </button>
                         )
                     })}
@@ -81,3 +81,4 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         </div>
     )
 }
+

@@ -45,7 +45,7 @@ export function FeedTabs() {
                         onClick={() => setActiveTab(id)}
                         className={`pb-4 font-medium text-sm transition ${
                             activeTab === id
-                                ? 'text-blue-500 border-b-2 border-blue-500'
+                                ? 'text-[#C9A84C] border-b-2 border-[#C9A84C]'
                                 : 'text-gray-500 hover:text-gray-300'
                         }`}
                     >
@@ -64,7 +64,7 @@ export function FeedTabs() {
                             onClick={() => toggleChip(id)}
                             className={`px-4 py-1.5 rounded-full text-xs transition border ${
                                 active
-                                    ? 'bg-blue-500/15 text-blue-300 border-blue-500/40'
+                                    ? 'bg-[#C9A84C]/15 text-[#E2C96E] border-[#C9A84C]/40'
                                     : 'bg-[#1E1E1E] hover:bg-[#2D2D2D] text-gray-300 border-[#333]'
                             }`}
                         >
@@ -76,7 +76,7 @@ export function FeedTabs() {
 
             {/* Mensaje sutil cuando hay filtros activos */}
             {(activeTab !== 'foryou' || activeChips.size > 0) && (
-                <div className="mb-6 px-4 py-3 rounded-xl bg-blue-500/5 border border-blue-500/15 text-xs text-blue-300 flex items-center justify-between">
+                <div className="mb-6 px-4 py-3 rounded-xl bg-[#C9A84C]/5 border border-[#C9A84C]/15 text-xs text-[#E2C96E] flex items-center justify-between">
                     <span>
                         {t('filter_label')}: <strong>{t(TAB_KEY[activeTab])}</strong>
                         {activeChips.size > 0 && (
@@ -100,3 +100,5 @@ export function FeedTabs() {
         </>
     )
 }
+
+

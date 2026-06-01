@@ -126,10 +126,10 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                 aria-expanded={open}
             >
                 <span className="flex items-center gap-2 min-w-0">
-                    <SelectedIcon size={14} className={selected ? 'text-blue-400 shrink-0' : 'text-gray-500 shrink-0'} />
+                    <SelectedIcon size={14} className={selected ? 'text-[#D8BA63] shrink-0' : 'text-gray-500 shrink-0'} />
                     <span className={`truncate ${!selected ? 'text-gray-300' : ''}`}>{selectedLabel}</span>
                     {selected?.format === 'thread' && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400/70 shrink-0">· Hilo</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#D8BA63]/70 shrink-0">· Hilo</span>
                     )}
                 </span>
                 <ChevronDown size={14} className={`text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -143,12 +143,12 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                         type="button"
                         onClick={() => pick('')}
                         className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left transition ${
-                            !selectedId ? 'bg-blue-500/10 text-blue-300' : 'text-gray-200 hover:bg-white/5'
+                            !selectedId ? 'bg-[#C9A84C]/10 text-[#E2C96E]' : 'text-gray-200 hover:bg-white/5'
                         }`}
                     >
                         <FileText size={14} className="text-gray-500 shrink-0" />
                         <span className="flex-1">Capítulo independiente</span>
-                        {!selectedId && <Check size={14} className="text-blue-400" />}
+                        {!selectedId && <Check size={14} className="text-[#D8BA63]" />}
                     </button>
 
                     {/* Series existentes */}
@@ -167,13 +167,13 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                                         type="button"
                                         onClick={() => pick(s.id)}
                                         className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left transition ${
-                                            selectedId === s.id ? 'bg-blue-500/10 text-blue-300' : 'text-gray-200 hover:bg-white/5'
+                                            selectedId === s.id ? 'bg-[#C9A84C]/10 text-[#E2C96E]' : 'text-gray-200 hover:bg-white/5'
                                         }`}
                                     >
-                                        <Icon size={14} className="text-blue-400 shrink-0" />
+                                        <Icon size={14} className="text-[#D8BA63] shrink-0" />
                                         <span className="flex-1 truncate">{s.title}</span>
                                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600 shrink-0">{formatLabel}</span>
-                                        {selectedId === s.id && <Check size={14} className="text-blue-400" />}
+                                        {selectedId === s.id && <Check size={14} className="text-[#D8BA63]" />}
                                     </button>
                                 )
                             })}
@@ -184,7 +184,7 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                     <div className="border-t border-gray-800/60">
                         {creatingFormat ? (
                             <div className="p-3 space-y-2 bg-[#0A0B0E]">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#D8BA63] flex items-center gap-1.5">
                                     {creatingFormat === 'thread' ? <MessageSquare size={11} /> : <BookOpen size={11} />}
                                     {creatingFormat === 'thread' ? 'Nueva historia en hilo' : 'Nueva historia'}
                                 </p>
@@ -201,7 +201,7 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                                     placeholder={placeholderForCreate}
                                     maxLength={120}
                                     disabled={busy}
-                                    className="w-full bg-[#15171C] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-blue-500/50"
+                                    className="w-full bg-[#15171C] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#C9A84C]/50"
                                 />
                                 {error && <p className="text-[11px] text-red-400">{error}</p>}
                                 <div className="flex items-center justify-end gap-2">
@@ -217,7 +217,7 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                                         type="button"
                                         onClick={handleCreate}
                                         disabled={busy || newTitle.trim().length < 1}
-                                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
+                                        className="px-3 py-1.5 rounded-lg bg-[#C9A84C] hover:bg-[#C9A84C] disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
                                     >
                                         {busy ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
                                         Crear
@@ -229,7 +229,7 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                                 <button
                                     type="button"
                                     onClick={() => setCreatingFormat('series')}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left text-blue-400 hover:bg-blue-500/5 transition"
+                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left text-[#D8BA63] hover:bg-[#C9A84C]/5 transition"
                                 >
                                     <BookOpen size={14} className="shrink-0" />
                                     <span className="flex-1">Crear nueva historia</span>
@@ -238,7 +238,7 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
                                 <button
                                     type="button"
                                     onClick={() => setCreatingFormat('thread')}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left text-blue-400 hover:bg-blue-500/5 transition border-t border-gray-800/40"
+                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left text-[#D8BA63] hover:bg-[#C9A84C]/5 transition border-t border-gray-800/40"
                                 >
                                     <MessageSquare size={14} className="shrink-0" />
                                     <span className="flex-1">Crear historia en hilo</span>
@@ -252,3 +252,4 @@ export function SeasonPicker({ name, initialSeasons, initialValue, inputClassNam
         </div>
     )
 }
+

@@ -20,94 +20,10 @@ function makeTimeAgo(locale: string, t: (k: string, v?: any) => string) {
     }
 }
 
-// Featured stories — shown when real data is thin, creates a vibrant feed
-const FEATURED = [
-    {
-        id: 'feat-1',
-        title: 'Cuando dormía en un sofá prestado',
-        chapter: 'Capítulo 4 de 12',
-        cover: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&h=600&fit=crop',
-        author: 'Rafael Sanz',
-        handle: 'rafael',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
-        time: 'hace 2 días',
-        reads: '4.2k',
-        comments: 182,
-        gifts: 93,
-        badges: ['free', 'series'],
-        hero: true,
-        preview: null,
-    },
-    {
-        id: 'feat-2',
-        title: 'Las cartas que nunca le mandé a mi padre',
-        chapter: 'Capítulo 3 de 8',
-        cover: 'https://images.unsplash.com/photo-1516627145497-ae6968895b40?w=1200&h=500&fit=crop',
-        author: 'Carla Mendoza',
-        handle: 'carla_m',
-        avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=200&h=200&fit=crop',
-        time: 'hace 3 horas',
-        reads: '2.8k',
-        comments: 97,
-        gifts: 147,
-        badges: ['top', 'series'],
-        hero: false,
-        preview: 'Guardé cartas durante ocho años. En cajas, en cajones, en archivos de Word. Nunca se las mandé. Este año decidí abrirlas todas y leerlas una por una...',
-    },
-    {
-        id: 'feat-3',
-        title: '3 años sin papeles en Barcelona',
-        chapter: 'Capítulo 7 de 15',
-        cover: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=1200&h=500&fit=crop',
-        author: 'María Santos',
-        handle: 'maria_santos',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
-        time: 'ayer',
-        reads: '1.9k',
-        comments: 88,
-        gifts: 54,
-        badges: ['exclusive'],
-        hero: false,
-        preview: 'Vivir sin DNI en España es vivir con miedo permanente. Te cuento cómo sobreviví tres años escondiéndome en una ciudad que amé y que me hizo daño...',
-    },
-    {
-        id: 'feat-4',
-        title: 'Sobrevivir al cáncer a los 28',
-        chapter: 'Capítulo 2 de 10',
-        cover: 'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=1200&h=500&fit=crop',
-        author: 'James Okafor',
-        handle: 'james_o',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
-        time: 'hace 2 días',
-        reads: '5.1k',
-        comments: 234,
-        gifts: 312,
-        badges: ['top', 'exclusive'],
-        hero: false,
-        preview: 'El día del diagnóstico no lloré. Lloré tres semanas después, en un McDonalds, mordiendo una papa fría. Así supe que algo se había roto adentro...',
-    },
-    {
-        id: 'feat-5',
-        title: 'Fundé mi empresa con $300',
-        chapter: 'Capítulo 5 de 12',
-        cover: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=500&fit=crop',
-        author: 'Ana Reyes',
-        handle: 'ana_reyes',
-        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
-        time: 'hace 4 días',
-        reads: '3.4k',
-        comments: 156,
-        gifts: 89,
-        badges: ['series', 'exclusive'],
-        hero: false,
-        preview: 'Con dos hijos, sin pareja, y 300 dólares guardados debajo del colchón. Así fundé la empresa que hoy factura $50K al mes. Aquí cómo lo hice paso a paso...',
-    },
-]
-
 function Badge({ type, labels }: { type: string; labels: Record<string, React.ReactNode> }) {
     const styles: Record<string, string> = {
         free: 'bg-yellow-600/30 text-yellow-500 border-yellow-500/20',
-        series: 'bg-blue-600/30 text-blue-400 border-blue-500/20',
+        series: 'bg-[#C9A84C]/30 text-[#D8BA63] border-[#C9A84C]/20',
         top: 'bg-red-900/30 text-red-400 border-red-500/20',
         exclusive: 'bg-purple-600/30 text-purple-400 border-purple-500/20',
     }
@@ -386,12 +302,7 @@ export default async function DashboardHome() {
         creatorId: ep.creator_id,            // para isOwner check
         isReal: true,                        // distingue de mocks
     }))
-
-    // Si hay episodios reales, mostrar SOLO esos (no mezclar con mocks).
-    // Los FEATURED son fallback cuando todavia no hay nada real publicado.
-    const feed = realEpisodes.length > 0
-        ? realEpisodes.slice(0, 8)
-        : FEATURED.slice(0, 8)
+    const feed = realEpisodes.slice(0, 8)
     if (feed.length > 0) feed[0].hero = true
 
     return (
@@ -407,10 +318,21 @@ export default async function DashboardHome() {
             </div>
 
             <div className="max-w-3xl mx-auto space-y-6 px-6 pb-20">
+                {feed.length === 0 && (
+                    <div className="rounded-2xl border border-dashed border-[#2D2D2D] bg-[#1E1E1E] p-10 text-center">
+                        <p className="font-serif text-2xl font-black text-white">Aun no hay capitulos publicados.</p>
+                        <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
+                            Discovery y feed deben llenarse con escritores reales. Empieza explorando perfiles o publica el primer capitulo si eres creador.
+                        </p>
+                        <Link href="/discover" className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-[#C9A84C] px-5 text-sm font-black text-[#0D0D0D] hover:bg-[#D8BA63]">
+                            Explorar escritores
+                        </Link>
+                    </div>
+                )}
                 {feed.map((ep: any, idx: number) => {
                     const href = ep.realUrl || `/${ep.handle}`
                     const AvatarFallback = () => (
-                        <div className="w-full h-full flex items-center justify-center bg-blue-900/40 text-blue-400 font-bold text-sm">
+                        <div className="w-full h-full flex items-center justify-center bg-[#2A2418]/40 text-[#D8BA63] font-bold text-sm">
                             {(ep.author || '?').charAt(0).toUpperCase()}
                         </div>
                     )
@@ -469,7 +391,7 @@ export default async function DashboardHome() {
                                 </Link>
                                 <div className="p-5 bg-[#242424] border-t border-[#333]">
                                     <Link href={href}>
-                                        <button className="w-full bg-[#1e40af] hover:bg-[#24634c] text-blue-400 font-bold py-3.5 rounded-xl transition text-base tracking-wide shadow-lg border border-blue-500/20">
+                                        <button className="w-full bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold py-3.5 rounded-xl transition text-base tracking-wide shadow-lg border border-[#C9A84C]/20">
                                             {tFeed('read_episode')}
                                         </button>
                                     </Link>
@@ -483,11 +405,11 @@ export default async function DashboardHome() {
                         <article key={ep.id} className="bg-[#1E1E1E] border border-[#2D2D2D] rounded-2xl overflow-hidden shadow-2xl p-6 hover:border-[#3D3D3D] transition">
                             <div className="flex items-center justify-between mb-4">
                                 <Link href={`/${ep.handle}`} className="flex items-center space-x-3 group">
-                                    <div className="w-12 h-12 rounded-full border border-gray-600 overflow-hidden bg-[#15171C] group-hover:border-blue-500 transition">
+                                    <div className="w-12 h-12 rounded-full border border-gray-600 overflow-hidden bg-[#15171C] group-hover:border-[#C9A84C] transition">
                                         {ep.avatar ? <img className="w-full h-full object-cover" src={ep.avatar} alt="" /> : <AvatarFallback />}
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-white group-hover:text-blue-400 transition">{ep.author}</h3>
+                                        <h3 className="font-bold text-white group-hover:text-[#D8BA63] transition">{ep.author}</h3>
                                         <p className="text-xs text-gray-500">{ep.time} · @{ep.handle}</p>
                                     </div>
                                 </Link>
@@ -511,7 +433,7 @@ export default async function DashboardHome() {
                             </div>
 
                             <Link href={href}>
-                                <h2 className="text-xl font-bold text-white mb-2 leading-snug hover:text-blue-400 transition">{ep.title}</h2>
+                                <h2 className="text-xl font-bold text-white mb-2 leading-snug hover:text-[#D8BA63] transition">{ep.title}</h2>
                             </Link>
                             {ep.preview && (
                                 <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">{ep.preview}</p>
@@ -524,8 +446,8 @@ export default async function DashboardHome() {
                                         {ep.badges.includes('exclusive') && !ep.badges.includes('free') && (
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-xl flex items-center gap-2">
-                                                    <Lock size={16} className="text-blue-400" />
-                                                    <span className="text-blue-400 font-bold text-sm">{tFeed('subscribers_only')}</span>
+                                                    <Lock size={16} className="text-[#D8BA63]" />
+                                                    <span className="text-[#D8BA63] font-bold text-sm">{tFeed('subscribers_only')}</span>
                                                 </div>
                                             </div>
                                         )}
@@ -545,7 +467,7 @@ export default async function DashboardHome() {
                                         <Gift size={14} /> {ep.gifts}
                                     </span>
                                 </div>
-                                <Link href={href} className="text-xs font-bold text-blue-500 hover:text-blue-400 transition">
+                                <Link href={href} className="text-xs font-bold text-[#C9A84C] hover:text-[#D8BA63] transition">
                                     {tFeed('read_short')}
                                 </Link>
                             </div>
@@ -578,3 +500,5 @@ function ReaderStartPanel() {
         </section>
     )
 }
+
+

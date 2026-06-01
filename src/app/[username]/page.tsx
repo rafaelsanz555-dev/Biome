@@ -143,7 +143,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                             {profile.avatar_url ? (
                                 <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center font-bold text-3xl bg-blue-600/10 text-blue-500">
+                                <div className="w-full h-full flex items-center justify-center font-bold text-3xl bg-[#C9A84C]/10 text-[#C9A84C]">
                                     {initial}
                                 </div>
                             )}
@@ -154,11 +154,11 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                             <div className="mb-2">
                                 <h1 className="font-bold text-2xl text-white flex items-center justify-center md:justify-start gap-2">
                                     {profile.full_name || profile.username}
-                                    <span className="text-blue-500 text-sm bg-blue-500/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+                                    <span className="text-[#C9A84C] text-sm bg-[#C9A84C]/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
                                 </h1>
                                 <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
                                 {profile.creators?.brand_tagline && (
-                                    <p className="text-sm font-semibold text-blue-400 mt-1.5 italic" style={{ fontFamily: 'Georgia, serif' }}>
+                                    <p className="text-sm font-semibold text-[#D8BA63] mt-1.5 italic" style={{ fontFamily: 'Georgia, serif' }}>
                                         {profile.creators.brand_tagline}
                                     </p>
                                 )}
@@ -181,7 +181,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                         {!isSubscribed ? (
                                             <div className="w-full sm:w-auto flex flex-col items-center sm:items-start gap-1">
                                                 <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`} className="w-full sm:w-auto">
-                                                    <Button className="w-full sm:w-auto font-bold px-8 h-11 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20">
+                                                    <Button className="w-full sm:w-auto font-bold px-8 h-11 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] shadow-lg shadow-[#C9A84C]/20">
                                                         Suscribirse · ${subscriptionPrice}/mes
                                                     </Button>
                                                 </Link>
@@ -192,7 +192,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                 )}
                                             </div>
                                         ) : (
-                                            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 w-full sm:w-auto justify-center">
+                                            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C]/10 text-[#D8BA63] border border-[#C9A84C]/20 w-full sm:w-auto justify-center">
                                                 ✓ Suscrito
                                             </span>
                                         )}
@@ -298,7 +298,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                             {profile.avatar_url ? (
                                                                 <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                                                             ) : (
-                                                                <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-blue-900 text-blue-400">{initial}</div>
+                                                                <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-[#2A2418] text-[#D8BA63]">{initial}</div>
                                                             )}
                                                         </div>
                                                         <div>
@@ -315,7 +315,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                             </span>
                                                         )}
                                                         {!canRead && (
-                                                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400">
+                                                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/20 text-xs font-bold text-[#D8BA63]">
                                                                 <Lock size={12} /> Exclusivo
                                                             </span>
                                                         )}
@@ -347,7 +347,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                                 <p className="text-white font-bold text-lg mb-2">Contenido Exclusivo</p>
                                                                 <p className="text-sm text-gray-400 mb-4">Suscríbete a {profile.username} para desbloquear este post y más.</p>
                                                                 <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`}>
-                                                                    <Button className="bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/20">
+                                                                    <Button className="bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold shadow-lg shadow-[#C9A84C]/20">
                                                                         Suscribirse por ${subscriptionPrice}/mes
                                                                     </Button>
                                                                 </Link>
@@ -379,3 +379,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
         </ThemeProvider>
     )
 }
+
+
+
+

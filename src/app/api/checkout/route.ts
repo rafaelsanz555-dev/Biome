@@ -113,3 +113,7 @@ export async function POST(req: Request) {
         return new NextResponse(error.message, { status: 500 })
     }
 }
+
+export async function GET(req: Request) {
+    return POST(req)
+}

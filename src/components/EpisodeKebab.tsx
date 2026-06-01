@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
     MoreHorizontal, Edit3, Trash2, Loader2, Link as LinkIcon, Flag,
-    Check, EyeOff, BellOff, X,
+    Check, X,
 } from 'lucide-react'
 import { deleteEpisode } from '@/app/dashboard/episodes/actions'
 
@@ -194,7 +194,7 @@ function OwnerMenu({
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition text-left"
                 role="menuitem"
             >
-                {copied ? <Check size={14} className="text-blue-400" /> : <LinkIcon size={14} className="text-gray-500" />}
+                {copied ? <Check size={14} className="text-[#D8BA63]" /> : <LinkIcon size={14} className="text-gray-500" />}
                 {copied ? 'Enlace copiado' : 'Copiar enlace'}
             </button>
             <div className="border-t border-gray-800/60" />
@@ -233,32 +233,9 @@ function SpectatorMenu({
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-200 hover:bg-white/5 transition text-left"
                 role="menuitem"
             >
-                {copied ? <Check size={14} className="text-blue-400" /> : <LinkIcon size={14} className="text-gray-500" />}
+                {copied ? <Check size={14} className="text-[#D8BA63]" /> : <LinkIcon size={14} className="text-gray-500" />}
                 {copied ? 'Enlace copiado' : 'Copiar enlace'}
             </button>
-
-            {/* Stubs — schema en backlog. Mostramos pero deshabilitados con tooltip. */}
-            {creatorUsername && (
-                <button
-                    onClick={(e) => { e.preventDefault(); alert('Próximamente: silenciar usuarios desde el feed.') }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:bg-white/5 transition text-left"
-                    role="menuitem"
-                    title="Próximamente"
-                >
-                    <BellOff size={14} className="text-gray-500" />
-                    <span className="truncate">Silenciar a @{creatorUsername}</span>
-                </button>
-            )}
-            <button
-                onClick={(e) => { e.preventDefault(); alert('Próximamente: ocultar posts específicos.') }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:bg-white/5 transition text-left"
-                role="menuitem"
-                title="Próximamente"
-            >
-                <EyeOff size={14} className="text-gray-500" />
-                Ocultar este post
-            </button>
-
             <div className="border-t border-gray-800/60" />
             <button
                 onClick={isAuthenticated ? onReport : (e) => { e.preventDefault(); alert('Iniciá sesión para reportar contenido.') }}
@@ -331,8 +308,8 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
 
                 {done ? (
                     <div className="py-6 text-center">
-                        <div className="w-12 h-12 mx-auto rounded-full bg-blue-500/15 flex items-center justify-center mb-3">
-                            <Check size={20} className="text-blue-400" />
+                        <div className="w-12 h-12 mx-auto rounded-full bg-[#C9A84C]/15 flex items-center justify-center mb-3">
+                            <Check size={20} className="text-[#D8BA63]" />
                         </div>
                         <p className="text-sm font-bold text-white">{t('sent')}</p>
                         <p className="text-xs text-gray-500 mt-1">{t('sent_description')}</p>
@@ -345,7 +322,7 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
                                     key={r.value}
                                     className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
                                         reason === r.value
-                                            ? 'border-blue-500/40 bg-blue-500/5'
+                                            ? 'border-[#C9A84C]/40 bg-[#C9A84C]/5'
                                             : 'border-gray-800 hover:border-gray-700'
                                     }`}
                                 >
@@ -355,7 +332,7 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
                                         value={r.value}
                                         checked={reason === r.value}
                                         onChange={() => setReason(r.value)}
-                                        className="mt-0.5 accent-blue-500"
+                                        className="mt-0.5 accent-[#C9A84C]"
                                     />
                                     <div>
                                         <div className="text-sm font-semibold text-white">{t(r.labelKey)}</div>
@@ -371,7 +348,7 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
                             placeholder={t('additional_details')}
                             maxLength={1000}
                             rows={3}
-                            className="w-full bg-[#15171C] border border-gray-800 rounded-lg p-3 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-blue-500/40 resize-none"
+                            className="w-full bg-[#15171C] border border-gray-800 rounded-lg p-3 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-[#C9A84C]/40 resize-none"
                         />
 
                         <div className="flex items-center justify-end gap-2 mt-4">
@@ -399,3 +376,5 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
         </div>
     )
 }
+
+

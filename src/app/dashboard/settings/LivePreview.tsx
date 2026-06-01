@@ -69,7 +69,7 @@ const FREQ_LABEL: Record<string, string> = {
 export function LivePreview({ initial }: LivePreviewProps) {
     // Estado vivo del preview, alimentado por eventos custom desde los forms
     const [branding, setBranding] = useState<BrandingState>({
-        accent_color: initial?.accent_color || '#2563EB',
+        accent_color: initial?.accent_color || '#C9A84C',
         font_family: initial?.font_family || 'inter',
         card_style: initial?.card_style || 'editorial',
         brand_tagline: initial?.brand_tagline || '',
@@ -130,7 +130,7 @@ export function LivePreview({ initial }: LivePreviewProps) {
             {/* Header */}
             <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span className="w-2 h-2 rounded-full bg-[#C9A84C] animate-pulse"></span>
                     <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400">Vista en vivo</p>
                 </div>
                 <p className="text-[10px] text-gray-600">{theme ? `🎨 ${theme.name}` : 'Sin tema'}</p>
@@ -143,7 +143,7 @@ export function LivePreview({ initial }: LivePreviewProps) {
                     <div className="flex gap-1">
                         <span className="w-2 h-2 rounded-full bg-red-500/50"></span>
                         <span className="w-2 h-2 rounded-full bg-yellow-500/50"></span>
-                        <span className="w-2 h-2 rounded-full bg-blue-500/50"></span>
+                        <span className="w-2 h-2 rounded-full bg-[#C9A84C]/50"></span>
                     </div>
                     <div className="flex-1 px-2 py-1 rounded-md bg-[#0A0B0E] text-[10px] text-gray-500 font-mono truncate">
                         bio.me/{initial?.username || 'tu-perfil'}
@@ -277,3 +277,4 @@ export function LivePreview({ initial }: LivePreviewProps) {
         </div>
     )
 }
+

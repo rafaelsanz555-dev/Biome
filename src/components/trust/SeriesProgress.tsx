@@ -13,9 +13,9 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-    publishing: 'bg-blue-400',
+    publishing: 'bg-[#D8BA63]',
     paused: 'bg-amber-400',
-    completed: 'bg-blue-400',
+    completed: 'bg-[#D8BA63]',
     planning: 'bg-violet-400',
 }
 
@@ -45,3 +45,4 @@ export function SeriesProgress({ title, publishedCount, expectedCount, status }:
         </div>
     )
 }
+

@@ -1,15 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { Crown, Flame, Gem, Heart, Rocket, Sparkles, Star } from 'lucide-react'
 
 const GIFTS = [
-    { emoji: '❤️', label: 'Amor', price: 1 },
-    { emoji: '🔥', label: 'Fuego', price: 2 },
-    { emoji: '👏', label: 'Aplauso', price: 3 },
-    { emoji: '⭐', label: 'Estrella', price: 5 },
-    { emoji: '💎', label: 'Diamante', price: 10 },
-    { emoji: '👑', label: 'Corona', price: 25 },
-    { emoji: '🚀', label: 'Cohete', price: 50 },
+    { icon: Heart, label: 'Amor', price: 1 },
+    { icon: Flame, label: 'Fuego', price: 2 },
+    { icon: Sparkles, label: 'Aplauso', price: 3 },
+    { icon: Star, label: 'Estrella', price: 5 },
+    { icon: Gem, label: 'Diamante', price: 10 },
+    { icon: Crown, label: 'Corona', price: 25 },
+    { icon: Rocket, label: 'Impulso', price: 50 },
 ]
 
 interface GiftPanelProps {
@@ -21,10 +22,12 @@ interface GiftPanelProps {
 export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelProps) {
     const [selected, setSelected] = useState<typeof GIFTS[0] | null>(null)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
 
     async function sendGift() {
-        if (!selected) return
+        if (!selected || loading) return
         setLoading(true)
+        setError('')
         try {
             const res = await fetch('/api/gifts', {
                 method: 'POST',
@@ -33,13 +36,14 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
                     recipientId,
                     postId: postId || null,
                     amount: selected.price,
-                    emoji: selected.emoji,
+                    emoji: selected.label,
                 }),
             })
-            const data = await res.json()
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok) throw new Error(data.error || 'No se pudo iniciar el pago.')
             if (data.url) window.location.href = data.url
-        } catch (e) {
-            console.error('Gift error:', e)
+        } catch (e: any) {
+            setError(e.message || 'No se pudo enviar el regalo.')
         } finally {
             setLoading(false)
         }
@@ -47,66 +51,63 @@ export function GiftPanel({ recipientId, recipientUsername, postId }: GiftPanelP
 
     return (
         <div>
-            {/* Gift grid */}
-            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
-                {GIFTS.map((g) => {
-                    const isSelected = selected?.label === g.label
+            <div className="mb-4 grid grid-cols-4 gap-2 sm:grid-cols-7">
+                {GIFTS.map((gift) => {
+                    const Icon = gift.icon
+                    const isSelected = selected?.label === gift.label
                     return (
                         <button
-                            key={g.label}
-                            onClick={() => setSelected(isSelected ? null : g)}
-                            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all ${
+                            key={gift.label}
+                            type="button"
+                            onClick={() => setSelected(isSelected ? null : gift)}
+                            className={`flex flex-col items-center gap-1 rounded-xl border-2 p-3 transition-all ${
                                 isSelected
-                                    ? 'bg-blue-500/10 border-2 border-blue-500 scale-105 shadow-lg shadow-blue-500/10'
-                                    : 'bg-[#0A0B0E] border-2 border-gray-800 hover:border-gray-600 hover:bg-[#15171C]'
+                                    ? 'scale-105 border-[#C9A84C] bg-[#C9A84C]/10 shadow-lg shadow-[#C9A84C]/10'
+                                    : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-600 hover:bg-[#15171C]'
                             }`}
                         >
-                            <span className="text-2xl drop-shadow-md">{g.emoji}</span>
-                            <span className={`text-[10px] font-bold ${isSelected ? 'text-blue-400' : 'text-gray-500'}`}>
-                                ${g.price}
+                            <Icon className={isSelected ? 'text-[#C9A84C]' : 'text-gray-400'} size={22} />
+                            <span className={`text-[10px] font-bold ${isSelected ? 'text-[#D8BA63]' : 'text-gray-500'}`}>
+                                ${gift.price}
                             </span>
                         </button>
                     )
                 })}
             </div>
 
-            {/* Selected preview */}
             {selected && (
-                <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-blue-500/10 border border-blue-500/20">
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl drop-shadow-md">{selected.emoji}</span>
-                        <div>
-                            <p className="text-sm font-bold text-white">Regalo de {selected.label}</p>
-                            <p className="text-xs text-gray-400">
-                                @{recipientUsername} recibe <span className="text-blue-400 font-bold">${(selected.price * 0.88).toFixed(2)}</span>
-                            </p>
-                        </div>
+                <div className="mb-3 flex items-center justify-between rounded-xl border border-[#C9A84C]/20 bg-[#C9A84C]/10 px-4 py-3">
+                    <div>
+                        <p className="text-sm font-bold text-white">Regalo de {selected.label}</p>
+                        <p className="text-xs text-gray-400">
+                            @{recipientUsername} recibe <span className="font-bold text-[#D8BA63]">${(selected.price * 0.88).toFixed(2)}</span>
+                        </p>
                     </div>
-                    <span className="text-xl font-black text-blue-400">
-                        ${selected.price}
-                    </span>
+                    <span className="text-xl font-black text-[#D8BA63]">${selected.price}</span>
                 </div>
             )}
 
-            {/* Send button */}
+            {error && (
+                <div className="mb-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-bold text-red-300">
+                    {error}
+                </div>
+            )}
+
             <button
+                type="button"
                 onClick={sendGift}
                 disabled={!selected || loading}
-                className={`w-full font-bold h-12 rounded-xl transition-all text-sm ${
+                className={`h-12 w-full rounded-xl text-sm font-bold transition-all ${
                     selected
-                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                        : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                        ? 'bg-[#C9A84C] text-[#0D0D0D] shadow-lg shadow-[#C9A84C]/20 hover:bg-[#D8BA63]'
+                        : 'cursor-not-allowed bg-gray-800 text-gray-500'
                 } ${loading ? 'opacity-60' : ''}`}
             >
-                {loading
-                    ? 'Procesando...'
-                    : selected
-                    ? `Enviar ${selected.emoji} — $${selected.price}`
-                    : 'Selecciona un regalo'}
+                {loading ? 'Procesando...' : selected ? `Enviar ${selected.label} - $${selected.price}` : 'Selecciona un regalo'}
             </button>
 
-            <p className="text-center text-[10px] mt-3 text-gray-600">
-                🔒 Pago seguro vía Stripe · El escritor recibe 88%
+            <p className="mt-3 text-center text-[10px] text-gray-600">
+                Pago seguro via Stripe. El escritor recibe 88%.
             </p>
         </div>
     )

@@ -165,9 +165,9 @@ function CommentRow({
 
     return (
         <div className={`${isReply ? 'pl-6 border-l-2 border-gray-800/60' : ''}`}>
-            <div className={`rounded-xl ${comment.is_pinned ? 'border border-blue-500/30 bg-blue-500/[0.03]' : 'border border-gray-800/60 bg-[#0F1114]'} p-4 ${comment.is_hidden ? 'opacity-50' : ''}`}>
+            <div className={`rounded-xl ${comment.is_pinned ? 'border border-[#C9A84C]/30 bg-[#C9A84C]/[0.03]' : 'border border-gray-800/60 bg-[#0F1114]'} p-4 ${comment.is_hidden ? 'opacity-50' : ''}`}>
                 {comment.is_pinned && (
-                    <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-2">
+                    <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#D8BA63] mb-2">
                         <Pin size={10} /> {t('pinned_label')}
                     </p>
                 )}
@@ -191,7 +191,7 @@ function CommentRow({
 
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                            <Link href={`/${handle}`} className="text-sm font-bold text-white hover:text-blue-400 transition">
+                            <Link href={`/${handle}`} className="text-sm font-bold text-white hover:text-[#D8BA63] transition">
                                 {displayName}
                             </Link>
                             <span className="text-[11px] text-gray-600">@{handle}</span>
@@ -227,8 +227,8 @@ function CommentRow({
                                     disabled={voting}
                                     className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition ${
                                         myVote === 1
-                                            ? 'bg-blue-500/15 text-blue-400'
-                                            : 'text-gray-500 hover:bg-white/5 hover:text-blue-400'
+                                            ? 'bg-[#C9A84C]/15 text-[#D8BA63]'
+                                            : 'text-gray-500 hover:bg-white/5 hover:text-[#D8BA63]'
                                     }`}
                                     aria-pressed={myVote === 1}
                                     title={t('vote_up')}
@@ -346,3 +346,4 @@ function CommentRow({
         </div>
     )
 }
+

@@ -111,7 +111,7 @@ export function TrustSettingsForm({ initial }: Props) {
                             key={f.value}
                             type="button"
                             onClick={() => setFrequency(f.value)}
-                            className={`text-left p-3 rounded-lg border transition ${frequency === f.value ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-800 hover:border-gray-700'}`}
+                            className={`text-left p-3 rounded-lg border transition ${frequency === f.value ? 'border-[#C9A84C]/50 bg-[#C9A84C]/5' : 'border-gray-800 hover:border-gray-700'}`}
                         >
                             <span className="text-sm font-semibold text-white">{f.label}</span>
                         </button>
@@ -132,12 +132,14 @@ export function TrustSettingsForm({ initial }: Props) {
                 <button
                     type="submit"
                     disabled={saving}
-                    className="px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-lg bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold text-sm transition disabled:opacity-50"
                 >
                     {saving ? 'Guardando...' : 'Guardar'}
                 </button>
-                {saved && <span className="text-sm text-blue-400">✓ Guardado</span>}
+                {saved && <span className="text-sm text-[#D8BA63]">✓ Guardado</span>}
             </div>
         </form>
     )
 }
+
+

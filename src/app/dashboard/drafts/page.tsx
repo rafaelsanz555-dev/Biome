@@ -27,7 +27,7 @@ export default async function DraftsPage() {
                     </p>
                 </div>
                 <Link href="/dashboard/episodes/new">
-                    <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-lg shadow-blue-500/20">
+                    <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] transition-all shadow-lg shadow-[#C9A84C]/20">
                         <PenLine size={14} />
                         Nuevo borrador
                     </button>
@@ -36,13 +36,13 @@ export default async function DraftsPage() {
 
             {!drafts || drafts.length === 0 ? (
                 <div className="p-14 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-blue-500/10">
-                        <FileText size={22} className="text-blue-500" />
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-[#C9A84C]/10">
+                        <FileText size={22} className="text-[#C9A84C]" />
                     </div>
                     <p className="text-xl font-bold mb-2 text-white">Sin borradores</p>
                     <p className="text-sm mb-6 text-gray-400">Guarda ideas antes de publicarlas.</p>
                     <Link href="/dashboard/episodes/new">
-                        <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                        <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C] text-[#0D0D0D] hover:bg-[#C9A84C] transition-colors shadow-lg shadow-[#C9A84C]/20">
                             <PlusCircle size={15} />
                             Empezar un borrador
                         </button>
@@ -78,3 +78,5 @@ export default async function DraftsPage() {
         </div>
     )
 }
+
+

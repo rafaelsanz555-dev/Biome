@@ -54,17 +54,17 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
     return (
         <div className="rounded-2xl bg-[#15171C] border border-gray-800 p-6 space-y-6">
             <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
-                <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                    <Wand2 size={18} className="text-violet-400" />
+                <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
+                    <Wand2 size={18} className="text-[#D8BA63]" />
                 </div>
                 <div className="flex-1">
                     <h2 className="font-bold text-lg text-white flex items-center gap-2">
                         Themes
-                        <span className="text-[10px] bg-violet-500/15 text-violet-300 px-2 py-0.5 rounded-full font-bold">NUEVO</span>
+                        <span className="text-[10px] bg-[#C9A84C]/15 text-[#E2C96E] px-2 py-0.5 rounded-full font-bold">NUEVO</span>
                     </h2>
                     <p className="text-sm text-gray-500">El theme cambia color, tipografía Y fondo. Los animados se mueven sutilmente mientras tu lector lee.</p>
                 </div>
-                {saved && <span className="text-sm text-blue-400 font-bold flex items-center gap-1.5"><Check size={14} /> Aplicado</span>}
+                {saved && <span className="text-sm text-[#D8BA63] font-bold flex items-center gap-1.5"><Check size={14} /> Aplicado</span>}
             </div>
 
             {/* Grid de themes oficiales */}
@@ -107,7 +107,7 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
             <button
                 type="button"
                 onClick={() => setShowCustomDialog(true)}
-                className="w-full p-4 rounded-xl border-2 border-dashed border-gray-700 hover:border-violet-500/50 text-gray-400 hover:text-violet-400 transition-all flex items-center justify-center gap-2 text-sm font-bold"
+                className="w-full p-4 rounded-xl border-2 border-dashed border-gray-700 hover:border-[#C9A84C]/50 text-gray-400 hover:text-[#D8BA63] transition-all flex items-center justify-center gap-2 text-sm font-bold"
             >
                 <Upload size={16} />
                 Sube tu propio fondo (Akatsuki, foto, lo que quieras)
@@ -179,7 +179,7 @@ function ThemeCard({
             suppressHydrationWarning
             className={`group relative aspect-[4/5] rounded-xl overflow-hidden border-2 transition-all text-left ${
                 isSelected
-                    ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[1.02]'
+                    ? 'border-[#C9A84C] shadow-lg shadow-[#C9A84C]/20 scale-[1.02]'
                     : 'border-transparent hover:border-gray-600 hover:scale-[1.02]'
             }`}
         >
@@ -188,7 +188,7 @@ function ThemeCard({
             {/* Mini composition de preview: título + accent */}
             <div className="absolute inset-0 p-3 flex flex-col justify-end">
                 <div className="space-y-1.5">
-                    <div className="h-1.5 w-12 rounded-full" style={{ backgroundColor: cfg.accent_color || '#2563EB' }} />
+                    <div className="h-1.5 w-12 rounded-full" style={{ backgroundColor: cfg.accent_color || '#C9A84C' }} />
                     <p
                         className="text-white text-sm font-bold leading-tight line-clamp-2"
                         style={{ fontFamily, color: cfg.is_light ? '#0F172A' : '#fff' }}
@@ -204,7 +204,7 @@ function ThemeCard({
             {/* Badges */}
             <div className="absolute top-2 left-2 flex gap-1">
                 {theme.is_animated && (
-                    <span className="bg-violet-500/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                    <span className="bg-[#C9A84C]/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
                         <Sparkles size={8} /> Anim
                     </span>
                 )}
@@ -212,7 +212,7 @@ function ThemeCard({
 
             {/* Selected indicator */}
             {isSelected && (
-                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center shadow-lg">
+                <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#C9A84C] flex items-center justify-center shadow-lg">
                     <Check size={14} className="text-white stroke-[3]" />
                 </div>
             )}
@@ -239,7 +239,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
 
     // Common state
     const [name, setName] = useState('Mi theme')
-    const [accent, setAccent] = useState('#2563EB')
+    const [accent, setAccent] = useState('#C9A84C')
     const [font, setFont] = useState('playfair')
     const [overlay, setOverlay] = useState<'dark' | 'medium' | 'light'>('dark')
     const [uploading, setUploading] = useState(false)
@@ -340,7 +340,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
             <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0F1114] border border-gray-800 rounded-2xl" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between p-5 border-b border-gray-800">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <Palette size={18} className="text-violet-400" />
+                        <Palette size={18} className="text-[#D8BA63]" />
                         Theme personalizado
                     </h3>
                     <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
@@ -353,7 +353,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             type="button"
                             onClick={() => { setMode('upload'); setError(null) }}
                             className={`px-4 py-2.5 rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 ${
-                                mode === 'upload' ? 'bg-violet-500/15 text-violet-300' : 'text-gray-500 hover:text-white'
+                                mode === 'upload' ? 'bg-[#C9A84C]/15 text-[#E2C96E]' : 'text-gray-500 hover:text-white'
                             }`}
                         >
                             <Upload size={14} /> Desde mi compu
@@ -362,7 +362,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             type="button"
                             onClick={() => { setMode('url'); setError(null) }}
                             className={`px-4 py-2.5 rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 ${
-                                mode === 'url' ? 'bg-violet-500/15 text-violet-300' : 'text-gray-500 hover:text-white'
+                                mode === 'url' ? 'bg-[#C9A84C]/15 text-[#E2C96E]' : 'text-gray-500 hover:text-white'
                             }`}
                         >
                             <Link2Icon size={14} /> Pegar URL de internet
@@ -375,7 +375,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
                                 Imagen (máx 5MB · jpg, png, webp)
                             </label>
-                            <label className="block aspect-video rounded-xl border-2 border-dashed border-gray-700 hover:border-violet-500/50 cursor-pointer overflow-hidden bg-[#0A0B0E]">
+                            <label className="block aspect-video rounded-xl border-2 border-dashed border-gray-700 hover:border-[#C9A84C]/50 cursor-pointer overflow-hidden bg-[#0A0B0E]">
                                 {filePreview ? (
                                     <div className="relative w-full h-full">
                                         <img src={filePreview} alt="" className="w-full h-full object-cover" />
@@ -384,7 +384,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 hover:text-violet-400 transition">
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 hover:text-[#D8BA63] transition">
                                         <Upload size={28} className="mb-2" />
                                         <span className="text-sm font-bold">Click para subir</span>
                                         <span className="text-[11px] mt-1">o arrastra una imagen aquí</span>
@@ -410,20 +410,20 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                                     value={urlInput}
                                     onChange={e => { setUrlInput(e.target.value); setUrlValid('idle'); setUrlPreview(null) }}
                                     placeholder="https://i.pinimg.com/originals/..."
-                                    className="flex-1 px-4 py-2.5 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm font-mono focus:border-violet-500/50 focus:outline-none"
+                                    className="flex-1 px-4 py-2.5 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm font-mono focus:border-[#C9A84C]/50 focus:outline-none"
                                 />
                                 <button
                                     type="button"
                                     onClick={checkUrl}
                                     disabled={!urlInput.trim() || urlValid === 'checking'}
-                                    className="px-4 py-2.5 rounded-lg bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 text-sm font-bold transition disabled:opacity-50 whitespace-nowrap"
+                                    className="px-4 py-2.5 rounded-lg bg-[#C9A84C]/15 hover:bg-[#C9A84C]/25 text-[#E2C96E] text-sm font-bold transition disabled:opacity-50 whitespace-nowrap"
                                 >
                                     {urlValid === 'checking' ? 'Verificando...' : 'Verificar'}
                                 </button>
                             </div>
                             {urlValid === 'ok' && urlPreview && (
                                 <div>
-                                    <p className="text-[11px] text-blue-400 mb-2 flex items-center gap-1.5"><Check size={12} /> Imagen cargada correctamente</p>
+                                    <p className="text-[11px] text-[#D8BA63] mb-2 flex items-center gap-1.5"><Check size={12} /> Imagen cargada correctamente</p>
                                     <div className="aspect-video rounded-xl overflow-hidden bg-[#0A0B0E] border border-gray-800">
                                         <img src={urlPreview} alt="" className="w-full h-full object-cover" />
                                     </div>
@@ -444,7 +444,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             type="text"
                             value={name}
                             onChange={e => setName(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm focus:border-violet-500/50 focus:outline-none"
+                            className="w-full px-4 py-2.5 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm focus:border-[#C9A84C]/50 focus:outline-none"
                         />
                     </div>
 
@@ -496,7 +496,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                         <button
                             onClick={handleSubmit}
                             disabled={!canSubmit || uploading}
-                            className="flex-1 px-4 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition disabled:opacity-50"
+                            className="flex-1 px-4 py-2.5 rounded-lg bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] text-sm font-bold transition disabled:opacity-50"
                         >
                             {uploading ? 'Creando...' : 'Crear theme'}
                         </button>
@@ -506,3 +506,4 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
         </div>
     )
 }
+

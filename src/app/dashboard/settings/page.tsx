@@ -8,6 +8,16 @@ import { TrustSettingsForm } from './TrustSettingsForm'
 import { ThemeSelector } from './ThemeSelector'
 import { User, Globe, ShieldCheck, Palette, Wand2, ExternalLink } from 'lucide-react'
 
+const creatorSections = [
+    { num: 1, label: 'Perfil', desc: 'Tu cara publica', icon: User },
+    { num: 2, label: 'Identidad', desc: 'De donde eres y que te define', icon: Globe },
+    { num: 3, label: 'Confianza', desc: 'Manifesto y compromiso', icon: ShieldCheck },
+    { num: 4, label: 'Tema visual', desc: 'El look de tu mundo', icon: Wand2 },
+    { num: 5, label: 'Marca', desc: 'Color, fuente y estilo', icon: Palette },
+]
+
+const readerSections = creatorSections.slice(0, 2)
+
 export default async function SettingsPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -28,8 +38,6 @@ export default async function SettingsPage() {
 
     const isCreator = profile?.role === 'creator'
 
-    // Hardening: si role=creator pero no hay row, créala on-the-fly
-    // (esto repara cuentas viejas donde el insert original falló silenciosamente)
     if (isCreator && !creatorInfo) {
         const { data: created } = await supabase
             .from('creators')
@@ -39,66 +47,52 @@ export default async function SettingsPage() {
         creatorInfo = created
     }
 
-    // Cargar themes para el ThemeSelector (oficiales + custom del creador actual)
     const { data: themes } = await supabase
         .from('themes')
         .select('id, slug, name, description, type, style, config, is_animated')
         .or(`type.eq.official,creator_id.eq.${user.id}`)
         .order('type', { ascending: true })
 
-    const sections = isCreator
-        ? [
-            { num: 1, label: 'Perfil', desc: 'Tu cara pública', icon: User, color: 'blue' },
-            { num: 2, label: 'Identidad', desc: 'De dónde sos, qué te define', icon: Globe, color: 'violet' },
-            { num: 3, label: 'Confianza', desc: 'Tu manifesto y compromiso', icon: ShieldCheck, color: 'emerald' },
-            { num: 4, label: 'Tema visual', desc: 'El look de tu mundo', icon: Wand2, color: 'amber' },
-            { num: 5, label: 'Marca', desc: 'Color, fuente, estilo', icon: Palette, color: 'rose' },
-        ]
-        : [
-            { num: 1, label: 'Perfil', desc: 'Tu cara pública', icon: User, color: 'blue' },
-            { num: 2, label: 'Identidad', desc: 'De dónde sos, qué te define', icon: Globe, color: 'violet' },
-        ]
+    const sections = isCreator ? creatorSections : readerSections
 
     return (
-        <div className="max-w-3xl mx-auto">
-            {/* Header editorial */}
-            <div className="mb-10 pb-6 border-b border-white/5">
-                <p className="text-[10px] uppercase tracking-[0.25em] text-blue-400 font-bold mb-2">Tu estudio</p>
-                <h1 className="text-4xl font-bold text-white tracking-tight mb-2" style={{ fontFamily: 'Georgia, "Playfair Display", serif' }}>
-                    {isCreator ? 'Construí tu universo narrativo' : 'Tu cuenta en bio.me'}
+        <div className="mx-auto max-w-3xl">
+            <div className="mb-10 border-b border-white/5 pb-6">
+                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#C9A84C]">Tu estudio</p>
+                <h1 className="mb-2 font-serif text-4xl font-black tracking-tight text-white">
+                    {isCreator ? 'Construye tu universo narrativo' : 'Tu cuenta en bio.me'}
                 </h1>
-                <p className="text-sm text-gray-400 max-w-xl leading-relaxed">
+                <p className="max-w-xl text-sm leading-relaxed text-gray-400">
                     {isCreator
-                        ? 'Cada decisión acá define cómo te encuentran, cómo te leen, y cómo te recuerdan. Tomá tu tiempo.'
-                        : 'Personalizá cómo te ven los escritores que seguís.'}
+                        ? 'Cada decision define como te encuentran, como te leen y como te recuerdan. La personalizacion debe sentirse como identidad de escritor, no decoracion vacia.'
+                        : 'Personaliza como te ven los escritores que sigues.'}
                 </p>
                 {profile?.username && (
                     <Link
                         href={`/${profile.username}`}
                         target="_blank"
-                        className="inline-flex items-center gap-2 mt-4 text-xs text-blue-400 hover:text-blue-300 transition font-semibold"
+                        className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#C9A84C] transition hover:text-[#D8BA63]"
                     >
                         <ExternalLink size={12} />
-                        Ver mi perfil público en bio.me/{profile.username}
+                        Ver mi perfil publico en bio.me/{profile.username}
                     </Link>
                 )}
             </div>
 
-            {/* Tabla de contenidos visual — anclas a las secciones */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-10">
-                {sections.map((s) => {
-                    const Icon = s.icon
+            <div className="mb-10 grid grid-cols-2 gap-2 sm:grid-cols-5">
+                {sections.map((section) => {
+                    const Icon = section.icon
                     return (
                         <a
-                            key={s.num}
-                            href={`#section-${s.num}`}
-                            className={`group flex flex-col items-center text-center gap-1.5 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-${s.color}-500/5 hover:border-${s.color}-500/20 transition`}
+                            key={section.num}
+                            href={`#section-${section.num}`}
+                            className="group flex flex-col items-center gap-1.5 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-center transition hover:border-[#C9A84C]/25 hover:bg-[#C9A84C]/5"
                         >
-                            <div className={`w-8 h-8 rounded-lg bg-${s.color}-500/10 flex items-center justify-center text-${s.color}-400`}>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#C9A84C]/10 text-[#C9A84C]">
                                 <Icon size={14} />
                             </div>
-                            <span className="text-[10px] font-bold text-white">{s.num}. {s.label}</span>
-                            <span className="text-[9px] text-gray-500 hidden sm:block">{s.desc}</span>
+                            <span className="text-[10px] font-bold text-white">{section.num}. {section.label}</span>
+                            <span className="hidden text-[9px] text-gray-500 sm:block">{section.desc}</span>
                         </a>
                     )
                 })}
@@ -106,12 +100,12 @@ export default async function SettingsPage() {
 
             <div className="space-y-12">
                 <section id="section-1">
-                    <SectionHeader num={1} label="Perfil" desc="Tu foto, nombre y bio. Lo primero que ven." icon={User} color="blue" />
+                    <SectionHeader num={1} label="Perfil" desc="Tu foto, nombre y bio. Lo primero que ven." icon={User} />
                     <SettingsForm profile={profile} creatorInfo={creatorInfo} />
                 </section>
 
                 <section id="section-2">
-                    <SectionHeader num={2} label="Identidad" desc="De dónde sos, qué idiomas hablás, qué temas te mueven." icon={Globe} color="violet" />
+                    <SectionHeader num={2} label="Identidad" desc="De donde eres, que idiomas hablas y que temas te mueven." icon={Globe} />
                     <IdentityForm
                         initial={{
                             id: profile?.id,
@@ -131,7 +125,7 @@ export default async function SettingsPage() {
                 {isCreator && (
                     <>
                         <section id="section-3">
-                            <SectionHeader num={3} label="Confianza" desc="Tu manifesto, frecuencia prometida y estado de la serie." icon={ShieldCheck} color="emerald" />
+                            <SectionHeader num={3} label="Confianza" desc="Tu manifesto, frecuencia prometida y estado de la serie." icon={ShieldCheck} />
                             <TrustSettingsForm
                                 initial={{
                                     posting_frequency: creatorInfo?.posting_frequency,
@@ -144,7 +138,7 @@ export default async function SettingsPage() {
                         </section>
 
                         <section id="section-4">
-                            <SectionHeader num={4} label="Tema visual" desc="El fondo, los colores, la atmósfera de tu perfil." icon={Wand2} color="amber" />
+                            <SectionHeader num={4} label="Tema visual" desc="Fondo, atmosfera y lectura de tu perfil." icon={Wand2} />
                             <ThemeSelector
                                 initialThemeId={creatorInfo?.theme_id}
                                 initialAccent={creatorInfo?.accent_color}
@@ -154,7 +148,7 @@ export default async function SettingsPage() {
                         </section>
 
                         <section id="section-5">
-                            <SectionHeader num={5} label="Marca" desc="Color de acento y tipografía que define tu voz visual." icon={Palette} color="rose" />
+                            <SectionHeader num={5} label="Marca" desc="Color de acento y tipografia que definen tu voz visual." icon={Palette} />
                             <BrandingForm
                                 initial={{
                                     accent_color: creatorInfo?.accent_color,
@@ -171,18 +165,18 @@ export default async function SettingsPage() {
     )
 }
 
-function SectionHeader({ num, label, desc, icon: Icon, color }: { num: number; label: string; desc: string; icon: any; color: string }) {
+function SectionHeader({ num, label, desc, icon: Icon }: { num: number; label: string; desc: string; icon: any }) {
     return (
-        <div className="flex items-start gap-4 mb-5">
-            <div className={`w-12 h-12 rounded-2xl bg-${color}-500/10 border border-${color}-500/20 flex items-center justify-center shrink-0`}>
-                <Icon className={`text-${color}-400`} size={20} />
+        <div className="mb-5 flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#C9A84C]/20 bg-[#C9A84C]/10">
+                <Icon className="text-[#C9A84C]" size={20} />
             </div>
             <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                    <span className={`text-[10px] uppercase tracking-[0.2em] text-${color}-400 font-bold`}>Sección {num}</span>
+                <div className="mb-0.5 flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C9A84C]">Seccion {num}</span>
                 </div>
-                <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>{label}</h2>
-                <p className="text-sm text-gray-500 mt-1">{desc}</p>
+                <h2 className="font-serif text-2xl font-black text-white">{label}</h2>
+                <p className="mt-1 text-sm text-gray-500">{desc}</p>
             </div>
         </div>
     )

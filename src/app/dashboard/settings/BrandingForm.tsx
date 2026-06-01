@@ -5,9 +5,9 @@ import { updateBranding } from './brandingActions'
 import { track } from '@/lib/analytics'
 import { Check, Palette, Type, Sparkles } from 'lucide-react'
 
-// 12 acentos curados (la paleta premium) — Cobalt es el nuevo default de bio.me
+// 12 acentos curados (la paleta premium) — Gold es el nuevo default de bio.me
 const ACCENTS = [
-    { code: '#2563EB', name: 'Cobalt' },
+    { code: '#C9A84C', name: 'Gold' },
     { code: '#EF4444', name: 'Crimson' },
     { code: '#F59E0B', name: 'Amber' },
     { code: '#8B5CF6', name: 'Violet' },
@@ -69,7 +69,7 @@ interface BrandingFormProps {
 }
 
 export function BrandingForm({ initial }: BrandingFormProps) {
-    const [accent, setAccent] = useState(initial?.accent_color || '#2563EB')
+    const [accent, setAccent] = useState(initial?.accent_color || '#C9A84C')
     const [font, setFont] = useState(initial?.font_family || 'inter')
     const [cardStyle, setCardStyle] = useState(initial?.card_style || 'editorial')
     const [tagline, setTagline] = useState(initial?.brand_tagline || '')
@@ -96,8 +96,8 @@ export function BrandingForm({ initial }: BrandingFormProps) {
         <div className="rounded-2xl bg-[#15171C] border border-gray-800 p-6 space-y-8">
 
             <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                    <Sparkles size={18} className="text-blue-400" />
+                <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
+                    <Sparkles size={18} className="text-[#D8BA63]" />
                 </div>
                 <div>
                     <h2 className="font-bold text-lg text-white">Tu marca personal</h2>
@@ -148,7 +148,7 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                             onClick={() => setFont(f.code)}
                             className={`text-left p-5 rounded-xl border-2 transition-all ${
                                 font === f.code
-                                    ? 'border-blue-500 bg-blue-500/5 shadow-lg shadow-blue-500/10'
+                                    ? 'border-[#C9A84C] bg-[#C9A84C]/5 shadow-lg shadow-[#C9A84C]/10'
                                     : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
                             }`}
                         >
@@ -157,7 +157,7 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block mb-0.5">{f.name}</span>
                                     <span className="text-[11px] text-gray-600">{f.desc}</span>
                                 </div>
-                                {font === f.code && <Check size={14} className="text-blue-500 shrink-0" />}
+                                {font === f.code && <Check size={14} className="text-[#C9A84C] shrink-0" />}
                             </div>
                             <p className="text-2xl text-white leading-tight mb-1" style={{ fontFamily: f.cssFamily, fontWeight: 600 }}>
                                 {f.preview}
@@ -183,13 +183,13 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                             onClick={() => setCardStyle(s.code)}
                             className={`text-left p-4 rounded-xl border-2 transition-all ${
                                 cardStyle === s.code
-                                    ? 'border-blue-500 bg-blue-500/5'
+                                    ? 'border-[#C9A84C] bg-[#C9A84C]/5'
                                     : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
                             }`}
                         >
                             <div className="flex items-center justify-between mb-1">
                                 <span className="font-bold text-sm text-white">{s.name}</span>
-                                {cardStyle === s.code && <Check size={14} className="text-blue-500" />}
+                                {cardStyle === s.code && <Check size={14} className="text-[#C9A84C]" />}
                             </div>
                             <p className="text-xs text-gray-500">{s.desc}</p>
                         </button>
@@ -208,7 +208,7 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                     value={tagline}
                     onChange={e => setTagline(e.target.value.slice(0, 80))}
                     placeholder="ej. Contando mi vida, un capítulo a la vez"
-                    className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:ring-1 focus:ring-[#C9A84C] focus:outline-none text-sm"
                 />
                 <p className="text-[10px] text-gray-600 mt-1">{tagline.length}/80</p>
             </div>
@@ -218,12 +218,12 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                 <button
                     onClick={handleSave}
                     disabled={isPending}
-                    className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                    className="px-6 py-3 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold text-sm transition-all shadow-lg shadow-[#C9A84C]/20 disabled:opacity-50"
                 >
                     {isPending ? 'Guardando...' : 'Guardar mi marca'}
                 </button>
                 {saved && (
-                    <span className="text-sm text-blue-400 font-bold flex items-center gap-1.5">
+                    <span className="text-sm text-[#D8BA63] font-bold flex items-center gap-1.5">
                         <Check size={14} /> Guardado
                     </span>
                 )}
@@ -231,3 +231,4 @@ export function BrandingForm({ initial }: BrandingFormProps) {
         </div>
     )
 }
+

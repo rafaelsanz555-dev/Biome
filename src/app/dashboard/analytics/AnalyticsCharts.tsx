@@ -99,7 +99,7 @@ export function AnalyticsCharts({ buckets, topCountries, deviceData, episodeStat
                                     </div>
                                 </div>
                                 <div className="w-20 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                                    <div className="h-full bg-blue-500" style={{ width: `${e.completion}%` }} />
+                                    <div className="h-full bg-[#C9A84C]" style={{ width: `${e.completion}%` }} />
                                 </div>
                             </div>
                         ))
@@ -109,3 +109,4 @@ export function AnalyticsCharts({ buckets, topCountries, deviceData, episodeStat
         </div>
     )
 }
+

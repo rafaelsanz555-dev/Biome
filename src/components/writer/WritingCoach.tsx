@@ -103,11 +103,11 @@ export function WritingCoach({ title, previewText, wordCount }: Props) {
                 {tips.map((tip) => {
                     const Icon = tip.icon
                     const colors = tip.severity === 'good'
-                        ? 'border-blue-500/20 bg-blue-500/5'
+                        ? 'border-[#C9A84C]/20 bg-[#C9A84C]/5'
                         : tip.severity === 'warn'
                             ? 'border-amber-500/30 bg-amber-500/5'
                             : 'border-gray-800 bg-white/[0.02]'
-                    const iconColor = tip.severity === 'good' ? 'text-blue-400'
+                    const iconColor = tip.severity === 'good' ? 'text-[#D8BA63]'
                         : tip.severity === 'warn' ? 'text-amber-400'
                             : 'text-gray-400'
                     return (
@@ -129,3 +129,4 @@ export function WritingCoach({ title, previewText, wordCount }: Props) {
         </div>
     )
 }
+

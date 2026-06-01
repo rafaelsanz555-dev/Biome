@@ -118,7 +118,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
-                            className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-blue-500/50 focus:outline-none"
+                            className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:outline-none"
                         />
                     </div>
 
@@ -131,7 +131,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                             value={previewText}
                             onChange={(e) => setPreviewText(e.target.value.slice(0, 240))}
                             rows={3}
-                            className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-blue-500/50 focus:outline-none"
+                            className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:outline-none"
                         />
                         <p className="text-[10px] text-gray-600 mt-1">{previewText.length}/240</p>
                     </div>
@@ -139,7 +139,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     {/* Cover image */}
                     <div>
                         <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Portada</label>
-                        <label className="block aspect-video rounded-xl border-2 border-dashed border-gray-700 hover:border-blue-500/50 cursor-pointer overflow-hidden bg-[#0A0B0E]">
+                        <label className="block aspect-video rounded-xl border-2 border-dashed border-gray-700 hover:border-[#C9A84C]/50 cursor-pointer overflow-hidden bg-[#0A0B0E]">
                             {coverUrl ? (
                                 <div className="relative w-full h-full group">
                                     <img src={coverUrl} alt="" className="w-full h-full object-cover" />
@@ -148,7 +148,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 hover:text-blue-400 transition">
+                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 hover:text-[#D8BA63] transition">
                                     <ImagePlus size={28} className="mb-2" />
                                     <span className="text-sm font-bold">Click para subir portada</span>
                                 </div>
@@ -169,7 +169,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                                 onClick={() => setMonetization(m)}
                                 className={`p-3 rounded-lg border text-sm font-bold transition ${
                                     monetization === m
-                                        ? 'border-blue-500/50 bg-blue-500/10 text-blue-400'
+                                        ? 'border-[#C9A84C]/50 bg-[#C9A84C]/10 text-[#D8BA63]'
                                         : 'border-gray-800 text-gray-400 hover:border-gray-700'
                                 }`}
                             >
@@ -203,7 +203,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                         className="w-full flex items-center justify-between gap-3 text-left"
                     >
                         <div className="flex items-center gap-3">
-                            {isPublished ? <Eye className="text-blue-400" size={18} /> : <EyeOff className="text-gray-500" size={18} />}
+                            {isPublished ? <Eye className="text-[#D8BA63]" size={18} /> : <EyeOff className="text-gray-500" size={18} />}
                             <div>
                                 <p className="text-sm font-bold text-white">
                                     {isPublished ? 'Publicado' : 'Borrador'}
@@ -213,7 +213,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                                 </p>
                             </div>
                         </div>
-                        <div className={`w-10 h-6 rounded-full transition ${isPublished ? 'bg-blue-500' : 'bg-gray-700'}`}>
+                        <div className={`w-10 h-6 rounded-full transition ${isPublished ? 'bg-[#C9A84C]' : 'bg-gray-700'}`}>
                             <div className={`w-5 h-5 rounded-full bg-white shadow-md transition mt-0.5 ${isPublished ? 'translate-x-5' : 'translate-x-0.5'}`} />
                         </div>
                     </button>
@@ -224,7 +224,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20 text-sm text-red-400">{error}</div>
                 )}
                 {saved && (
-                    <div className="p-3 rounded-lg bg-blue-500/5 border border-blue-500/20 text-sm text-blue-400">✓ Cambios guardados</div>
+                    <div className="p-3 rounded-lg bg-[#C9A84C]/5 border border-[#C9A84C]/20 text-sm text-[#D8BA63]">✓ Cambios guardados</div>
                 )}
 
                 {/* Actions */}
@@ -232,7 +232,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="flex-1 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 px-5 py-3 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {isPending && <Loader2 size={14} className="animate-spin" />}
                         {isPending ? 'Guardando...' : 'Guardar cambios'}
@@ -282,3 +282,5 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
         </>
     )
 }
+
+

@@ -136,8 +136,8 @@ export function StudioPanel({ username }: StudioPanelProps = {}) {
         <aside className="w-80 bg-[#0F1114] border-l border-[#262626] overflow-y-auto p-6 space-y-6 hidden lg:block">
             {/* Header sutil "Modo Estudio" */}
             <div className="flex items-center gap-2 pb-4 border-b border-white/5">
-                <Sparkles size={12} className="text-blue-400" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-blue-400">{t('mode_label')}</span>
+                <Sparkles size={12} className="text-[#D8BA63]" />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#D8BA63]">{t('mode_label')}</span>
             </div>
 
             {/* Contexto actual */}
@@ -176,10 +176,10 @@ export function StudioPanel({ username }: StudioPanelProps = {}) {
                                     className="flex items-center justify-between gap-2 p-2.5 rounded-lg hover:bg-white/5 transition group"
                                 >
                                     <div className="flex items-center gap-2.5">
-                                        <SIcon size={14} className="text-gray-500 group-hover:text-blue-400 transition" />
+                                        <SIcon size={14} className="text-gray-500 group-hover:text-[#D8BA63] transition" />
                                         <span className="text-xs text-gray-300 group-hover:text-white transition">{label}</span>
                                     </div>
-                                    <ArrowRight size={11} className="text-gray-700 group-hover:text-blue-400 transition" />
+                                    <ArrowRight size={11} className="text-gray-700 group-hover:text-[#D8BA63] transition" />
                                 </Link>
                             )
                         })}
@@ -191,11 +191,12 @@ export function StudioPanel({ username }: StudioPanelProps = {}) {
             <div className="pt-4 border-t border-white/5">
                 <p className="text-[10px] text-gray-600 italic leading-relaxed">
                     {t.rich('feed_returns', {
-                        home: (chunks) => <Link href="/dashboard" className="text-blue-400 hover:underline">{chunks}</Link>,
-                        discovery: (chunks) => <Link href="/dashboard/discovery" className="text-blue-400 hover:underline">{chunks}</Link>,
+                        home: (chunks) => <Link href="/dashboard" className="text-[#D8BA63] hover:underline">{chunks}</Link>,
+                        discovery: (chunks) => <Link href="/dashboard/discovery" className="text-[#D8BA63] hover:underline">{chunks}</Link>,
                     })}
                 </p>
             </div>
         </aside>
     )
 }
+

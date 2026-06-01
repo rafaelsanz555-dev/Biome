@@ -189,14 +189,14 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         href={`/${username}`}
                         className="flex items-center gap-3 group"
                     >
-                        <div className="bg-[#15171C] border border-gray-800 p-1.5 rounded-full group-hover:border-blue-500/30 transition">
-                            <ChevronLeft size={16} className="text-gray-400 group-hover:text-blue-500" />
+                        <div className="bg-[#15171C] border border-gray-800 p-1.5 rounded-full group-hover:border-[#C9A84C]/30 transition">
+                            <ChevronLeft size={16} className="text-gray-400 group-hover:text-[#C9A84C]" />
                         </div>
                         <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-gray-700">
                             {creatorProfile.avatar_url ? (
                                 <img src={creatorProfile.avatar_url} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center font-bold text-sm bg-blue-900/40 text-blue-400">
+                                <div className="w-full h-full flex items-center justify-center font-bold text-sm bg-[#2A2418]/40 text-[#D8BA63]">
                                     {initial}
                                 </div>
                             )}
@@ -210,7 +210,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                     </Link>
                     <div className="flex items-center gap-2">
                         {episode.seasons?.title && (
-                            <div className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-500/20 uppercase tracking-wider">
+                            <div className="text-[10px] font-bold text-[#D8BA63] bg-[#C9A84C]/10 px-2.5 py-1 rounded-full border border-[#C9A84C]/20 uppercase tracking-wider">
                                 {episode.seasons.title}
                             </div>
                         )}
@@ -262,20 +262,20 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 className={`w-full h-auto max-h-[70vh] object-contain transition-all ${!hasAccess ? 'blur-2xl opacity-40 scale-110' : ''}`}
                             />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-blue-900/30 via-[#15171C] to-[#0A0B0E]"></div>
+                            <div className="w-full h-full bg-gradient-to-br from-[#2A2418]/30 via-[#15171C] to-[#0A0B0E]"></div>
                         )}
 
                         {!hasAccess && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/50 backdrop-blur-sm">
-                                <div className="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-5">
-                                    <Lock className="w-7 h-7 text-blue-400" />
+                                <div className="w-16 h-16 rounded-2xl bg-[#C9A84C]/10 border border-[#C9A84C]/30 flex items-center justify-center mb-5">
+                                    <Lock className="w-7 h-7 text-[#D8BA63]" />
                                 </div>
                                 <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Contenido exclusivo</h2>
                                 <p className="text-gray-300 text-sm mb-6 max-w-sm leading-relaxed">
                                     Suscríbete a <strong>@{creatorProfile.username}</strong> por <strong>${subPrice}/mes</strong> para leer este episodio completo.
                                 </p>
                                 <Link href={`/api/checkout?type=subscription&creatorId=${creatorIdForSub}`}>
-                                    <Button className="bg-blue-600 hover:bg-blue-500 text-white font-bold h-12 px-8 rounded-xl shadow-lg shadow-blue-500/20 transition-transform hover:scale-105">
+                                    <Button className="bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold h-12 px-8 rounded-xl shadow-lg shadow-[#C9A84C]/20 transition-transform hover:scale-105">
                                         Suscribirme — ${subPrice}/mes
                                     </Button>
                                 </Link>
@@ -297,7 +297,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
                 {/* Free preview (if there's one) */}
                 {episode.preview_text && (
-                    <div className="text-gray-400 text-xl leading-relaxed mb-8 font-medium italic border-l-4 border-blue-500 pl-6 py-2">
+                    <div className="text-gray-400 text-xl leading-relaxed mb-8 font-medium italic border-l-4 border-[#C9A84C] pl-6 py-2">
                         {episode.preview_text}
                     </div>
                 )}
@@ -316,13 +316,13 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         )}
 
                         {episode.content_json ? (
-                            <div className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] selection:bg-blue-500/40 selection:text-white" style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}>
+                            <div className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] selection:bg-[#C9A84C]/40 selection:text-white" style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}>
                                 <ReaderRenderer content={episode.content_json} />
                             </div>
                         ) : (
                             <div
                                 data-reader-content
-                                className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] whitespace-pre-wrap selection:bg-blue-500/40 selection:text-white"
+                                className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] whitespace-pre-wrap selection:bg-[#C9A84C]/40 selection:text-white"
                                 style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}
                             >
                                 {episode.full_text}
@@ -425,7 +425,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 creatorUsername={creatorProfile.username}
                             />
                             {!isOwnProfile && (
-                                <a href="#gift-panel" className="flex items-center gap-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-2 rounded-xl font-bold text-sm hover:bg-blue-500/20 transition">
+                                <a href="#gift-panel" className="flex items-center gap-2 bg-[#C9A84C]/10 text-[#D8BA63] border border-[#C9A84C]/20 px-4 py-2 rounded-xl font-bold text-sm hover:bg-[#C9A84C]/20 transition">
                                     <Gift size={16} />
                                     Enviar regalo
                                 </a>
@@ -439,8 +439,8 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         {!isOwnProfile && (
                             <div id="gift-panel" className="mt-10 bg-gradient-to-br from-[#15171C] to-[#0F1114] p-6 rounded-2xl border border-gray-800">
                                 <div className="flex items-center gap-3 mb-5">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                                        <Gift className="text-blue-400" size={18} />
+                                    <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
+                                        <Gift className="text-[#D8BA63]" size={18} />
                                     </div>
                                     <div>
                                         <h3 className="text-white font-bold text-base">Apoya a {creatorProfile.full_name || creatorProfile.username}</h3>
@@ -454,11 +454,11 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         {/* Author footer */}
                         <div className="mt-10 p-6 rounded-2xl bg-[#15171C] border border-gray-800 flex items-center gap-4">
                             <Link href={`/${username}`} className="shrink-0">
-                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition">
+                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-700 hover:border-[#C9A84C] transition">
                                     {creatorProfile.avatar_url ? (
                                         <img src={creatorProfile.avatar_url} alt="" className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center font-bold text-lg bg-blue-900/40 text-blue-400">
+                                        <div className="w-full h-full flex items-center justify-center font-bold text-lg bg-[#2A2418]/40 text-[#D8BA63]">
                                             {initial}
                                         </div>
                                     )}
@@ -466,7 +466,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                             </Link>
                             <div className="flex-1 min-w-0">
                                 <Link href={`/${username}`}>
-                                    <p className="font-bold text-white hover:text-blue-400 transition">
+                                    <p className="font-bold text-white hover:text-[#D8BA63] transition">
                                         {creatorProfile.full_name || creatorProfile.username}
                                     </p>
                                 </Link>
@@ -489,24 +489,24 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 {hasAccess && (
                     <div className="my-12 flex flex-col sm:flex-row gap-4 justify-between items-stretch">
                         {prevEp ? (
-                            <Link href={`/${creatorProfile.username}/${prevEp.id}`} className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-blue-500/50 transition group flex flex-col justify-center">
+                            <Link href={`/${creatorProfile.username}/${prevEp.id}`} className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-[#C9A84C]/50 transition group flex flex-col justify-center">
                                 <div className="text-[10px] uppercase tracking-wider font-bold text-gray-500 mb-1 flex items-center gap-1">
                                     <ChevronLeft size={12} className="group-hover:-translate-x-1 transition" /> Anterior
                                 </div>
-                                <h3 className="font-bold text-white group-hover:text-blue-400 transition" style={{ fontFamily: 'Georgia, serif' }}>{prevEp.title}</h3>
+                                <h3 className="font-bold text-white group-hover:text-[#D8BA63] transition" style={{ fontFamily: 'Georgia, serif' }}>{prevEp.title}</h3>
                             </Link>
                         ) : <div className="flex-1 hidden sm:block"></div>}
                         
                         {nextEp ? (
-                            <Link href={`/${creatorProfile.username}/${nextEp.id}`} className="flex-1 p-4 rounded-2xl border border-blue-900/40 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-blue-500/80 transition group flex flex-col justify-center text-right">
-                                <div className="text-[10px] uppercase tracking-wider font-bold text-blue-400 mb-1 flex items-center gap-1 justify-end">
+                            <Link href={`/${creatorProfile.username}/${nextEp.id}`} className="flex-1 p-4 rounded-2xl border border-[#2A2418]/40 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-[#C9A84C]/80 transition group flex flex-col justify-center text-right">
+                                <div className="text-[10px] uppercase tracking-wider font-bold text-[#D8BA63] mb-1 flex items-center gap-1 justify-end">
                                     Siguiente <ArrowRight size={12} className="group-hover:translate-x-1 transition" />
                                 </div>
-                                <h3 className="font-bold text-white group-hover:text-blue-400 transition" style={{ fontFamily: 'Georgia, serif' }}>{nextEp.title}</h3>
+                                <h3 className="font-bold text-white group-hover:text-[#D8BA63] transition" style={{ fontFamily: 'Georgia, serif' }}>{nextEp.title}</h3>
                             </Link>
                         ) : (
                             <div className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] text-center flex flex-col justify-center items-center">
-                                <Sparkles className="text-blue-400 mb-1" size={16} />
+                                <Sparkles className="text-[#D8BA63] mb-1" size={16} />
                                 <h3 className="text-sm font-bold text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Estás al día</h3>
                             </div>
                         )}
@@ -523,3 +523,6 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
         </ThemeProvider>
     )
 }
+
+
+

@@ -20,9 +20,9 @@ const FREQUENCY_LABEL: Record<string, string> = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
-    active: { label: 'Serie activa', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: BookOpen },
+    active: { label: 'Serie activa', color: 'text-[#D8BA63] bg-[#C9A84C]/10 border-[#C9A84C]/20', icon: BookOpen },
     paused: { label: 'En pausa', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20', icon: Pause },
-    completed: { label: 'Completa', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: ShieldCheck },
+    completed: { label: 'Completa', color: 'text-[#D8BA63] bg-[#C9A84C]/10 border-[#C9A84C]/20', icon: ShieldCheck },
     planning: { label: 'En preparación', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20', icon: Sparkles },
 }
 
@@ -39,7 +39,7 @@ export function TrustSignals({
         return (
             <div className="flex items-center gap-2 flex-wrap text-[11px]">
                 {isVerified && (
-                    <span className="inline-flex items-center gap-1 text-blue-400 font-semibold">
+                    <span className="inline-flex items-center gap-1 text-[#D8BA63] font-semibold">
                         <ShieldCheck size={12} /> Verificado
                     </span>
                 )}
@@ -64,8 +64,8 @@ export function TrustSignals({
             {/* Verified */}
             {isVerified && (
                 <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                        <ShieldCheck className="text-blue-400" size={16} />
+                    <div className="w-8 h-8 rounded-lg bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="text-[#D8BA63]" size={16} />
                     </div>
                     <div className="flex-1">
                         <p className="text-sm font-semibold text-white">Storyteller verificado</p>
@@ -97,8 +97,8 @@ export function TrustSignals({
             {/* Posting frequency */}
             {(frequencyPromise || (postingFrequency && postingFrequency !== 'irregular')) && (
                 <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                        <Calendar className="text-blue-400" size={16} />
+                    <div className="w-8 h-8 rounded-lg bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center shrink-0">
+                        <Calendar className="text-[#D8BA63]" size={16} />
                     </div>
                     <div className="flex-1">
                         <p className="text-sm font-semibold text-white">
@@ -135,3 +135,4 @@ export function TrustSignals({
         </div>
     )
 }
+
