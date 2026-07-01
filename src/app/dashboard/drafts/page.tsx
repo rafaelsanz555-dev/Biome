@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { FileText, PenLine, PlusCircle } from 'lucide-react'
+import { Edit3, FileText, PenLine, PlusCircle } from 'lucide-react'
 
-export default async function DraftsPage() {
+export default async function DraftsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+    const { saved } = await searchParams
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -12,24 +13,29 @@ export default async function DraftsPage() {
 
     const { data: drafts } = await supabase
         .from('episodes')
-        .select('*, seasons(title)')
+        .select('id, title, preview_text, created_at, seasons(title)')
         .eq('creator_id', user?.id)
         .eq('is_published', false)
         .order('created_at', { ascending: false })
 
     return (
         <div className="space-y-6">
+            {saved === '1' && (
+                <div className="rounded-xl border border-[#C9A84C]/30 bg-[#C9A84C]/10 px-4 py-3 text-sm text-[#D8BA63]">
+                    <strong>✓ Borrador guardado.</strong> Cuando lo termines, ábrelo y actívalo como publicado.
+                </div>
+            )}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold mb-1 text-white">Borradores</h1>
                     <p className="text-sm text-gray-500">
-                        {drafts?.length || 0} borrador{drafts?.length !== 1 ? 'es' : ''} sin publicar
+                        {drafts?.length || 0} borrador{drafts?.length !== 1 ? 'es' : ''} sin publicar — solo tú los ves
                     </p>
                 </div>
                 <Link href="/dashboard/episodes/new">
                     <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] transition-all shadow-lg shadow-[#C9A84C]/20">
                         <PenLine size={14} />
-                        Nuevo borrador
+                        Escribir nuevo
                     </button>
                 </Link>
             </div>
@@ -50,7 +56,7 @@ export default async function DraftsPage() {
                 </div>
             ) : (
                 <div className="space-y-3">
-                    {drafts.map((episode) => (
+                    {drafts.map((episode: any) => (
                         <div
                             key={episode.id}
                             className="rounded-2xl border border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center overflow-hidden bg-[#15171C] hover:border-gray-700 transition-all"
@@ -69,7 +75,12 @@ export default async function DraftsPage() {
                                 </p>
                             </div>
                             <div className="pb-4 sm:pb-0 px-5 sm:px-6 flex items-center gap-3 shrink-0">
-                                <span className="text-xs text-gray-500 italic">Edición próximamente</span>
+                                <Link
+                                    href={`/dashboard/episodes/${episode.id}/edit`}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-white/5 text-gray-200 hover:bg-[#C9A84C] hover:text-[#0D0D0D] transition"
+                                >
+                                    <Edit3 size={13} /> Editar y publicar
+                                </Link>
                             </div>
                         </div>
                     ))}

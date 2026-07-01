@@ -24,7 +24,7 @@ export default async function HistoryPage() {
     const activity = [
         ...(transactions || []).map((t: any) => ({
             id: 't-' + t.id,
-            type: t.transaction_type === 'subscription' ? 'Suscripción' : t.transaction_type === 'ppv' ? 'Compra de episodio' : 'Transacción',
+            type: t.transaction_type === 'subscription' ? 'Suscripción' : t.transaction_type === 'ppv' ? 'Compra de episodio' : t.transaction_type === 'tip' ? 'Propina' : 'Transacción',
             date: t.created_at,
             amount: t.amount,
             profiles: t.profiles,

@@ -1,7 +1,9 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClientSafe } from '@/lib/supabase/admin'
+import { PLATFORM_FEE_PCT } from '@/lib/fees'
 
 export default async function AdminRevenuePage() {
-    const supabase = await createClient()
+    // Service role: la RLS de transactions/gifts solo muestra filas propias
+    const supabase = await createAdminClientSafe()
 
     // All transactions
     const { data: transactions } = await supabase
@@ -61,7 +63,7 @@ export default async function AdminRevenuePage() {
     const completedGifts = gifts?.filter(g => g.status === 'completed') || []
 
     const totalTxRevenue = completedTx.reduce((acc, t) => acc + Number(t.amount), 0)
-    const totalTxPlatformFee = totalTxRevenue * 0.10
+    const totalTxPlatformFee = totalTxRevenue * PLATFORM_FEE_PCT
     const totalGiftRevenue = completedGifts.reduce((acc, g) => acc + Number(g.amount), 0)
     const totalGiftPlatformFee = completedGifts.reduce((acc, g) => acc + Number(g.platform_fee), 0)
     const totalPlatformRevenue = totalTxPlatformFee + totalGiftPlatformFee

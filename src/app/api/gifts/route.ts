@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getStripe } from '@/lib/stripe'
 import { z } from 'zod'
 import { parseJsonBody } from '@/lib/validation'
+import { PLATFORM_FEE_PCT } from '@/lib/fees'
 
-const PLATFORM_FEE_PCT = 0.12
 const giftSchema = z.object({
     recipientId: z.string().uuid(),
     postId: z.string().uuid().optional().nullable(),
@@ -27,6 +27,10 @@ export async function POST(req: Request) {
         }
 
         const { recipientId, postId, amount, emoji } = parsed.data
+
+        if (recipientId === user.id) {
+            return NextResponse.json({ error: 'No puedes enviarte un regalo a ti mismo.' }, { status: 400 })
+        }
 
         if (!process.env.STRIPE_SECRET_KEY) {
             return NextResponse.json({ error: 'Pagos no configurados aun. Pronto estara disponible.' }, { status: 503 })
@@ -64,6 +68,9 @@ export async function POST(req: Request) {
             ],
             metadata: {
                 type: 'gift',
+                // El webhook procesa eventos por metadata.userId — sin esto el
+                // regalo se cobraba en Stripe pero nunca se registraba en la DB
+                userId: user.id,
                 senderId: user.id,
                 recipientId,
                 postId: postId || '',

@@ -9,13 +9,14 @@ export default async function AudiencePage() {
     const { data: _p } = await supabase.from('profiles').select('role').eq('id', user?.id ?? '').maybeSingle()
     if (_p?.role !== 'creator') redirect('/dashboard')
 
-    // Followers
-    const { data: follows, count: followersCount } = await supabase
+    // Followers — el FK hint correcto es follower_id (follows no tiene user_id)
+    const { data: follows, count: followersCount, error: followsError } = await supabase
         .from('follows')
-        .select('*, profiles!user_id(username, full_name, avatar_url)', { count: 'exact' })
+        .select('*, profiles!follower_id(username, full_name, avatar_url)', { count: 'exact' })
         .eq('creator_id', user?.id)
         .order('created_at', { ascending: false })
         .limit(50)
+    if (followsError) console.error('[audience] follows query failed:', followsError.message)
 
     // Active subscribers
     const { data: subs, count: subsCount } = await supabase
@@ -132,7 +133,7 @@ export default async function AudiencePage() {
                         ) : (
                             <div className="space-y-2">
                                 {follows.map((f: any) => (
-                                    <div key={f.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#0A0B0E] border border-gray-800/80">
+                                    <div key={f.follower_id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#0A0B0E] border border-gray-800/80">
                                         <div className="w-9 h-9 rounded-full bg-pink-500/10 flex items-center justify-center text-sm font-bold text-pink-400 shrink-0 overflow-hidden">
                                             {f.profiles?.avatar_url ? (
                                                 <img src={f.profiles.avatar_url} alt="" className="w-full h-full object-cover" />

@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { requireCreatorAction } from '@/lib/auth-guards'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { runEpisodeChecks } from '@/lib/moderation/runChecks'
@@ -11,8 +12,9 @@ import { sanitizeTipTapContent } from '@/lib/content-security'
 const episodeFormSchema = z.object({
     title: z.string().trim().min(1).max(160),
     preview_text: z.string().trim().max(1200).optional().default(''),
-    full_text: z.string().trim().min(30).max(120000),
-    word_count: z.coerce.number().int().min(30).max(50000),
+    // Los borradores pueden ser cortos; el mínimo de 30 palabras solo aplica al publicar
+    full_text: z.string().trim().min(1).max(120000),
+    word_count: z.coerce.number().int().min(0).max(50000),
     reading_time_min: z.coerce.number().int().min(1).max(600).nullable().optional(),
     cover_image_url: z.string().url().optional().or(z.literal('')),
     images: z.string().optional().default(''),
@@ -23,6 +25,38 @@ const episodeFormSchema = z.object({
     monetization: z.enum(['free', 'subscription', 'ppv']),
     ppv_price: z.coerce.number().min(0.99).max(999.99).optional().nullable(),
 })
+
+// Mensajes de error legibles por campo — el reviewer reportó que los errores
+// genéricos hacían imposible saber qué corregir
+const FIELD_LABELS: Record<string, string> = {
+    title: 'el título (obligatorio, máximo 160 caracteres)',
+    preview_text: 'el adelanto (máximo 1200 caracteres)',
+    full_text: 'el texto de tu historia (no puede estar vacío)',
+    word_count: 'el texto de tu historia',
+    ppv_price: 'el precio de desbloqueo (entre $0.99 y $999.99)',
+    cover_image_url: 'la imagen de portada',
+    season_id: 'la serie seleccionada',
+    soundtrack_url: 'el link de la banda sonora (debe ser una URL válida de Spotify o YouTube)',
+    soundtrack_title: 'el nombre de la canción (máximo 140 caracteres)',
+}
+
+function formatEpisodeErrors(error: z.ZodError): string {
+    const fields = [...new Set(error.issues.map((i) => FIELD_LABELS[String(i.path[0])] || String(i.path[0])))]
+    return `Revisa ${fields.join(' · ')}`
+}
+
+const MIN_PUBLISH_WORDS = 30
+
+function publishValidationError(values: z.infer<typeof episodeFormSchema>): string | null {
+    if (!values.is_published) return null
+    if (values.word_count < MIN_PUBLISH_WORDS) {
+        return `Para publicar, tu historia necesita al menos ${MIN_PUBLISH_WORDS} palabras (llevas ${values.word_count}). Puedes guardarla como borrador mientras la terminas.`
+    }
+    if (values.monetization === 'ppv' && !values.ppv_price) {
+        return 'Elegiste "Pago único" pero falta el precio de desbloqueo.'
+    }
+    return null
+}
 
 function parseEpisodeForm(formData: FormData) {
     const monetization = formString(formData, 'monetization') || 'subscription'
@@ -97,17 +131,23 @@ async function isOldestPublishedChapter(
 }
 
 export async function createEpisode(formData: FormData) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'Not authenticated' }
+    const guard = await requireCreatorAction()
+    if (!guard.ok) return { error: guard.error }
+    const { supabase, user } = guard
 
     const parsed = parseEpisodeForm(formData)
-    if (!parsed.success) return { error: 'Revisa titulo, texto, precio y campos del episodio.' }
+    if (!parsed.success) return { error: formatEpisodeErrors(parsed.error) }
 
     const values = parsed.data
+    const publishError = publishValidationError(values)
+    if (publishError) return { error: publishError }
+
     const seasonId = values.season_id || null
     const firstChapter = values.is_published ? await hasNoPublishedChapter(supabase, user.id, seasonId) : false
+    // Regla bio.me: el primer capítulo de cada historia siempre es gratis.
+    // Si forzamos el cambio, se lo avisamos al escritor vía query param.
     const monetization = firstChapter ? 'free' : values.monetization
+    const forcedFree = firstChapter && values.monetization !== 'free' && values.is_published
     const contentJson = parseContentJson(formString(formData, 'content_json'))
 
     const { data: inserted, error } = await supabase
@@ -132,7 +172,10 @@ export async function createEpisode(formData: FormData) {
         .select('id')
         .single()
 
-    if (error) return { error: error.message }
+    if (error) {
+        console.error('[createEpisode] insert failed:', error.message)
+        return { error: friendlyDbError(error.message) }
+    }
 
     if (inserted?.id && values.is_published) {
         runEpisodeChecks(inserted.id, values.full_text).catch((e) =>
@@ -141,7 +184,22 @@ export async function createEpisode(formData: FormData) {
     }
 
     revalidatePath('/dashboard/episodes')
-    redirect('/dashboard/episodes')
+    revalidatePath('/dashboard/drafts')
+    if (!values.is_published) {
+        redirect('/dashboard/drafts?saved=1')
+    }
+    redirect(`/dashboard/episodes?published=1${forcedFree ? '&first_free=1' : ''}`)
+}
+
+// Errores crudos de Postgres → mensajes que un escritor puede entender
+function friendlyDbError(message: string): string {
+    if (/foreign key|violates.*constraint/i.test(message)) {
+        return 'Tu cuenta de escritor no está completamente activada. Ve a Ajustes y vuelve a intentarlo.'
+    }
+    if (/row-level security|permission denied/i.test(message)) {
+        return 'No tienes permisos para publicar. Cierra sesión, vuelve a entrar e inténtalo de nuevo.'
+    }
+    return `No se pudo guardar el episodio: ${message}`
 }
 
 export async function updateEpisode(episodeId: string, formData: FormData) {
@@ -158,15 +216,19 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
     if (existing.creator_id !== user.id) return { error: 'No autorizado' }
 
     const parsed = parseEpisodeForm(formData)
-    if (!parsed.success) return { error: 'Revisa titulo, texto, precio y campos del episodio.' }
+    if (!parsed.success) return { error: formatEpisodeErrors(parsed.error) }
 
     const values = parsed.data
+    const publishError = publishValidationError(values)
+    if (publishError) return { error: publishError }
+
     const seasonId = values.season_id || null
     const firstChapter = values.is_published
         ? await hasNoPublishedChapter(supabase, user.id, seasonId)
             || await isOldestPublishedChapter(supabase, episodeId, user.id, seasonId)
         : false
     const monetization = firstChapter ? 'free' : values.monetization
+    const forcedFree = firstChapter && values.monetization !== 'free'
 
     const { error } = await supabase
         .from('episodes')
@@ -190,11 +252,15 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
         .eq('id', episodeId)
         .eq('creator_id', user.id)
 
-    if (error) return { error: error.message }
+    if (error) {
+        console.error('[updateEpisode] update failed:', error.message)
+        return { error: friendlyDbError(error.message) }
+    }
 
     revalidatePath('/dashboard/episodes')
+    revalidatePath('/dashboard/drafts')
     revalidatePath(`/dashboard/episodes/${episodeId}/edit`)
-    return { ok: true }
+    return { ok: true, forcedFree }
 }
 
 export async function deleteEpisode(episodeId: string) {

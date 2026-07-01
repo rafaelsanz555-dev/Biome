@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { generateRecap } from '@/lib/ai'
 import { z } from 'zod'
 import { parseJsonBody } from '@/lib/validation'
@@ -15,16 +16,35 @@ export async function POST(req: Request) {
     if (!parsed.ok) return NextResponse.json({ error: 'invalid', details: parsed.error }, { status: 400 })
     const { episode_id } = parsed.data
 
-    // Solo el creador puede regenerar el recap
+    // Solo el creador puede regenerar el recap — validamos ownership con la
+    // sesión, y leemos full_text con admin (columna revocada para sesiones)
     const { data: ep } = await supabase
         .from('episodes')
-        .select('id, full_text, creator_id, auto_recap')
+        .select('id, creator_id, auto_recap')
         .eq('id', episode_id)
-        .single()
+        .maybeSingle()
     if (!ep) return NextResponse.json({ error: 'not_found' }, { status: 404 })
     if (ep.creator_id !== user.id) return NextResponse.json({ error: 'forbidden' }, { status: 403 })
 
-    const recap = await generateRecap(ep.full_text || '')
+    let fullText = ''
+    try {
+        const admin = createAdminClient()
+        const { data: content } = await admin
+            .from('episodes')
+            .select('full_text')
+            .eq('id', episode_id)
+            .maybeSingle()
+        fullText = content?.full_text || ''
+    } catch {
+        const { data: content } = await supabase
+            .from('episodes')
+            .select('full_text')
+            .eq('id', episode_id)
+            .maybeSingle()
+        fullText = content?.full_text || ''
+    }
+
+    const recap = await generateRecap(fullText)
     if (!recap) return NextResponse.json({ error: 'ai_unavailable' }, { status: 503 })
 
     await supabase.from('episodes').update({ auto_recap: recap }).eq('id', ep.id)
@@ -32,7 +52,7 @@ export async function POST(req: Request) {
         user_id: user.id,
         episode_id: ep.id,
         assist_type: 'recap',
-        input_length: (ep.full_text || '').length,
+        input_length: fullText.length,
         output_length: recap.length,
         model: process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5',
     })

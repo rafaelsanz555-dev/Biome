@@ -32,15 +32,16 @@ export async function saveTrustSettings(input: Input) {
     const promise = parsed.data.frequency_promise || null
     const whyIWrite = parsed.data.why_i_write || null
 
+    // upsert: si la fila creators no existe, update() no guardaría nada y no daría error
     const { error } = await supabase
         .from('creators')
-        .update({
+        .upsert({
+            profile_id: user.id,
             posting_frequency: freq,
             frequency_promise: promise,
             series_status: status,
             why_i_write: whyIWrite,
-        })
-        .eq('profile_id', user.id)
+        }, { onConflict: 'profile_id' })
 
     if (error) return { error: error.message }
 

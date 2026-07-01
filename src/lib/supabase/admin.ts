@@ -17,6 +17,19 @@ export function createAdminClient() {
     })
 }
 
+/**
+ * Cliente service-role para páginas admin (la RLS limita la sesión normal a
+ * "filas propias", así que el panel veía ingresos/reportes casi vacíos).
+ * Fallback a la sesión si la service key no está configurada (ej. local).
+ */
+export async function createAdminClientSafe() {
+    try {
+        return createAdminClient()
+    } catch {
+        return await createClient()
+    }
+}
+
 export async function requireAdmin() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

@@ -1,13 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { requireCreatorPage } from '@/lib/auth-guards'
 import { AnalyticsCharts } from './AnalyticsCharts'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AnalyticsPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect('/login')
+    const { supabase, user } = await requireCreatorPage()
 
     // Fetch creator's episodes
     const { data: episodes } = await supabase

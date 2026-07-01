@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import SettingsForm from './SettingsForm'
+import { RoleSwitcher } from './RoleSwitcher'
 import { BrandingForm } from './BrandingForm'
 import { IdentityForm } from './IdentityForm'
 import { TrustSettingsForm } from './TrustSettingsForm'
@@ -9,8 +10,8 @@ import { ThemeSelector } from './ThemeSelector'
 import { User, Globe, ShieldCheck, Palette, Wand2, ExternalLink } from 'lucide-react'
 
 const creatorSections = [
-    { num: 1, label: 'Perfil', desc: 'Tu cara publica', icon: User },
-    { num: 2, label: 'Identidad', desc: 'De donde eres y que te define', icon: Globe },
+    { num: 1, label: 'Perfil', desc: 'Tu cara pública', icon: User },
+    { num: 2, label: 'Identidad', desc: 'De dónde eres y qué te define', icon: Globe },
     { num: 3, label: 'Confianza', desc: 'Manifesto y compromiso', icon: ShieldCheck },
     { num: 4, label: 'Tema visual', desc: 'El look de tu mundo', icon: Wand2 },
     { num: 5, label: 'Marca', desc: 'Color, fuente y estilo', icon: Palette },
@@ -58,14 +59,14 @@ export default async function SettingsPage() {
     return (
         <div className="mx-auto max-w-3xl">
             <div className="mb-10 border-b border-white/5 pb-6">
-                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#C9A84C]">Tu estudio</p>
+                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#C9A84C]">Ajustes</p>
                 <h1 className="mb-2 font-serif text-4xl font-black tracking-tight text-white">
-                    {isCreator ? 'Construye tu universo narrativo' : 'Tu cuenta en bio.me'}
+                    {isCreator ? 'Tu perfil de escritor' : 'Tu cuenta en bio.me'}
                 </h1>
                 <p className="max-w-xl text-sm leading-relaxed text-gray-400">
                     {isCreator
-                        ? 'Cada decision define como te encuentran, como te leen y como te recuerdan. La personalizacion debe sentirse como identidad de escritor, no decoracion vacia.'
-                        : 'Personaliza como te ven los escritores que sigues.'}
+                        ? 'Tu cara pública, tu precio y el look de tu perfil.'
+                        : 'Tu foto, tu nombre y cómo te ven los demás.'}
                 </p>
                 {profile?.username && (
                     <Link
@@ -74,7 +75,7 @@ export default async function SettingsPage() {
                         className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#C9A84C] transition hover:text-[#D8BA63]"
                     >
                         <ExternalLink size={12} />
-                        Ver mi perfil publico en bio.me/{profile.username}
+                        Ver mi perfil público en bio.me/{profile.username}
                     </Link>
                 )}
             </div>
@@ -99,13 +100,18 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-12">
+                {/* Cambio de modo de cuenta — lector ↔ escritor */}
+                {(profile?.role === 'reader' || profile?.role === 'creator') && (
+                    <RoleSwitcher currentRole={profile.role} />
+                )}
+
                 <section id="section-1">
                     <SectionHeader num={1} label="Perfil" desc="Tu foto, nombre y bio. Lo primero que ven." icon={User} />
                     <SettingsForm profile={profile} creatorInfo={creatorInfo} />
                 </section>
 
                 <section id="section-2">
-                    <SectionHeader num={2} label="Identidad" desc="De donde eres, que idiomas hablas y que temas te mueven." icon={Globe} />
+                    <SectionHeader num={2} label="Identidad" desc="De dónde eres, qué idiomas hablas y qué temas te mueven." icon={Globe} />
                     <IdentityForm
                         initial={{
                             id: profile?.id,
@@ -138,7 +144,7 @@ export default async function SettingsPage() {
                         </section>
 
                         <section id="section-4">
-                            <SectionHeader num={4} label="Tema visual" desc="Fondo, atmosfera y lectura de tu perfil." icon={Wand2} />
+                            <SectionHeader num={4} label="Tema visual" desc="Fondo, atmósfera y lectura de tu perfil." icon={Wand2} />
                             <ThemeSelector
                                 initialThemeId={creatorInfo?.theme_id}
                                 initialAccent={creatorInfo?.accent_color}
@@ -148,7 +154,7 @@ export default async function SettingsPage() {
                         </section>
 
                         <section id="section-5">
-                            <SectionHeader num={5} label="Marca" desc="Color de acento y tipografia que definen tu voz visual." icon={Palette} />
+                            <SectionHeader num={5} label="Marca" desc="Color de acento y tipografía que definen tu voz visual." icon={Palette} />
                             <BrandingForm
                                 initial={{
                                     accent_color: creatorInfo?.accent_color,
@@ -173,7 +179,7 @@ function SectionHeader({ num, label, desc, icon: Icon }: { num: number; label: s
             </div>
             <div>
                 <div className="mb-0.5 flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C9A84C]">Seccion {num}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C9A84C]">Sección {num}</span>
                 </div>
                 <h2 className="font-serif text-2xl font-black text-white">{label}</h2>
                 <p className="mt-1 text-sm text-gray-500">{desc}</p>

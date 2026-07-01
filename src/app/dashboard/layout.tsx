@@ -7,7 +7,8 @@ import { DashboardNav } from '@/components/DashboardNav'
 import { RightRail } from '@/components/RightRail'
 import { UserMenu } from '@/components/UserMenu'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
-import { Search, Bell, Edit3, Play, ChevronDown, RefreshCw } from 'lucide-react'
+import { Bell, Edit3, Play } from 'lucide-react'
+import { SearchBox } from '@/components/SearchBox'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
     const supabase = await createClient()
@@ -25,6 +26,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
     if (!profile) redirect('/onboarding')
     const isCreator = profile.role === 'creator'
+
+    // Badge real de notificaciones sin leer (antes estaba hardcodeado en "1")
+    const { count: unreadCount } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false)
 
     const initial = (profile.full_name || profile.username || 'W').charAt(0).toUpperCase()
 
@@ -71,23 +79,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     <DashboardNav isCreator={isCreator} username={profile?.username} />
                 </div>
 
-                {/* Wallet / Balance Info — only for creators */}
+                {/* Earnings — link real a Monetización (el botón "Retirar" se ocultó
+                    hasta que Stripe Connect esté implementado; antes no hacía nada) */}
                 {isCreator && <div className="p-6 border-t border-[#262626]">
-                    <div className="bg-gray-800/30 p-4 rounded-xl flex flex-col space-y-4 border border-white/5">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-yellow-500/20 p-1.5 rounded-md">
-                                    <span className="text-yellow-500 text-sm font-bold">$</span>
-                                </div>
-                                <span className="text-sm font-medium text-white">$0.00</span>
+                    <Link
+                        href="/dashboard/billing"
+                        className="block bg-gray-800/30 p-4 rounded-xl border border-white/5 hover:border-[#C9A84C]/30 transition group"
+                    >
+                        <div className="flex items-center gap-2">
+                            <div className="bg-yellow-500/20 p-1.5 rounded-md">
+                                <span className="text-yellow-500 text-sm font-bold">$</span>
                             </div>
-                            <ChevronDown size={14} className="text-gray-500" />
+                            <span className="text-sm font-medium text-white group-hover:text-[#C9A84C] transition">{tDash('nav_monetization')}</span>
                         </div>
-                        <button className="w-full bg-[#262626] hover:bg-[#333] text-gray-300 text-xs py-2 rounded-lg flex items-center justify-center space-x-2 transition">
-                            <RefreshCw size={12} />
-                            <span>{tDash('wallet_withdraw')}</span>
-                        </button>
-                    </div>
+                        <p className="mt-2 text-[11px] leading-4 text-gray-500">
+                            {tDash('wallet_payouts_soon')}
+                        </p>
+                    </Link>
                 </div>}
 
                 {/* Logout — siempre visible */}
@@ -138,23 +146,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <main className="flex-1 flex flex-col min-w-0 bg-[#0A0A0A] relative pt-14 md:pt-0 h-full">
                 {/* Top Header / Search (Desktop Only) */}
                 <header className="hidden md:flex h-16 flex-shrink-0 border-b border-[#262626] px-8 items-center justify-between sticky top-0 bg-[#0A0A0A]/95 backdrop-blur-md z-30">
-                    <div className="relative w-full max-w-xl group">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <Search size={16} className="text-gray-500 group-focus-within:text-[#C9A84C] transition-colors" />
-                        </span>
-                        <input 
-                            type="text" 
-                            className="block w-full bg-[#1E1E1E] border border-transparent rounded-lg pl-10 pr-3 py-2 text-sm focus:border-[#C9A84C]/50 focus:bg-[#1E1E1E] focus:ring-1 focus:ring-[#C9A84C] text-white placeholder-gray-500 transition-all outline-none"
-                            placeholder={tDash('topbar_search')}
-                        />
-                    </div>
+                    <SearchBox placeholder={tDash('topbar_search')} variant="dark" />
                     <div className="flex items-center space-x-6 pl-4">
                         <Link href="/dashboard/notifications" className="relative text-gray-400 hover:text-white transition group">
                             <Bell size={20} className="group-hover:text-[#C9A84C] transition" />
-                            {/* Unread badge indicator */}
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-[#0A0A0A]">
-                                1
-                            </span>
+                            {(unreadCount || 0) > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold border-2 border-[#0A0A0A]">
+                                    {Math.min(unreadCount || 0, 9)}
+                                </span>
+                            )}
                         </Link>
                         {isCreator ? (
                             <Link href="/dashboard/episodes/new" className="bg-[#C9A84C] text-[#0D0D0D] px-4 py-2 rounded-lg flex items-center space-x-2 text-sm font-black hover:bg-[#E2C96E] transition">

@@ -3,6 +3,7 @@ import { getStripe } from '@/lib/stripe'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email/client'
+import { writerEarnings, platformFee } from '@/lib/fees'
 import {
     subscriptionSuccessReaderEmail,
     subscriptionSuccessCreatorEmail,
@@ -45,6 +46,20 @@ export async function POST(req: Request) {
             const supabaseAdmin = getSupabaseAdmin()
             const type = metadata.type
             const userId = metadata.userId
+
+            // ── Idempotencia ──
+            // Stripe reintenta webhooks; sin esto, un reintento duplicaría
+            // entitlements, transacciones y regalos.
+            const paymentRef = (session.payment_intent as string) || (session.subscription as string) || null
+            if (paymentRef) {
+                const [{ data: existingTx }, { data: existingGift }] = await Promise.all([
+                    supabaseAdmin.from('transactions').select('id').eq('stripe_payment_intent', paymentRef).maybeSingle(),
+                    supabaseAdmin.from('gifts').select('id').eq('stripe_payment_intent', paymentRef).maybeSingle(),
+                ])
+                if (existingTx || existingGift) {
+                    return new NextResponse('OK (already processed)', { status: 200 })
+                }
+            }
 
             if (type === 'ppv' && metadata.episodeId) {
                 await supabaseAdmin.from('entitlements').insert({
@@ -113,7 +128,7 @@ export async function POST(req: Request) {
                             creatorName: creator.full_name || creator.username,
                             subscriberName: subscriber.full_name || subscriber.username,
                             amount,
-                            earnings: +(amount * 0.88).toFixed(2),
+                            earnings: writerEarnings(amount),
                         })
                         sendEmail({ to: crAuth.user.email, subject, html, text }).catch(() => {})
                     }
@@ -135,16 +150,14 @@ export async function POST(req: Request) {
 
             if (type === 'gift' && metadata.recipientId) {
                 const totalAmount = (session.amount_total || 0) / 100
-                const platformFee = +(totalAmount * 0.12).toFixed(2)
-                const writerEarnings = +(totalAmount * 0.88).toFixed(2)
 
                 await supabaseAdmin.from('gifts').insert({
                     sender_id: userId,
                     recipient_id: metadata.recipientId,
                     post_id: metadata.postId || null,
                     amount: totalAmount,
-                    platform_fee: platformFee,
-                    writer_earnings: writerEarnings,
+                    platform_fee: platformFee(totalAmount),
+                    writer_earnings: writerEarnings(totalAmount),
                     emoji: metadata.emoji || '🎁',
                     stripe_payment_intent: session.payment_intent as string,
                     status: 'completed'
@@ -156,6 +169,69 @@ export async function POST(req: Request) {
                     type: 'gift',
                     message: `¡Has recibido un regalo (${metadata.emoji || '🎁'}) de $${totalAmount.toFixed(2)}!`
                 })
+            }
+        }
+    }
+
+    // ────────────────────────────────────────────
+    // RENOVACIÓN MENSUAL DE SUSCRIPCIÓN
+    // El primer cobro lo registra checkout.session.completed; los siguientes
+    // llegan SOLO como invoice.payment_succeeded. Sin esto, las renovaciones
+    // no extendían el acceso ni contaban como ingresos del escritor.
+    // ────────────────────────────────────────────
+    if (event.type === 'invoice.payment_succeeded') {
+        const invoice = event.data.object as any
+        // En versiones nuevas de la API, subscription vive en parent.subscription_details
+        const subId: string | null =
+            (typeof invoice.subscription === 'string' && invoice.subscription) ||
+            invoice.parent?.subscription_details?.subscription ||
+            null
+
+        if (subId && invoice.billing_reason !== 'subscription_create') {
+            try {
+                const supabaseAdmin = getSupabaseAdmin()
+                const paymentRef = (invoice.payment_intent as string) || (invoice.id as string)
+
+                const { data: existing } = await supabaseAdmin
+                    .from('transactions')
+                    .select('id')
+                    .eq('stripe_payment_intent', paymentRef)
+                    .maybeSingle()
+
+                if (!existing) {
+                    const { data: ents } = await supabaseAdmin
+                        .from('entitlements')
+                        .select('id, user_id, creator_id')
+                        .eq('stripe_subscription_id', subId)
+                        .limit(1)
+                    const ent = ents?.[0]
+
+                    if (ent) {
+                        const periodEnd = invoice.lines?.data?.[0]?.period?.end
+                        const validUntil = periodEnd
+                            ? new Date(periodEnd * 1000)
+                            : (() => { const d = new Date(); d.setMonth(d.getMonth() + 1); return d })()
+
+                        await supabaseAdmin
+                            .from('entitlements')
+                            .update({
+                                valid_until: validUntil.toISOString(),
+                                updated_at: new Date().toISOString(),
+                            })
+                            .eq('stripe_subscription_id', subId)
+
+                        await supabaseAdmin.from('transactions').insert({
+                            user_id: ent.user_id,
+                            creator_id: ent.creator_id,
+                            amount: (invoice.amount_paid || 0) / 100,
+                            transaction_type: 'subscription',
+                            stripe_payment_intent: paymentRef,
+                            status: 'completed',
+                        })
+                    }
+                }
+            } catch (e: any) {
+                console.error('[webhook] invoice.payment_succeeded error:', e.message)
             }
         }
     }

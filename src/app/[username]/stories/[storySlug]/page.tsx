@@ -78,7 +78,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
 
     const { data: episodes } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, cover_image_url, is_subscription_only, ppv_price, created_at, chapter_number, full_text')
+        .select('id, title, preview_text, cover_image_url, is_subscription_only, ppv_price, created_at, chapter_number, word_count')
         .eq('creator_id', profile.id)
         .eq('season_id', season.id)
         .eq('is_published', true)
@@ -101,10 +101,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
     }
 
     const firstEpisodeId = episodes?.[0]?.id
-    const totalWords = (episodes || []).reduce((sum, episode) => {
-        const words = (episode.full_text || '').trim().split(/\s+/).filter(Boolean).length
-        return sum + words
-    }, 0)
+    const totalWords = (episodes || []).reduce((sum, episode) => sum + Number(episode.word_count || 0), 0)
 
     return (
         <div className="min-h-screen bg-[#FAF7F0] text-[#0D0D0D]">

@@ -32,16 +32,16 @@ export default async function AdminContentPage() {
 
     const { count: totalEpisodes } = await supabase
         .from('episodes')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
 
     const { count: publishedCount } = await supabase
         .from('episodes')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('is_published', true)
 
     const { count: draftCount } = await supabase
         .from('episodes')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('is_published', false)
 
     const { count: seasonCount } = await supabase

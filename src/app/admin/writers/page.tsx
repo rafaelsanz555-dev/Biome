@@ -1,8 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClientSafe } from '@/lib/supabase/admin'
+import { PLATFORM_FEE_PCT } from '@/lib/fees'
 import Link from 'next/link'
 
 export default async function AdminWritersPage() {
-    const supabase = await createClient()
+    // Service role: la RLS de transactions/gifts solo muestra filas propias
+    const supabase = await createAdminClientSafe()
 
     // Get all creators with their profile info
     const { data: creators } = await supabase
@@ -55,7 +57,7 @@ export default async function AdminWritersPage() {
             .reduce((acc, g) => acc + Number(g.platform_fee), 0) || 0
         const txTotal = txData?.filter(t => t.creator_id === creatorId)
             .reduce((acc, t) => acc + Number(t.amount), 0) || 0
-        const txPlatformFee = txTotal * 0.10
+        const txPlatformFee = txTotal * PLATFORM_FEE_PCT
         return {
             episodes,
             followers,

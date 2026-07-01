@@ -96,6 +96,7 @@ export type AnalyticsEvent =
     | 'onboarding_completed'
     | 'first_episode_published'
     | 'episode_published'
+    | 'episode_draft_saved'
     | 'episode_viewed'
     | 'episode_completed'
     | 'subscription_created'

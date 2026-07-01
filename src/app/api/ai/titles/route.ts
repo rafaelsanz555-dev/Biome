@@ -14,6 +14,10 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
+    // Herramienta de escritor: cada llamada cuesta tokens — solo creators
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+    if (profile?.role !== 'creator') return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+
     const parsed = parseJsonBody(aiTextSchema, await req.json().catch(() => null))
     if (!parsed.ok) return NextResponse.json({ error: 'invalid', details: parsed.error }, { status: 400 })
     const { text, episode_id } = parsed.data

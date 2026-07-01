@@ -3,7 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { parseJsonBody } from '@/lib/validation'
 
-const VALID_EMOJIS = ['â¤ï¸', 'ðŸ”¥', 'ðŸ˜¢', 'ðŸ˜¡', 'ðŸ¤¯', 'ðŸ˜‚']
+// OJO: esta lista debe coincidir byte a byte con los emojis que envía el front
+// (EmotionalReactions / EpisodeFeedActions). Antes estaba con doble encoding
+// y TODAS las reacciones fallaban con invalid_emoji.
+const VALID_EMOJIS = ['❤️', '🔥', '😢', '😡', '🤯', '😂']
 const reactionSchema = z.object({
     episode_id: z.string().uuid(),
     emoji: z.string().refine((emoji) => VALID_EMOJIS.includes(emoji), 'invalid_emoji'),

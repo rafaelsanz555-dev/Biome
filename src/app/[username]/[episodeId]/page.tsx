@@ -45,14 +45,21 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     if (!creatorProfile) notFound()
 
     // ── Query 2: episode SEPARADO de seasons (evita FK ambigua) ──
+    // SIN full_text/content_json: el contenido pago se carga aparte, solo
+    // tras validar acceso — antes el texto completo viajaba al HTML del paywall
     const { data: episode, error: epError } = await supabase
         .from('episodes')
-        .select('*')
+        .select('id, season_id, creator_id, title, preview_text, cover_image_url, images, soundtrack_url, soundtrack_title, is_published, is_subscription_only, ppv_price, word_count, reading_time_min, created_at')
         .eq('id', episodeId)
         .maybeSingle()
 
     if (epError) console.error('[episode page] episode query failed:', epError.message)
     if (!episode) notFound()
+
+    // El episodio DEBE pertenecer al creador de la URL. Sin esto, un suscriptor
+    // de A podía abrir /A/{episodeId-de-B} y el check de suscripción (que usa el
+    // creador de la URL) le daba acceso al contenido pago de B.
+    if (episode.creator_id !== creatorProfile.id) notFound()
 
     // Cargar season aparte si existe
     let seasonTitle: string | null = null
@@ -80,36 +87,57 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     const user = currentUser
     let hasAccess = false
 
-    if (user) {
+    // Episodio gratis (sin suscripción ni PPV): legible por cualquiera.
+    // Antes solo el PRIMER capítulo gratis era accesible — los demás episodios
+    // marcados "gratis" quedaban tras el paywall (inconsistente con el perfil).
+    if (!episode.is_subscription_only && !episode.ppv_price) {
+        hasAccess = true
+    }
+
+    if (!hasAccess && user) {
         if (user.id === episode.creator_id) {
             hasAccess = true
         } else {
             // El creator_id usa creatorProfile.id (que es profiles.id = creators.profile_id, todos iguales)
-            const { data: entitlement } = await supabase
+            // PPV: valid_until null = desbloqueo permanente. Subscripción: debe estar vigente.
+            const { data: entitlements } = await supabase
                 .from('entitlements')
-                .select('id')
+                .select('id, entitlement_type, valid_until')
                 .eq('user_id', user.id)
                 .or(`episode_id.eq.${episode.id},and(creator_id.eq.${creatorProfile.id},entitlement_type.eq.subscription)`)
-                .limit(1)
-                .maybeSingle()
 
-            if (entitlement) hasAccess = true
+            const now = Date.now()
+            hasAccess = (entitlements || []).some(
+                (e) => !e.valid_until || new Date(e.valid_until).getTime() > now
+            )
         }
     }
 
-    // First episode is always free — fetch only the very first one
-    const { data: firstEp } = await supabase
-        .from('episodes')
-        .select('id')
-        .eq('creator_id', creatorProfile.id)
-        .eq('is_published', true)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle()
-
-    const isFirstEpisode = firstEp?.id === episode.id
-    if (isFirstEpisode && !episode.is_subscription_only && !episode.ppv_price) {
-        hasAccess = true
+    // ── Contenido del episodio: SOLO se trae si hay acceso ──
+    // Se usa el admin client porque la migración revoca el SELECT de
+    // full_text/content_json para anon/authenticated (el contenido pago ya no
+    // es legible vía la REST API pública de Supabase).
+    let fullText: string | null = null
+    let contentJson: any = null
+    let teaser: string | null = null
+    try {
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const admin = createAdminClient()
+        const { data: content } = await admin
+            .from('episodes')
+            .select('full_text, content_json')
+            .eq('id', episode.id)
+            .maybeSingle()
+        if (hasAccess) {
+            fullText = content?.full_text ?? null
+            contentJson = content?.content_json ?? null
+        } else {
+            // Lo ÚNICO del texto pago que llega al HTML: un teaser corto.
+            // Antes se mandaba el texto COMPLETO oculto con CSS (overflow hidden).
+            teaser = (content?.full_text || '').slice(0, 400) || null
+        }
+    } catch (e: any) {
+        console.error('[episode page] content load failed:', e?.message)
     }
 
     const isOwnProfile = user?.id === creatorProfile.id
@@ -155,9 +183,10 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
         ? Math.floor((Date.now() - new Date(lastEpisodeAt).getTime()) / 86400000)
         : null
 
-    // Word count for reading time
-    const words = (episode.full_text || '').trim().split(/\s+/).filter(Boolean).length
-    const readMin = Math.max(1, Math.round(words / 220))
+    // Word count for reading time — usa la columna word_count (el texto ya no
+    // se descarga cuando no hay acceso)
+    const words = Number(episode.word_count || 0) || (fullText || '').trim().split(/\s+/).filter(Boolean).length
+    const readMin = Number(episode.reading_time_min || 0) || Math.max(1, Math.round(words / 220))
 
     // Fetch emotional reactions for this episode
     const { data: reactions } = await supabase
@@ -209,12 +238,12 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
-                        {episode.seasons?.title && (
+                        {seasonTitle && (
                             <div className="text-[10px] font-bold text-[#D8BA63] bg-[#C9A84C]/10 px-2.5 py-1 rounded-full border border-[#C9A84C]/20 uppercase tracking-wider">
-                                {episode.seasons.title}
+                                {seasonTitle}
                             </div>
                         )}
-                        {isFirstEpisode && (
+                        {!episode.is_subscription_only && !episode.ppv_price && (
                             <div className="text-[10px] font-bold text-yellow-400 bg-yellow-500/10 px-2.5 py-1 rounded-full border border-yellow-500/20 uppercase tracking-wider">
                                 Gratis
                             </div>
@@ -308,16 +337,16 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 )}
 
                 {/* Full text — immersive reading */}
-                {hasAccess && episode.full_text && (
+                {hasAccess && fullText && (
                     <article className="prose prose-invert max-w-none bio-reading-experience">
                         {/* 🎵 Chapter Soundtrack */}
                         {episode.soundtrack_url && (
                             <ChapterSoundtrack url={episode.soundtrack_url} title={episode.soundtrack_title} />
                         )}
 
-                        {episode.content_json ? (
+                        {contentJson ? (
                             <div className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] selection:bg-[#C9A84C]/40 selection:text-white" style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}>
-                                <ReaderRenderer content={episode.content_json} />
+                                <ReaderRenderer content={contentJson} />
                             </div>
                         ) : (
                             <div
@@ -325,7 +354,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] whitespace-pre-wrap selection:bg-[#C9A84C]/40 selection:text-white"
                                 style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}
                             >
-                                {episode.full_text}
+                                {fullText}
                             </div>
                         )}
                         <TextHighlightShare creatorUsername={creatorProfile.username} episodeTitle={episode.title} />
@@ -356,8 +385,8 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                     </article>
                 )}
 
-                {/* Paywall fade teaser for non-subscribers */}
-                {!hasAccess && episode.full_text && (
+                {/* Paywall fade teaser — solo un fragmento corto llega al HTML */}
+                {!hasAccess && teaser && (
                     <div className="relative mb-2">
                         <div
                             className="text-gray-300 text-lg md:text-xl leading-[1.9] whitespace-pre-wrap relative"
@@ -367,7 +396,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 overflow: 'hidden',
                             }}
                         >
-                            {episode.full_text}
+                            {teaser}…
                             <div
                                 className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none"
                                 style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(10,11,14,0.7) 50%, #0A0B0E 100%)' }}

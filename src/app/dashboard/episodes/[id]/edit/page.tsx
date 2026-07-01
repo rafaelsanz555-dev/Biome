@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { EditEpisodeForm } from './EditEpisodeForm'
@@ -14,12 +15,29 @@ export default async function EditEpisodePage({ params }: Props) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const { data: episode } = await supabase
-        .from('episodes')
-        .select('*')
-        .eq('id', id)
-        .eq('creator_id', user.id)
-        .maybeSingle()
+    // El SELECT de full_text/content_json está revocado para sesiones normales
+    // (protección del contenido pago) — el dueño edita vía admin client, con
+    // ownership garantizado por el .eq('creator_id', user.id).
+    let episode: any = null
+    try {
+        const admin = createAdminClient()
+        const { data } = await admin
+            .from('episodes')
+            .select('*')
+            .eq('id', id)
+            .eq('creator_id', user.id)
+            .maybeSingle()
+        episode = data
+    } catch {
+        // Fallback (ej. service key ausente en local): sesión normal
+        const { data } = await supabase
+            .from('episodes')
+            .select('*')
+            .eq('id', id)
+            .eq('creator_id', user.id)
+            .maybeSingle()
+        episode = data
+    }
 
     if (!episode) notFound()
 

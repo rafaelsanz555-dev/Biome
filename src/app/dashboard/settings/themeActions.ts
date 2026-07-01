@@ -33,14 +33,15 @@ export async function selectTheme(themeId: string) {
 
     // Aplicar theme al creator: setea theme_id Y también copia accent/font para fallback
     const cfg = theme.config || {}
+    // upsert: si la fila creators no existe, update() no guardaría nada y no daría error
     const { error } = await supabase
         .from('creators')
-        .update({
+        .upsert({
+            profile_id: user.id,
             theme_id: parsedId.data,
             accent_color: cfg.accent_color || null,
             font_family: cfg.font || null,
-        })
-        .eq('profile_id', user.id)
+        }, { onConflict: 'profile_id' })
 
     if (error) return { error: error.message }
 
@@ -113,15 +114,15 @@ export async function uploadCustomBackground(input: {
 
     if (error || !data) return { error: error?.message || 'create_failed' }
 
-    // Auto-aplicarlo
+    // Auto-aplicarlo (upsert por si la fila creators no existe)
     await supabase
         .from('creators')
-        .update({
+        .upsert({
+            profile_id: user.id,
             theme_id: data.id,
             accent_color: input.accent_color,
             font_family: input.font,
-        })
-        .eq('profile_id', user.id)
+        }, { onConflict: 'profile_id' })
 
     // Revalidar
     const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single()

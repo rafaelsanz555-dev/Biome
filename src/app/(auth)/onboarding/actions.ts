@@ -26,7 +26,14 @@ export async function completeOnboarding(prevState: { error: string }, formData:
     })
 
     if (!parsed.success) {
-        return { error: 'Revisa usuario, rol y terminos antes de continuar.' }
+        const usernameIssue = parsed.error.issues.find((i) => i.path[0] === 'username')
+        if (usernameIssue?.message === 'reserved_username') {
+            return { error: 'Ese nombre de usuario está reservado por la plataforma. Elige otro.' }
+        }
+        if (usernameIssue) {
+            return { error: 'El nombre de usuario debe tener 3-20 caracteres: minúsculas, números o guión bajo.' }
+        }
+        return { error: 'Revisa usuario, rol y términos antes de continuar.' }
     }
 
     const { username, role } = parsed.data

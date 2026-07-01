@@ -61,7 +61,9 @@ async function WriterCommandCenter({ userId, username }: { userId: string; usern
             .from('entitlements')
             .select('id, creator_id')
             .eq('creator_id', userId)
-            .eq('entitlement_type', 'subscription'),
+            .eq('entitlement_type', 'subscription')
+            // Solo suscripciones vigentes — antes contaba también las expiradas
+            .or(`valid_until.is.null,valid_until.gte.${new Date().toISOString()}`),
     ])
 
     const published = episodes?.filter((e: any) => e.is_published) || []
@@ -85,12 +87,12 @@ async function WriterCommandCenter({ userId, username }: { userId: string; usern
             <section className="overflow-hidden rounded-2xl border border-[#2A261F] bg-[#12100D]">
                 <div className="grid gap-0 lg:grid-cols-[1.1fr_0.9fr]">
                     <div className="p-6 md:p-8">
-                        <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C9A84C]">Writer studio</p>
+                        <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C9A84C]">Tu estudio</p>
                         <h1 className="mt-3 max-w-2xl font-serif text-4xl font-black leading-tight text-[#FAF7F0] md:text-5xl">
-                            Convierte tu historia en una serie que pueda sostenerte.
+                            ¿Qué pasa en el próximo capítulo?
                         </h1>
                         <p className="mt-4 max-w-2xl text-sm leading-7 text-[#B9AD98]">
-                            Publica un gancho gratis, convierte lectores en suscriptores y usa cada capitulo como un activo de tu negocio narrativo.
+                            Escribe, publica y mira cómo responde tu audiencia.
                         </p>
                         <div className="mt-6 flex flex-wrap gap-3">
                             <Link href="/dashboard/episodes/new" className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#C9A84C] px-5 text-sm font-black text-[#0D0D0D] hover:bg-[#D8BA63]">
@@ -181,15 +183,11 @@ async function WriterCommandCenter({ userId, username }: { userId: string; usern
                     </div>
                     <p className="mt-3 text-sm leading-7 text-gray-400">
                         {published.length === 0
-                            ? 'Publica un primer capitulo gratis. Es tu hook: sin inventario emocional no hay discovery.'
+                            ? 'Publica tu primer capítulo. Es gratis para los lectores y es lo que te hace visible.'
                             : !hasPaidChapter
-                                ? 'Ya tienes el gancho. Publica la continuacion monetizada para medir intencion real de pago.'
-                                : 'Ahora optimiza conversion: mejora preview, portada y frecuencia de publicacion.'}
+                                ? 'Ya tienes el gancho. Publica la continuación de pago.'
+                                : 'Mejora la portada y el adelanto de tus capítulos, y publica con regularidad.'}
                     </p>
-                    <div className="mt-5 rounded-xl border border-[#C9A84C]/20 bg-[#C9A84C]/10 p-4">
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#C9A84C]">Regla bio.me</p>
-                        <p className="mt-2 text-sm leading-6 text-[#FAF7F0]">Un capitulo gratis siempre. La confianza vende mejor que la presion.</p>
-                    </div>
                 </div>
             </section>
         </div>
@@ -275,13 +273,20 @@ export default async function DashboardHome() {
         profiles: profilesMap[ep.creator_id] || null,
     }))
 
-    const { data: gifts } = await supabase
-        .from('gifts')
-        .select('post_id')
-        .eq('status', 'completed')
+    const episodeIds = (episodesRaw || []).map((e) => e.id)
+    const [{ data: gifts }, { data: feedReactions }, { data: feedComments }] = await Promise.all([
+        supabase.from('gifts').select('post_id').eq('status', 'completed').in('post_id', episodeIds.length ? episodeIds : ['00000000-0000-0000-0000-000000000000']),
+        supabase.from('reactions').select('episode_id').in('episode_id', episodeIds.length ? episodeIds : ['00000000-0000-0000-0000-000000000000']),
+        supabase.from('comments').select('episode_id').in('episode_id', episodeIds.length ? episodeIds : ['00000000-0000-0000-0000-000000000000']),
+    ])
 
     const giftCount: Record<string, number> = {}
     gifts?.forEach(g => { if (g.post_id) giftCount[g.post_id] = (giftCount[g.post_id] || 0) + 1 })
+    // Contadores reales — antes el feed mostraba 0 likes / 0 comentarios fijo
+    const reactionCount: Record<string, number> = {}
+    feedReactions?.forEach(r => { reactionCount[r.episode_id] = (reactionCount[r.episode_id] || 0) + 1 })
+    const commentCount: Record<string, number> = {}
+    feedComments?.forEach(c => { commentCount[c.episode_id] = (commentCount[c.episode_id] || 0) + 1 })
 
     const realEpisodes = (episodes || []).map((ep: any) => ({
         id: ep.id,
@@ -292,8 +297,8 @@ export default async function DashboardHome() {
         handle: ep.profiles?.username || tFeed('fallback_handle'),
         avatar: ep.profiles?.avatar_url,
         time: timeAgo(ep.created_at),
-        reads: '0',
-        comments: 0,
+        reads: String(reactionCount[ep.id] || 0),
+        comments: commentCount[ep.id] || 0,
         gifts: giftCount[ep.id] || 0,
         badges: [ep.is_subscription_only ? 'exclusive' : 'free'],
         hero: false,
@@ -320,9 +325,9 @@ export default async function DashboardHome() {
             <div className="max-w-3xl mx-auto space-y-6 px-6 pb-20">
                 {feed.length === 0 && (
                     <div className="rounded-2xl border border-dashed border-[#2D2D2D] bg-[#1E1E1E] p-10 text-center">
-                        <p className="font-serif text-2xl font-black text-white">Aun no hay capitulos publicados.</p>
+                        <p className="font-serif text-2xl font-black text-white">Aún no hay capítulos publicados.</p>
                         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
-                            Discovery y feed deben llenarse con escritores reales. Empieza explorando perfiles o publica el primer capitulo si eres creador.
+                            Cuando sigas a escritores, sus capítulos aparecerán aquí. Empieza explorando.
                         </p>
                         <Link href="/discover" className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-[#C9A84C] px-5 text-sm font-black text-[#0D0D0D] hover:bg-[#D8BA63]">
                             Explorar escritores

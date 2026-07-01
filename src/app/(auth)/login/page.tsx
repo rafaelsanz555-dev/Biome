@@ -5,11 +5,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 const ERROR_MESSAGES: Record<string, string> = {
-    credenciales: 'Email o contrasena incorrectos.',
+    credenciales: 'Email o contraseña incorrectos.',
     campos: 'Completa todos los campos.',
-    existe: 'Ya existe una cuenta con ese email. Inicia sesion.',
+    existe: 'Ya existe una cuenta con ese email. Inicia sesión.',
     registro: 'No se pudo crear la cuenta. Intenta de nuevo.',
-    password_corto: 'La contrasena debe tener al menos 6 caracteres.',
+    password_corto: 'La contraseña debe tener al menos 6 caracteres.',
+    password_mismatch: 'Las contraseñas no coinciden. Escríbelas de nuevo.',
 }
 
 export default async function LoginPage({
@@ -39,7 +40,7 @@ export default async function LoginPage({
                             Publica el primer capitulo gratis, crea una serie, mide lectores y convierte apoyo en ingresos dignos.
                         </p>
                     </div>
-                    <p className="text-xs font-bold text-[#FAF7F0]/42">$5/mes para escritores. Lectores siguen gratis.</p>
+                    <p className="text-xs font-bold text-[#FAF7F0]/42">Publicar es gratis para los primeros escritores. Leer el primer capítulo, siempre.</p>
                 </section>
 
                 <main className="flex items-center justify-center px-4 py-10">
@@ -60,14 +61,14 @@ export default async function LoginPage({
                                     {isRegistro ? 'Empieza tu historia' : 'Bienvenido de vuelta'}
                                 </h2>
                                 <p className="mt-2 text-sm leading-6 text-[#0D0D0D]/58">
-                                    {isRegistro ? 'Crea tu acceso con email y contrasena.' : 'Ingresa con tu email y contrasena.'}
+                                    {isRegistro ? 'Crea tu acceso con email y contraseña.' : 'Ingresa con tu email y contraseña.'}
                                 </p>
                             </div>
 
                             <form action={isRegistro ? signup : login} className="space-y-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-sm font-black text-[#0D0D0D]">
-                                        Correo electronico
+                                        Correo electrónico
                                     </Label>
                                     <Input
                                         id="email"
@@ -82,18 +83,35 @@ export default async function LoginPage({
 
                                 <div className="space-y-2">
                                     <Label htmlFor="password" className="text-sm font-black text-[#0D0D0D]">
-                                        Contrasena
+                                        Contraseña
                                     </Label>
                                     <Input
                                         id="password"
                                         name="password"
                                         type="password"
-                                        placeholder={isRegistro ? 'Minimo 6 caracteres' : '••••••••'}
+                                        placeholder={isRegistro ? 'Mínimo 6 caracteres' : '••••••••'}
                                         required
                                         minLength={6}
                                         className="h-12 rounded-xl border-[#0D0D0D]/12 bg-[#FAF7F0] text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus-visible:ring-[#C9A84C]"
                                     />
                                 </div>
+
+                                {isRegistro && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="confirm_password" className="text-sm font-black text-[#0D0D0D]">
+                                            Confirmar contraseña
+                                        </Label>
+                                        <Input
+                                            id="confirm_password"
+                                            name="confirm_password"
+                                            type="password"
+                                            placeholder="Repite tu contraseña"
+                                            required
+                                            minLength={6}
+                                            className="h-12 rounded-xl border-[#0D0D0D]/12 bg-[#FAF7F0] text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus-visible:ring-[#C9A84C]"
+                                        />
+                                    </div>
+                                )}
 
                                 {errorMsg && (
                                     <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm font-bold text-red-700">
@@ -109,16 +127,16 @@ export default async function LoginPage({
                             <div className="mt-6 text-center">
                                 {isRegistro ? (
                                     <p className="text-sm text-[#0D0D0D]/55">
-                                        Ya tienes cuenta?{' '}
+                                        ¿Ya tienes cuenta?{' '}
                                         <Link href="/login" className="font-black text-[#8A6A1C] hover:underline">
-                                            Inicia sesion
+                                            Inicia sesión
                                         </Link>
                                     </p>
                                 ) : (
                                     <p className="text-sm text-[#0D0D0D]/55">
-                                        No tienes cuenta?{' '}
+                                        ¿No tienes cuenta?{' '}
                                         <Link href="/login?mode=registro" className="font-black text-[#8A6A1C] hover:underline">
-                                            Registrate
+                                            Regístrate
                                         </Link>
                                     </p>
                                 )}

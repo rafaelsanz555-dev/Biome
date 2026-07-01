@@ -33,6 +33,9 @@ export async function POST(req: Request) {
         if (!parsedQuery.success) return new NextResponse('Solicitud invalida', { status: 400 })
 
         const query = parsedQuery.data
+        if ('creatorId' in query && query.creatorId === user.id) {
+            return new NextResponse('No puedes suscribirte ni enviarte propinas a ti mismo.', { status: 400 })
+        }
         const stripe = getStripe()
         let line_items: any[] = []
         const metadata: any = { userId: user.id, type: query.type }
@@ -41,12 +44,15 @@ export async function POST(req: Request) {
         if (query.type === 'ppv') {
             const { data: episode } = await supabase
                 .from('episodes')
-                .select('title, ppv_price')
+                .select('title, ppv_price, creator_id, is_published')
                 .eq('id', query.episodeId)
                 .single()
 
-            if (!episode || !episode.ppv_price) {
+            if (!episode || !episode.ppv_price || !episode.is_published) {
                 return new NextResponse('Episodio invalido', { status: 400 })
+            }
+            if (episode.creator_id === user.id) {
+                return new NextResponse('No puedes comprar tu propio episodio.', { status: 400 })
             }
 
             metadata.episodeId = query.episodeId
@@ -69,6 +75,24 @@ export async function POST(req: Request) {
                 return new NextResponse('Escritor invalido', { status: 400 })
             }
 
+            // Evitar doble suscripción: si ya hay una vigente, no crear otra sesión
+            const { data: activeSub } = await supabase
+                .from('entitlements')
+                .select('id, valid_until')
+                .eq('user_id', user.id)
+                .eq('creator_id', query.creatorId)
+                .eq('entitlement_type', 'subscription')
+                .gt('valid_until', new Date().toISOString())
+                .limit(1)
+                .maybeSingle()
+
+            if (activeSub) {
+                return NextResponse.redirect(
+                    `${process.env.NEXT_PUBLIC_APP_URL || 'https://biome-app.vercel.app'}/dashboard/subscriptions?already=true`,
+                    { status: 303 }
+                )
+            }
+
             metadata.creatorId = query.creatorId
             mode = 'subscription'
             line_items = [{
@@ -86,6 +110,10 @@ export async function POST(req: Request) {
                 .select('profiles(username)')
                 .eq('profile_id', query.creatorId)
                 .single() as any
+
+            if (!creator?.profiles?.username) {
+                return new NextResponse('Escritor invalido', { status: 400 })
+            }
 
             metadata.creatorId = query.creatorId
             line_items = [{

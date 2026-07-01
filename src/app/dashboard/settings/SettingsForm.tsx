@@ -144,14 +144,14 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                             id="subscription_price"
                             name="subscription_price"
                             step="0.01"
-                            min="0.99"
-                            max="999.99"
+                            min="2"
+                            max="999"
                             defaultValue={creatorInfo?.subscription_price || "4.99"}
                             className="pl-8 bg-[#0A0B0E] border-gray-800 text-white font-bold h-12 focus-visible:ring-[#C9A84C]"
                         />
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
-                        Al ajustar el precio se aplicará para nuevos suscriptores. Recibirás todo el dinero directo, sin comisiones de suscripción.
+                        Mínimo $2/mes. El nuevo precio aplica para suscriptores nuevos; los actuales conservan el suyo.
                     </p>
                 </div>
             </div>

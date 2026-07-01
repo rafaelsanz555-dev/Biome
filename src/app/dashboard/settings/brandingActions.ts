@@ -47,10 +47,10 @@ export async function updateBranding(payload: BrandingPayload) {
 
     if (Object.keys(update).length === 0) return { error: 'no_valid_fields' }
 
+    // upsert: si la fila creators no existe, update() no guardaría nada y no daría error
     const { error } = await supabase
         .from('creators')
-        .update(update)
-        .eq('profile_id', user.id)
+        .upsert({ profile_id: user.id, ...update }, { onConflict: 'profile_id' })
 
     if (error) return { error: error.message }
 

@@ -9,7 +9,6 @@ export async function Navbar() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const tCommon = await getTranslations('common')
-    const tLanding = await getTranslations('landing')
     const tOnboarding = await getTranslations('onboarding')
 
     let profile = null
@@ -36,6 +35,9 @@ export async function Navbar() {
                         </Link>
                         <Link href="/dashboard" className="text-sm font-semibold text-[#5D5142] hover:text-[#0D0D0D] hover:bg-[#0D0D0D]/5 px-3 py-2 rounded-lg transition-all">
                             {tCommon('feed')}
+                        </Link>
+                        <Link href="/search" className="text-sm font-semibold text-[#5D5142] hover:text-[#0D0D0D] hover:bg-[#0D0D0D]/5 px-3 py-2 rounded-lg transition-all">
+                            {tCommon('search')}
                         </Link>
                     </nav>
                 </div>

@@ -41,8 +41,6 @@ type Reason = 'copyright' | 'harassment' | 'explicit' | 'spam' | 'other'
  *
  * Lector/espectador ve:
  *   - Copiar enlace
- *   - Silenciar a @creator (stub — schema en backlog)
- *   - Ocultar este post (stub — schema en backlog)
  *   - ─────
  *   - Reportar (rojo, abre modal con razones)
  */
@@ -267,9 +265,11 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
     const [description, setDescription] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [done, setDone] = useState(false)
+    const [error, setError] = useState('')
 
     async function submit() {
         setSubmitting(true)
+        setError('')
         try {
             const res = await fetch('/api/reports', {
                 method: 'POST',
@@ -279,7 +279,11 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
             if (res.ok) {
                 setDone(true)
                 setTimeout(onClose, 1600)
+            } else {
+                setError('No se pudo enviar el reporte. Inténtalo de nuevo.')
             }
+        } catch {
+            setError('No se pudo enviar el reporte. Revisa tu conexión.')
         } finally {
             setSubmitting(false)
         }
@@ -350,6 +354,10 @@ function ReportDialog({ episodeId, onClose }: { episodeId: string; onClose: () =
                             rows={3}
                             className="w-full bg-[#15171C] border border-gray-800 rounded-lg p-3 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-[#C9A84C]/40 resize-none"
                         />
+
+                        {error && (
+                            <p className="mt-3 rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs font-bold text-red-300">{error}</p>
+                        )}
 
                         <div className="flex items-center justify-end gap-2 mt-4">
                             <button

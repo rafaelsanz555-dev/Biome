@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { writerEarnings } from '@/lib/fees'
 import { TrendingUp, Gift, CreditCard, Lock } from 'lucide-react'
 
 export default async function BillingPage({
@@ -29,10 +30,12 @@ export default async function BillingPage({
         .order('created_at', { ascending: false })
         .limit(20)
 
-    const totalTransactions = transactions?.reduce((acc, t) => acc + Number(t.amount), 0) || 0
+    // Las transactions guardan el monto BRUTO que pagó el lector; el escritor
+    // recibe su parte (88%). Antes se mostraba el bruto como "ganancia neta".
+    const totalTransactionsGross = transactions?.reduce((acc, t) => acc + Number(t.amount), 0) || 0
     const totalGiftEarnings = gifts?.reduce((acc, g) => acc + Number(g.writer_earnings), 0) || 0
-    const totalGross = totalTransactions + (gifts?.reduce((acc, g) => acc + Number(g.amount), 0) || 0)
-    const totalNet = totalTransactions + totalGiftEarnings
+    const totalGross = totalTransactionsGross + (gifts?.reduce((acc, g) => acc + Number(g.amount), 0) || 0)
+    const totalNet = writerEarnings(totalTransactionsGross) + totalGiftEarnings
 
     return (
         <div className="space-y-6">
@@ -93,7 +96,7 @@ export default async function BillingPage({
                             <Gift size={16} className="text-pink-500" /> 
                             Regalos Recibidos
                         </h2>
-                        <p className="text-xs text-gray-500">Recibes el 88% de casa propina</p>
+                        <p className="text-xs text-gray-500">Recibes el 88% de cada propina</p>
                     </div>
                     <div className="p-5">
                         {!gifts || gifts.length === 0 ? (
@@ -142,7 +145,7 @@ export default async function BillingPage({
                                         <div>
                                             <p className="text-sm font-bold text-white capitalize flex items-center gap-2">
                                                 {tx.transaction_type === 'subscription' && <Lock size={12} className="text-[#C9A84C]" />}
-                                                {tx.transaction_type === 'subscription' ? 'Suscripción Mensual' : tx.transaction_type === 'gift' ? 'Regalo' : 'Post Exclusivo (PPV)'}
+                                                {tx.transaction_type === 'subscription' ? 'Suscripción Mensual' : tx.transaction_type === 'tip' ? 'Propina' : tx.transaction_type === 'gift' ? 'Regalo' : 'Post Exclusivo (PPV)'}
                                             </p>
                                             <p className="text-xs text-gray-500">
                                                 de @{tx.profiles?.username || 'Fan'} · {new Date(tx.created_at).toLocaleDateString('es-ES')}

@@ -1,34 +1,19 @@
-import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { requireAdmin, createAdminClientSafe } from '@/lib/supabase/admin'
 import { resolveReport, dismissReport, resolveFlag } from './actions'
 
 export const dynamic = 'force-dynamic'
 
-// Admin allowlist (email-based). Extend via env var ADMIN_EMAILS (comma-separated).
-function isAdmin(email: string | undefined): boolean {
-    if (!email) return false
-    const env = process.env.ADMIN_EMAILS || ''
-    const list = env.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
-    // Default: Rafael's admin email always allowed
-    if (email.toLowerCase().includes('rafael')) return true
-    return list.includes(email.toLowerCase())
-}
-
 export default async function ModerationPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect('/login')
-    if (!isAdmin(user.email)) {
-        return (
-            <div className="min-h-screen bg-[#0A0B0E] flex items-center justify-center">
-                <div className="max-w-md text-center">
-                    <h1 className="text-2xl font-bold text-white mb-2">Acceso restringido</h1>
-                    <p className="text-gray-400">Esta página es solo para administradores de bio.me.</p>
-                </div>
-            </div>
-        )
-    }
+    // Rol real (profiles.role = admin), no allowlist por email — el check
+    // anterior dejaba pasar a cualquier correo que contuviera "rafael"
+    const admin = await requireAdmin()
+    if (!admin.ok) redirect('/login')
+
+    // Service role: la RLS de reports/content_flags solo muestra filas del
+    // reporter o del dueño del episodio — el admin no veía ningún reporte
+    const supabase = await createAdminClientSafe()
 
     const { data: reports } = await supabase
         .from('reports')
@@ -39,7 +24,7 @@ export default async function ModerationPage() {
 
     const { data: flags } = await supabase
         .from('content_flags')
-        .select('*, episodes(title, creator_id, profiles:creator_id(username, display_name))')
+        .select('*, episodes(title, creator_id, profiles:creator_id(username, full_name))')
         .eq('reviewed', false)
         .order('created_at', { ascending: false })
         .limit(50)

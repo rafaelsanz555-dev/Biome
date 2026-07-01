@@ -50,6 +50,11 @@ export async function signup(formData: FormData) {
     if (!parsed.success) redirect('/login?mode=registro&error=campos')
     const { email, password } = parsed.data
 
+    const confirmPassword = formData.get('confirm_password')
+    if (confirmPassword !== password) {
+        redirect('/login?mode=registro&error=password_mismatch')
+    }
+
     const { data, error } = await supabase.auth.signUp({
         email,
         password,

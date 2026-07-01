@@ -25,7 +25,15 @@ export async function updateProfileSettings(formData: FormData) {
         avatar_url: formData.get('avatar_url') || '',
         subscription_price: formData.get('subscription_price') || null,
     })
-    if (!parsed.success) return { error: 'Invalid settings.' }
+    if (!parsed.success) {
+        const fields = parsed.error.issues.map((i) => String(i.path[0]))
+        if (fields.includes('subscription_price')) {
+            return { error: 'El precio de suscripción debe estar entre $2 y $999 al mes.' }
+        }
+        if (fields.includes('full_name')) return { error: 'El nombre público no puede superar 100 caracteres.' }
+        if (fields.includes('bio')) return { error: 'La biografía no puede superar 500 caracteres.' }
+        return { error: 'Revisa los campos del formulario.' }
+    }
     const { full_name, bio, avatar_url, subscription_price } = parsed.data
 
     // Update Profile
@@ -44,19 +52,20 @@ export async function updateProfileSettings(formData: FormData) {
 
     if (profileError) {
         console.error('Error updating profile:', profileError)
-        return { error: 'Failed to update profile.' }
+        return { error: 'No se pudo guardar tu perfil. Inténtalo de nuevo.' }
     }
 
-    // Update Creator settings
+    // Update Creator settings — UPSERT, no update:
+    // update() sobre una fila inexistente afecta 0 filas SIN devolver error,
+    // por eso el precio de suscripción "no se guardaba" cuando faltaba la fila creators
     if (subscription_price) {
         const { error: creatorError } = await supabase
             .from('creators')
-            .update({ subscription_price })
-            .eq('profile_id', user.id)
+            .upsert({ profile_id: user.id, subscription_price }, { onConflict: 'profile_id' })
 
         if (creatorError) {
             console.error('Error updating creator settings:', creatorError)
-            return { error: 'Failed to update subscription price.' }
+            return { error: 'No se pudo guardar el precio de suscripción. Inténtalo de nuevo.' }
         }
     }
 

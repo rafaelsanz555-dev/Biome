@@ -16,6 +16,15 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+    if (profile?.role !== 'creator') {
+        return NextResponse.json({ error: 'Necesitas una cuenta de escritor para crear series.' }, { status: 403 })
+    }
+
     const parsed = parseJsonBody(seasonSchema, await req.json().catch(() => null))
     if (!parsed.ok) return NextResponse.json({ error: 'invalid_body', details: parsed.error }, { status: 400 })
     const { title, description, format } = parsed.data

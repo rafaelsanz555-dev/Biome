@@ -5,11 +5,21 @@ export const uuidSchema = z.string().uuid()
 export const profileRoleSchema = z.enum(['reader', 'creator'])
 export const adminRoleSchema = z.enum(['reader', 'creator', 'admin'])
 
+// Rutas propias de la app: si un usuario las toma como username, su perfil
+// /{username} queda inaccesible (la ruta estática gana) y confunde URLs.
+const RESERVED_USERNAMES = new Set([
+    'admin', 'api', 'auth', 'dashboard', 'discover', 'search', 'login',
+    'signup', 'register', 'onboarding', 'legal', 'settings', 'billing',
+    'notifications', 'help', 'support', 'about', 'terms', 'privacy',
+    'bio', 'biome', 'official', 'root', 'www',
+])
+
 export const usernameSchema = z
     .string()
     .trim()
     .toLowerCase()
     .regex(/^[a-zA-Z0-9_]{3,20}$/, 'invalid_username')
+    .refine((u) => !RESERVED_USERNAMES.has(u), 'reserved_username')
 
 export const safeText = (max: number) => z.string().trim().max(max)
 

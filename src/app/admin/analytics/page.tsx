@@ -1,7 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClientSafe } from '@/lib/supabase/admin'
 
 export default async function AdminAnalyticsPage() {
-    const supabase = await createClient()
+    // Service role: la RLS de transactions/gifts solo muestra filas propias
+    const supabase = await createAdminClientSafe()
 
     // Get all data for analytics
     const [

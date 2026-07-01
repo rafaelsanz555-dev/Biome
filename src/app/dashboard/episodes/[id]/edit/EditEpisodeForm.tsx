@@ -1,11 +1,23 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateEpisode, deleteEpisode } from '../../actions'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2, ImagePlus, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { LivePreview } from '@/app/dashboard/settings/LivePreview'
+import { RichEditor, RichEditorHandle } from '@/components/editor/RichEditor'
+
+// full_text plano (legacy sin content_json) → documento TipTap
+function plainTextToDoc(text: string) {
+    const paragraphs = (text || '').split(/\n{2,}|\r\n{2,}/).map((p) => p.trim()).filter(Boolean)
+    return {
+        type: 'doc',
+        content: paragraphs.length
+            ? paragraphs.map((p) => ({ type: 'paragraph', content: [{ type: 'text', text: p }] }))
+            : [{ type: 'paragraph' }],
+    }
+}
 
 interface EditEpisodeFormProps {
     episode: any
@@ -17,9 +29,12 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const [saved, setSaved] = useState(false)
+    const [forcedFreeNotice, setForcedFreeNotice] = useState(false)
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
     // Form state
+    const editorRef = useRef<RichEditorHandle>(null)
+    const initialDoc = episode.content_json || plainTextToDoc(episode.full_text || '')
     const [title, setTitle] = useState(episode.title || '')
     const [previewText, setPreviewText] = useState(episode.preview_text || '')
     const [coverUrl, setCoverUrl] = useState(episode.cover_image_url || '')
@@ -58,7 +73,9 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                 const supabase = createClient()
                 const ext = coverFile.name.split('.').pop()
                 const fileName = `cover_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
-                const { error: upErr } = await supabase.storage.from('post-images').upload(fileName, coverFile)
+                // upload y getPublicUrl deben usar el MISMO bucket — antes se subía
+                // a 'post-images' pero la URL se generaba contra 'episodes' (portada rota)
+                const { error: upErr } = await supabase.storage.from('episodes').upload(fileName, coverFile)
                 if (upErr) {
                     setError('Error subiendo portada: ' + upErr.message)
                     return
@@ -67,14 +84,28 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                 finalCoverUrl = urlData.publicUrl
             }
 
-            // Construir FormData
+            // Construir FormData — el cuerpo sale del editor (ya es editable)
+            const editorText = editorRef.current?.getText() ?? (episode.full_text || '')
+            const editorJson = editorRef.current?.getJSON() ?? episode.content_json
+            const wordCount = editorRef.current?.getWordCount() ?? (episode.word_count || 0)
+            const readingTime = editorRef.current?.getReadingTime() ?? (episode.reading_time_min || 1)
+
+            if (!editorText.trim()) {
+                setError('Tu historia está vacía. Escribe algo antes de guardar.')
+                return
+            }
+            if (isPublished && wordCount < 30) {
+                setError(`Para mantenerlo publicado necesitas al menos 30 palabras (llevas ${wordCount}). Despublícalo si quieres guardarlo corto.`)
+                return
+            }
+
             const formData = new FormData()
             formData.append('title', title)
             formData.append('preview_text', previewText)
-            formData.append('full_text', episode.full_text || '')
-            formData.append('content_json', JSON.stringify(episode.content_json))
-            formData.append('word_count', String(episode.word_count || 0))
-            formData.append('reading_time_min', String(episode.reading_time_min || 1))
+            formData.append('full_text', editorText)
+            formData.append('content_json', JSON.stringify(editorJson))
+            formData.append('word_count', String(wordCount))
+            formData.append('reading_time_min', String(readingTime))
             formData.append('cover_image_url', finalCoverUrl || '')
             formData.append('season_id', episode.season_id || '')
             formData.append('soundtrack_url', episode.soundtrack_url || '')
@@ -87,6 +118,12 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
             if (result.error) {
                 setError(result.error)
             } else {
+                if ((result as any).forcedFree) {
+                    setMonetization('free')
+                    setError(null)
+                    setForcedFreeNotice(true)
+                    setTimeout(() => setForcedFreeNotice(false), 6000)
+                }
                 setSaved(true)
                 setTimeout(() => setSaved(false), 3000)
                 router.refresh()
@@ -134,6 +171,12 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                             className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:outline-none"
                         />
                         <p className="text-[10px] text-gray-600 mt-1">{previewText.length}/240</p>
+                    </div>
+
+                    {/* Cuerpo del episodio — editable */}
+                    <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Tu historia</label>
+                        <RichEditor ref={editorRef} initialContent={initialDoc} />
                     </div>
 
                     {/* Cover image */}
@@ -226,6 +269,11 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                 {saved && (
                     <div className="p-3 rounded-lg bg-[#C9A84C]/5 border border-[#C9A84C]/20 text-sm text-[#D8BA63]">✓ Cambios guardados</div>
                 )}
+                {forcedFreeNotice && (
+                    <div className="p-3 rounded-lg bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-sm text-[#D8BA63]">
+                        Este es el primer capítulo de la historia, así que se publicó <strong>gratis</strong> (regla bio.me: el gancho siempre es gratis).
+                    </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
@@ -247,9 +295,6 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     </button>
                 </div>
 
-                <p className="text-[11px] text-gray-600 italic text-center pt-2 border-t border-gray-800">
-                    💡 Para editar el cuerpo del episodio (texto e imágenes inline), próximamente desde aquí. Por ahora puedes despublicar y crear uno nuevo si necesitas cambios profundos.
-                </p>
                 </div>
 
                 {/* Sidebar */}

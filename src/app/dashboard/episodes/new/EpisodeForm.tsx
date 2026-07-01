@@ -38,14 +38,29 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
     const [previewTextValue, setPreviewTextValue] = useState('')
     const [editorState, setEditorState] = useState<{ json: any; text: string; wordCount: number; readingTimeMin: number }>({ json: null, text: '', wordCount: 0, readingTimeMin: 1 })
 
+    const MAX_IMAGE_MB = 5
+
     function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0] || null
+        if (file && file.size > MAX_IMAGE_MB * 1024 * 1024) {
+            setErrorMsg(`La portada pesa más de ${MAX_IMAGE_MB}MB. Comprime la imagen e inténtalo de nuevo.`)
+            e.target.value = ''
+            return
+        }
+        setErrorMsg('')
         setCoverFile(file)
         setCoverPreview(file ? URL.createObjectURL(file) : null)
     }
 
     function handlePostImagesChange(e: React.ChangeEvent<HTMLInputElement>) {
         const files = Array.from(e.target.files || [])
+        const tooBig = files.find((f) => f.size > MAX_IMAGE_MB * 1024 * 1024)
+        if (tooBig) {
+            setErrorMsg(`"${tooBig.name}" pesa más de ${MAX_IMAGE_MB}MB. Comprime la imagen e inténtalo de nuevo.`)
+            e.target.value = ''
+            return
+        }
+        setErrorMsg('')
         const combined = [...postImages, ...files].slice(0, 10)
         setPostImages(combined)
         setPostImagePreviews(combined.map(f => URL.createObjectURL(f)))
@@ -62,16 +77,46 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
         setErrorMsg('')
         const supabase = createClient()
 
+        // El botón presionado define si es publicación o borrador
+        const publishing = formData.get('intent') !== 'draft'
+        formData.set('is_published', publishing ? 'true' : 'false')
+
         // Pull data from rich editor
         const editorJson = editorRef.current?.getJSON() || editorState.json
         const editorText = editorRef.current?.getText() || editorState.text
         const wordCount = editorRef.current?.getWordCount() || editorState.wordCount
         const readingTime = editorRef.current?.getReadingTime() || editorState.readingTimeMin
 
-        if (!editorText || editorText.trim().length < 10) {
-            setErrorMsg('Escribe al menos algunos párrafos de tu historia antes de publicar.')
+        // Validación en cliente — espejo de las reglas del servidor para que
+        // el error aparezca al instante y diga exactamente qué falta
+        const title = (formData.get('title') as string || '').trim()
+        if (!title) {
+            setErrorMsg('Ponle un título a tu episodio antes de continuar.')
             setIsPending(false)
             return
+        }
+        if (title.length > 160) {
+            setErrorMsg('El título es demasiado largo (máximo 160 caracteres).')
+            setIsPending(false)
+            return
+        }
+        if (!editorText || editorText.trim().length === 0) {
+            setErrorMsg('Tu historia está vacía. Escribe algo antes de guardar.')
+            setIsPending(false)
+            return
+        }
+        if (publishing && wordCount < 30) {
+            setErrorMsg(`Para publicar necesitas al menos 30 palabras (llevas ${wordCount}). Usa "Guardar borrador" si aún no terminas.`)
+            setIsPending(false)
+            return
+        }
+        if (publishing && monetization === 'ppv') {
+            const price = parseFloat((formData.get('ppv_price') as string) || '')
+            if (!price || price < 0.99 || price > 999.99) {
+                setErrorMsg('El precio de desbloqueo debe estar entre $0.99 y $999.99.')
+                setIsPending(false)
+                return
+            }
         }
 
         formData.set('full_text', editorText)
@@ -110,13 +155,11 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
         }
 
         // Track antes del server action (el action puede redirect)
-        const title = formData.get('title') as string
-        const monetization = formData.get('monetization') as string
-        track('episode_published', {
-            title_length: title?.length || 0,
+        track(publishing ? 'episode_published' : 'episode_draft_saved', {
+            title_length: title.length,
             word_count: wordCount,
             reading_time_min: readingTime,
-            monetization,
+            monetization: formData.get('monetization') as string,
             has_cover: !!coverFile,
             has_soundtrack: !!formData.get('soundtrack_url'),
             post_images_count: postImages.length,
@@ -381,7 +424,7 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                                                 name="ppv_price"
                                                 step="0.01"
                                                 min="0.99"
-                                                max="99.99"
+                                                max="999.99"
                                                 defaultValue="1.99"
                                                 className={`${inputCls} pl-7 pr-3 py-2 text-sm font-bold`}
                                             />
@@ -398,23 +441,33 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                             </div>
                         )}
 
-                        {/* Submit */}
-                        <div className="border-t border-gray-800 pt-4">
-                            <input type="hidden" name="is_published" value="true" />
+                        {/* Submit — publicar o guardar borrador */}
+                        <div className="border-t border-gray-800 pt-4 space-y-2">
                             <button
                                 type="submit"
+                                name="intent"
+                                value="publish"
                                 disabled={isPending}
                                 className="w-full font-bold h-12 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] transition-all shadow-lg shadow-[#C9A84C]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isPending ? (
                                     <>
                                         <span className="w-4 h-4 border-2 rounded-full animate-spin border-white/30 border-t-white" />
-                                        Publicando...
+                                        Guardando...
                                     </>
                                 ) : 'Publicar episodio →'}
                             </button>
-                            <p className="text-[10px] text-gray-600 text-center mt-2">
-                                Tu primer capítulo siempre es gratis para todos
+                            <button
+                                type="submit"
+                                name="intent"
+                                value="draft"
+                                disabled={isPending}
+                                className="w-full font-bold h-11 rounded-xl border border-gray-700 bg-transparent text-gray-300 hover:border-[#C9A84C]/50 hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Guardar borrador
+                            </button>
+                            <p className="text-[10px] text-gray-600 text-center pt-1">
+                                El primer capítulo de cada historia se publica gratis — es el gancho para tus lectores.
                             </p>
                         </div>
                     </div>

@@ -17,6 +17,9 @@ export async function POST(req: Request) {
     if (!parsed.ok) return NextResponse.json({ error: 'invalid_body' }, { status: 400 })
 
     const { targetType, targetId } = parsed.data
+    if (targetType === 'creator' && targetId === user.id) {
+        return NextResponse.json({ error: 'cannot_follow_self' }, { status: 400 })
+    }
     const table = targetType === 'creator' ? 'follows' : 'story_follows'
     const targetColumn = targetType === 'creator' ? 'creator_id' : 'season_id'
 

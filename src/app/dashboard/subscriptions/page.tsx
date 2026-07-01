@@ -3,7 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 import { Star, Compass } from 'lucide-react'
 import { CancelButton } from './CancelButton'
 
-export default async function SubscriptionsPage() {
+export default async function SubscriptionsPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+    const { already } = await searchParams
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -17,6 +22,11 @@ export default async function SubscriptionsPage() {
 
     return (
         <div className="space-y-6">
+            {already && (
+                <div className="p-4 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 text-[#D8BA63] text-sm font-bold">
+                    Ya tienes una suscripción activa con este escritor.
+                </div>
+            )}
             <div>
                 <h1 className="text-2xl font-bold mb-1 text-white">Mis Suscripciones</h1>
                 <p className="text-sm text-gray-500">Creadores a los que apoyas activamente.</p>

@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { requireCreatorAction } from '@/lib/auth-guards'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { slugify } from '@/lib/slugs'
@@ -17,9 +17,9 @@ const seasonFormSchema = z.object({
 })
 
 export async function createSeason(formData: FormData) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Not authenticated')
+    const guard = await requireCreatorAction()
+    if (!guard.ok) throw new Error(guard.error)
+    const { supabase, user } = guard
 
     const parsed = seasonFormSchema.safeParse({
         title: formData.get('title'),

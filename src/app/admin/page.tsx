@@ -1,7 +1,9 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClientSafe } from '@/lib/supabase/admin'
+import { PLATFORM_FEE_PCT } from '@/lib/fees'
 
 async function getAdminStats() {
-    const supabase = await createClient()
+    // Service role: la RLS de transactions/gifts solo muestra filas propias
+    const supabase = await createAdminClientSafe()
 
     const [
         { count: totalUsers },
@@ -16,15 +18,16 @@ async function getAdminStats() {
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'creator'),
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'reader'),
-        supabase.from('episodes').select('*', { count: 'exact', head: true }),
-        supabase.from('episodes').select('*', { count: 'exact', head: true }).eq('is_published', true),
+        supabase.from('episodes').select('id', { count: 'exact', head: true }),
+        supabase.from('episodes').select('id', { count: 'exact', head: true }).eq('is_published', true),
         supabase.from('transactions').select('amount, transaction_type, created_at').eq('status', 'completed'),
         supabase.from('gifts').select('amount, platform_fee, writer_earnings, created_at').eq('status', 'completed'),
         supabase.from('follows').select('*', { count: 'exact', head: true }),
     ])
 
     const totalTransactionRevenue = transactions?.reduce((acc, t) => acc + Number(t.amount), 0) || 0
-    const platformFeeFromTransactions = totalTransactionRevenue * 0.10
+    // Misma comisión en toda la app (antes aquí se usaba 10% y en el resto 12%)
+    const platformFeeFromTransactions = totalTransactionRevenue * PLATFORM_FEE_PCT
     const totalGiftRevenue = gifts?.reduce((acc, g) => acc + Number(g.amount), 0) || 0
     const platformFeeFromGifts = gifts?.reduce((acc, g) => acc + Number(g.platform_fee), 0) || 0
     const totalPlatformRevenue = platformFeeFromTransactions + platformFeeFromGifts
@@ -33,7 +36,7 @@ async function getAdminStats() {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
     const recentTransactions = transactions?.filter(t => t.created_at >= sevenDaysAgo) || []
     const recentGifts = gifts?.filter(g => g.created_at >= sevenDaysAgo) || []
-    const recentRevenue = recentTransactions.reduce((acc, t) => acc + Number(t.amount) * 0.10, 0)
+    const recentRevenue = recentTransactions.reduce((acc, t) => acc + Number(t.amount) * PLATFORM_FEE_PCT, 0)
         + recentGifts.reduce((acc, g) => acc + Number(g.platform_fee), 0)
 
     return {

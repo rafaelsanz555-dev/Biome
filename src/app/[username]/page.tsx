@@ -29,7 +29,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
 
     const { data: episodes } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, full_text, cover_image_url, is_subscription_only, ppv_price, created_at, season_id, seasons(id, title, description, slug, tagline, promise, central_question, audience, transformation, tone)')
+        .select('id, title, preview_text, cover_image_url, is_subscription_only, ppv_price, created_at, season_id, seasons(id, title, description, slug, tagline, promise, central_question, audience, transformation, tone)')
         .eq('creator_id', profile.id)
         .eq('is_published', true)
         .order('created_at', { ascending: true })
@@ -37,6 +37,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
     const { data: { user } } = await supabase.auth.getUser()
 
     let isSubscribed = false
+    const ppvUnlocked = new Set<string>()
     if (user) {
         const { data: entitlement } = await supabase
             .from('entitlements')
@@ -47,10 +48,19 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
             .gte('valid_until', new Date().toISOString())
             .maybeSingle()
         isSubscribed = !!entitlement
+
+        // Episodios comprados con pago único: el lector que pagó debe verlos desbloqueados
+        const { data: ppvRows } = await supabase
+            .from('entitlements')
+            .select('episode_id')
+            .eq('user_id', user.id)
+            .eq('entitlement_type', 'ppv')
+            .not('episode_id', 'is', null)
+        ppvRows?.forEach((r) => { if (r.episode_id) ppvUnlocked.add(r.episode_id) })
     }
 
     const isOwnProfile = user?.id === profile.id
-    const subscriptionPrice = profile.creators?.subscription_price || 4.99
+    const subscriptionPrice = profile.creators?.subscription_price || 5
     const initial = (profile.full_name || profile.username).charAt(0).toUpperCase()
 
     // Reactions (likes ❤️) por episodio — para alimentar el action bar
@@ -69,13 +79,11 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
         })
     }
 
-    // Subscriber count (social proof in CTA)
-    const { count: subCount } = await supabase
-        .from('entitlements')
-        .select('*', { count: 'exact', head: true })
-        .eq('creator_id', profile.id)
-        .eq('entitlement_type', 'subscription')
-        .gte('valid_until', new Date().toISOString())
+    // Subscriber count (social proof in CTA) — RPC security definer:
+    // RLS de entitlements no permite contar suscriptores ajenos desde el cliente
+    const { data: subCountData } = await supabase
+        .rpc('public_subscriber_count', { p_creator: profile.id })
+    const subCount = typeof subCountData === 'number' ? subCountData : 0
 
     const { count: followerCount } = await supabase
         .from('follows')
@@ -92,12 +100,6 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
             .maybeSingle()
         isFollowingCreator = !!followRow
     }
-
-    const freePostIds = new Set((episodes || [])
-        .slice()
-        .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-        .slice(0, 1) // First post is free
-        .map(e => e.id))
 
     const branding = extractBranding(profile.creators)
     const { theme, fallback } = extractTheme(profile.creators)
@@ -154,7 +156,10 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                             <div className="mb-2">
                                 <h1 className="font-bold text-2xl text-white flex items-center justify-center md:justify-start gap-2">
                                     {profile.full_name || profile.username}
-                                    <span className="text-[#C9A84C] text-sm bg-[#C9A84C]/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+                                    {/* El check solo si está verificado — antes se mostraba a todos */}
+                                    {profile.creators?.is_verified_storyteller && (
+                                        <span className="text-[#C9A84C] text-sm bg-[#C9A84C]/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+                                    )}
                                 </h1>
                                 <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
                                 {profile.creators?.brand_tagline && (
@@ -240,7 +245,8 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                         totalEpisodes={episodes?.length || 0}
                         daysSinceLastEpisode={
                             episodes && episodes.length > 0
-                                ? Math.floor((Date.now() - new Date(episodes[0].created_at).getTime()) / 86400000)
+                                // El array viene ordenado ascendente: el ÚLTIMO es el más reciente
+                                ? Math.floor((Date.now() - new Date(episodes[episodes.length - 1].created_at).getTime()) / 86400000)
                                 : null
                         }
                     />
@@ -285,8 +291,12 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                 {/* Lista de Capítulos */}
                                 <div className="space-y-6">
                                     {group.episodes.map((episode: any, epIdx: number) => {
-                                        const isFree = freePostIds.has(episode.id) || (!episode.is_subscription_only && !episode.ppv_price)
-                                        const canRead = isFree || isSubscribed || isOwnProfile
+                                        // Gratis = lo que dice la DB. Antes el primer post se marcaba
+                                        // "legible" solo en esta pantalla y el lector chocaba con el
+                                        // paywall al abrirlo (la regla del 1er capítulo gratis se
+                                        // aplica al PUBLICAR, en episodes/actions.ts).
+                                        const isFree = !episode.is_subscription_only && !episode.ppv_price
+                                        const canRead = isFree || isSubscribed || isOwnProfile || ppvUnlocked.has(episode.id)
                                         const chapterNumber = group.season ? `Capítulo ${epIdx + 1}` : null
 
                                         return (
@@ -351,6 +361,13 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                                         Suscribirse por ${subscriptionPrice}/mes
                                                                     </Button>
                                                                 </Link>
+                                                                {!episode.is_subscription_only && episode.ppv_price && (
+                                                                    <Link href={`/api/checkout?type=ppv&episodeId=${episode.id}`} className="mt-2">
+                                                                        <Button variant="outline" className="border-gray-600 bg-transparent text-gray-300 hover:bg-white/10 text-xs font-semibold">
+                                                                            o desbloquear solo este por ${episode.ppv_price}
+                                                                        </Button>
+                                                                    </Link>
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>

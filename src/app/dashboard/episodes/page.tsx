@@ -17,7 +17,8 @@ type EpisodeRow = {
     seasons?: { title?: string | null } | null
 }
 
-export default async function EpisodesPage() {
+export default async function EpisodesPage({ searchParams }: { searchParams: Promise<{ published?: string; first_free?: string }> }) {
+    const { published, first_free } = await searchParams
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -61,12 +62,20 @@ export default async function EpisodesPage() {
 
     return (
         <div className="space-y-6">
+            {published === '1' && (
+                <div className="rounded-xl border border-[#C9A84C]/30 bg-[#C9A84C]/10 px-4 py-3 text-sm text-[#D8BA63]">
+                    <strong>✓ Episodio publicado.</strong>{' '}
+                    {first_free === '1'
+                        ? 'Como es el primer capítulo de la historia, se publicó gratis — es el gancho que convierte lectores en suscriptores.'
+                        : 'Ya está visible en tu perfil público.'}
+                </div>
+            )}
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p className="text-xs font-black uppercase tracking-[0.22em] text-[#C9A84C]">Writer library</p>
                     <h1 className="mt-2 text-3xl font-black text-white">Tus historias</h1>
                     <p className="mt-1 text-sm text-gray-500">
-                        Gestiona tus series como activos: capitulos, palabras, estado y monetizacion.
+                        Tus series y capítulos: estado, palabras y monetización.
                     </p>
                 </div>
                 <Link href="/dashboard/episodes/new">
