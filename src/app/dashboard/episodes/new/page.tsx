@@ -4,7 +4,8 @@ import EpisodeForm from './EpisodeForm'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 
-export default async function NewEpisodePage() {
+export default async function NewEpisodePage({ searchParams }: { searchParams: Promise<{ season?: string }> }) {
+    const { season } = await searchParams
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -21,6 +22,9 @@ export default async function NewEpisodePage() {
         .select('id, title, format')
         .eq('creator_id', user?.id)
         .order('created_at', { ascending: false })
+
+    // Solo pre-seleccionamos la serie si de verdad pertenece a este escritor
+    const defaultSeasonId = season && (seasons || []).some((s) => s.id === season) ? season : ''
 
     const creatorInfo = Array.isArray(profile?.creators) ? profile.creators[0] : profile?.creators
     const themeInfo = creatorInfo?.themes
@@ -52,7 +56,7 @@ export default async function NewEpisodePage() {
                 <p className="text-sm text-gray-500">Escribe, elige el acceso y publica cuando estés listo.</p>
             </div>
 
-            <EpisodeForm seasons={seasons || []} previewInitial={previewInitial} />
+            <EpisodeForm seasons={seasons || []} previewInitial={previewInitial} defaultSeasonId={defaultSeasonId} />
         </div>
     )
 }

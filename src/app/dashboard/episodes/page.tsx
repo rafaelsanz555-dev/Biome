@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { BookOpen, Edit3, Eye, FileText, Lock, PlusCircle, Sparkles } from 'lucide-react'
+import { BookOpen, ChevronRight, Edit3, Eye, FileText, Lock, PlusCircle, Sparkles } from 'lucide-react'
 
 type EpisodeRow = {
     id: string
@@ -37,12 +37,15 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
         .order('created_at', { ascending: false })
 
     const episodes = (data || []) as EpisodeRow[]
-    const storyMap = new Map<string, { id: string; title: string; episodes: EpisodeRow[] }>()
+    const storyMap = new Map<string, { id: string; title: string; isSeries: boolean; seasonId: string | null; episodes: EpisodeRow[] }>()
 
     for (const episode of episodes) {
+        const isSeries = !!episode.season_id
         const id = episode.season_id || `solo-${episode.id}`
-        const title = episode.seasons?.title || 'Historias independientes'
-        const current = storyMap.get(id) || { id, title, episodes: [] }
+        // Serie: título de la serie. Independiente: el título del propio episodio
+        // (antes todos los sueltos decían "Historias independientes" — confuso).
+        const title = isSeries ? (episode.seasons?.title || 'Serie sin título') : episode.title
+        const current = storyMap.get(id) || { id, title, isSeries, seasonId: episode.season_id ?? null, episodes: [] }
         current.episodes.push(episode)
         storyMap.set(id, current)
     }
@@ -157,15 +160,49 @@ export default async function EpisodesPage({ searchParams }: { searchParams: Pro
                                         </Link>
                                     )}
                                     <Link href={`/dashboard/episodes/${story.latest.id}/edit`} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-white/5 px-3 text-xs font-bold text-gray-200 hover:bg-white/10">
-                                        <Edit3 size={13} /> Story info
+                                        <Edit3 size={13} /> Editar
                                     </Link>
-                                    <Link href="/dashboard/episodes" className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-white/5 px-3 text-xs font-bold text-gray-200 hover:bg-white/10">
-                                        All chapters
-                                    </Link>
-                                    <Link href="/dashboard/episodes/new" className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#C9A84C] px-3 text-xs font-black text-[#0D0D0D] hover:bg-[#D8BA63]">
-                                        New chapter
-                                    </Link>
+                                    {/* "Nuevo capítulo" solo tiene sentido en una serie/hilo, no en
+                                        una publicación suelta — y pre-selecciona la serie. */}
+                                    {story.isSeries && (
+                                        <Link href={`/dashboard/episodes/new?season=${story.seasonId}`} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-[#C9A84C] px-3 text-xs font-black text-[#0D0D0D] hover:bg-[#D8BA63]">
+                                            <PlusCircle size={13} /> Nuevo capitulo
+                                        </Link>
+                                    )}
                                 </div>
+
+                                {/* Lista de capítulos — reemplaza el botón "All chapters" que
+                                    no hacía nada. Solo en series con más de un capítulo. */}
+                                {story.isSeries && story.episodes.length > 1 && (
+                                    <details className="group/ch lg:col-span-4 rounded-xl border border-gray-800/60 bg-[#101114]">
+                                        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-2.5 text-xs font-bold text-gray-400 transition hover:text-white">
+                                            <ChevronRight size={13} className="transition-transform group-open/ch:rotate-90" />
+                                            Ver los {story.episodes.length} capitulos
+                                        </summary>
+                                        <div className="divide-y divide-gray-800/60 border-t border-gray-800/60">
+                                            {story.episodes.map((ep) => (
+                                                <div key={ep.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-sm font-semibold text-white">{ep.title}</p>
+                                                        <p className="text-[11px] text-gray-500">
+                                                            {ep.is_published ? 'Publicado' : 'Borrador'} · {Number(ep.word_count || 0).toLocaleString('en-US')} palabras
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex shrink-0 gap-2">
+                                                        {profile?.username && ep.is_published && (
+                                                            <Link href={`/${profile.username}/${ep.id}`} className="inline-flex h-8 items-center gap-1 rounded-lg bg-white/5 px-2.5 text-xs font-bold text-gray-200 hover:bg-white/10">
+                                                                <Eye size={12} /> Ver
+                                                            </Link>
+                                                        )}
+                                                        <Link href={`/dashboard/episodes/${ep.id}/edit`} className="inline-flex h-8 items-center gap-1 rounded-lg bg-white/5 px-2.5 text-xs font-bold text-gray-200 hover:bg-white/10">
+                                                            <Edit3 size={12} /> Editar
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </details>
+                                )}
                             </article>
                         ))}
                     </div>

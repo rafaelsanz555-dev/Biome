@@ -332,23 +332,35 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                                                     </div>
                                                 </div>
 
-                                                {/* Post Content */}
+                                                {/* Post Content — clickeable: abre el episodio (o su paywall) */}
                                                 <div className="px-4 pb-3">
-                                                    <h3 className="font-bold text-gray-100 text-base mb-1">{episode.title}</h3>
-                                                    <p className="text-sm text-gray-400 mb-4 whitespace-pre-wrap leading-relaxed line-clamp-3">
-                                                        {episode.preview_text || "Mira este post..."}
-                                                    </p>
+                                                    <Link href={`/${profile.username}/${episode.id}`} className="group block">
+                                                        <h3 className="font-bold text-gray-100 text-base mb-1 transition group-hover:text-[#D8BA63]">{episode.title}</h3>
+                                                        <p className="text-sm text-gray-400 mb-4 whitespace-pre-wrap leading-relaxed line-clamp-3">
+                                                            {episode.preview_text || "Mira este post..."}
+                                                        </p>
+                                                    </Link>
                                                 </div>
 
                                                 {/* Big Media Area */}
                                                 {(episode.cover_image_url || !canRead) && (
                                                     <div className="relative w-full bg-[#0A0B0E] border-y border-gray-800 min-h-[250px] flex items-center justify-center overflow-hidden">
                                                         {episode.cover_image_url && (
-                                                            <img
-                                                                src={episode.cover_image_url}
-                                                                alt="Contenido"
-                                                                className={`w-full h-auto max-h-[600px] object-contain ${!canRead ? 'blur-2xl opacity-40 scale-110' : ''}`}
-                                                            />
+                                                            canRead ? (
+                                                                <Link href={`/${profile.username}/${episode.id}`} className="block w-full">
+                                                                    <img
+                                                                        src={episode.cover_image_url}
+                                                                        alt="Contenido"
+                                                                        className="w-full h-auto max-h-[600px] object-contain transition hover:opacity-90"
+                                                                    />
+                                                                </Link>
+                                                            ) : (
+                                                                <img
+                                                                    src={episode.cover_image_url}
+                                                                    alt="Contenido"
+                                                                    className="w-full h-auto max-h-[600px] object-contain blur-2xl opacity-40 scale-110"
+                                                                />
+                                                            )
                                                         )}
                                                         
                                                         {!canRead && (

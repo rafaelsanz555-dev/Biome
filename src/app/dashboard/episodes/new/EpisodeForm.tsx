@@ -21,9 +21,10 @@ import { LivePreview } from '@/app/dashboard/settings/LivePreview'
 interface EpisodeFormProps {
     seasons: any[]
     previewInitial?: any
+    defaultSeasonId?: string
 }
 
-export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProps) {
+export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }: EpisodeFormProps) {
     const [isPending, setIsPending] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [monetization, setMonetization] = useState<'free' | 'subscription' | 'ppv'>('subscription')
@@ -374,6 +375,7 @@ export default function EpisodeForm({ seasons, previewInitial }: EpisodeFormProp
                             <SeasonPicker
                                 name="season_id"
                                 initialSeasons={seasons || []}
+                                initialValue={defaultSeasonId}
                                 inputClassName={inputCls}
                             />
                             <p className="text-[11px] text-gray-500 leading-relaxed">
