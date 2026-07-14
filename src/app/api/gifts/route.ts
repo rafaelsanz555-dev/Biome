@@ -59,7 +59,7 @@ export async function POST(req: Request) {
                         currency: 'usd',
                         product_data: {
                             name: `${emoji} Regalo a @${recipient.username}`,
-                            description: `Enviando un regalo a ${recipient.full_name || recipient.username} en bio.me. Ellos reciben el 88%.`,
+                            description: `Enviando un regalo a ${recipient.full_name || recipient.username} en Pergamo. Ellos reciben el 88%.`,
                         },
                         unit_amount: totalCents,
                     },

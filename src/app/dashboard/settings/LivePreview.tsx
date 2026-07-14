@@ -146,7 +146,7 @@ export function LivePreview({ initial }: LivePreviewProps) {
                         <span className="w-2 h-2 rounded-full bg-[#C9A84C]/50"></span>
                     </div>
                     <div className="flex-1 px-2 py-1 rounded-md bg-[#0A0B0E] text-[10px] text-gray-500 font-mono truncate">
-                        bio.me/{initial?.username || 'tu-perfil'}
+                        Pergamo/{initial?.username || 'tu-perfil'}
                     </div>
                 </div>
 
@@ -185,7 +185,7 @@ export function LivePreview({ initial }: LivePreviewProps) {
 
                     {/* Bio */}
                     <p className="relative z-10 text-sm mb-4 line-clamp-3 leading-relaxed" style={{ fontFamily: fontVar, color: textColor, opacity: 0.92 }}>
-                        {initial?.bio || 'Compartiendo mi historia y contenido exclusivo en bio.me.'}
+                        {initial?.bio || 'Compartiendo mi historia y contenido exclusivo en Pergamo.'}
                     </p>
 
                     {/* Why I write — manifesto */}

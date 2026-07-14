@@ -177,7 +177,7 @@ export default async function CreatorProfilePage({ params }: ProfilePageProps) {
                             </div>
                             
                             <p className="text-sm text-gray-300 leading-relaxed mb-6 max-w-lg mx-auto md:mx-0">
-                                {profile.bio || 'Compartiendo mi historia y contenido exclusivo en bio.me.'}
+                                {profile.bio || 'Compartiendo mi historia y contenido exclusivo en Pergamo.'}
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center gap-3">

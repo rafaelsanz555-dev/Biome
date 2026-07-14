@@ -34,7 +34,7 @@ export default async function AdminLayout({
                 {/* Logo */}
                 <div className="mb-8 flex items-center gap-3">
                     <Link href="/admin" className="text-xl font-bold text-[#FAF7F0] tracking-tight">
-                        bio<span className="text-[#C9A84C]">.me</span>
+                        Pergamo<span className="text-[#C9A84C]">.</span>
                     </Link>
                     <span className="text-[8px] font-bold text-[#C9A84C] uppercase tracking-[0.2em] bg-[#C9A84C]/10 px-2.5 py-1 rounded-full border border-[#C9A84C]/20">
                         Admin

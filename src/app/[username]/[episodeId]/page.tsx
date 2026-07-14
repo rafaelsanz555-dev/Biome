@@ -500,7 +500,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                     </p>
                                 </Link>
                                 <p className="text-sm text-gray-500 truncate">
-                                    {creatorProfile.bio || 'Compartiendo su historia en bio.me.'}
+                                    {creatorProfile.bio || 'Compartiendo su historia en Pergamo.'}
                                 </p>
                             </div>
                             {!isOwnProfile && (

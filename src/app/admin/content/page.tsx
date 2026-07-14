@@ -63,7 +63,7 @@ export default async function AdminContentPage() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#FAF7F0] tracking-tight">Contenido</h1>
-                <p className="text-[#666] text-sm mt-1">Gestion y moderacion de todo el contenido publicado en bio.me</p>
+                <p className="text-[#666] text-sm mt-1">Gestion y moderacion de todo el contenido publicado en Pergamo</p>
             </div>
 
             {/* Quick stats */}

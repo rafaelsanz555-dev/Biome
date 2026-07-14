@@ -1,4 +1,4 @@
-export const metadata = { title: 'Política de Contenido · bio.me [BORRADOR]' }
+export const metadata = { title: 'Política de Contenido · Pergamo [BORRADOR]' }
 
 export default function ContentPolicyPage() {
     return (
@@ -6,10 +6,10 @@ export default function ContentPolicyPage() {
             <h1>Política de Contenido</h1>
             <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
 
-            <p>bio.me es una plataforma para narrativa personal auténtica. Esta política define qué contenido se permite, qué no se permite, cómo se modera y cómo se apelan las decisiones.</p>
+            <p>Pergamo es una plataforma para narrativa personal auténtica. Esta política define qué contenido se permite, qué no se permite, cómo se modera y cómo se apelan las decisiones.</p>
 
             <h2>1. Filosofía editorial</h2>
-            <p>bio.me cree en la libertad creativa <strong>con responsabilidad</strong>. Apoyamos historias difíciles, incómodas, profundas. No moralizamos. Pero hay límites concretos cuando el contenido daña a otros o viola la ley.</p>
+            <p>Pergamo cree en la libertad creativa <strong>con responsabilidad</strong>. Apoyamos historias difíciles, incómodas, profundas. No moralizamos. Pero hay límites concretos cuando el contenido daña a otros o viola la ley.</p>
             <p><strong>No certificamos que toda historia sea verdad absoluta</strong>, pero implementamos señales de confianza para que los lectores tengan contexto al evaluar cada perfil.</p>
 
             <h2>2. Contenido permitido</h2>
@@ -60,7 +60,7 @@ export default function ContentPolicyPage() {
                 <li>Usar imágenes con copyright sin licencia</li>
                 <li>Traducir obras protegidas sin permiso</li>
             </ul>
-            <p>bio.me usa <strong>shingling interno (k=5)</strong> para detectar similitud entre episodios publicados en la plataforma. Si un episodio nuevo tiene más de 40% de similitud con uno existente, levantamos un flag automático para revisión.</p>
+            <p>Pergamo usa <strong>shingling interno (k=5)</strong> para detectar similitud entre episodios publicados en la plataforma. Si un episodio nuevo tiene más de 40% de similitud con uno existente, levantamos un flag automático para revisión.</p>
 
             <h3>3.5. Spam y manipulación</h3>
             <ul>
@@ -82,7 +82,7 @@ export default function ContentPolicyPage() {
             <h3>4.1. Detección automática</h3>
             <p>Cada episodio publicado pasa por:</p>
             <ul>
-                <li><strong>Shingling interno:</strong> compara fragmentos de 5 palabras con todo bio.me. Detecta plagio entre creadores.</li>
+                <li><strong>Shingling interno:</strong> compara fragmentos de 5 palabras con todo Pergamo. Detecta plagio entre creadores.</li>
                 <li><strong>OpenAI Moderation API:</strong> detecta categorías de riesgo (autolesión, odio, contenido explícito, violencia).</li>
                 <li><strong>Keyword matching:</strong> lista regulable de términos que requieren revisión humana.</li>
             </ul>
@@ -112,10 +112,10 @@ export default function ContentPolicyPage() {
             </ul>
 
             <h2>6. DMCA y copyright takedowns</h2>
-            <p>Si crees que contenido en bio.me viola tu copyright, envía notificación DMCA a <strong>dmca@bio.me</strong> incluyendo:</p>
+            <p>Si crees que contenido en Pergamo viola tu copyright, envía notificación DMCA a <strong>dmca@Pergamo</strong> incluyendo:</p>
             <ul>
                 <li>Identificación del trabajo protegido</li>
-                <li>URL del contenido infractor en bio.me</li>
+                <li>URL del contenido infractor en Pergamo</li>
                 <li>Tus datos de contacto</li>
                 <li>Declaración de buena fe</li>
                 <li>Firma física o electrónica</li>

@@ -15,7 +15,12 @@
       "Bash(python3 -c ' *)",
       "Bash(python -c ' *)",
       "PowerShell(npm pkg set scripts.dev=\"next dev -p 8000\")",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(git rev-list *)",
+      "Bash(curl -s \"https://biome-app.vercel.app/onboarding\")",
+      "Bash(curl -s -o /dev/null -w \"sin -L: HTTP %{http_code} -> %{redirect_url}\\\\n\" \"https://biome-app.vercel.app/onboarding\")",
+      "Bash(curl -sL \"https://biome-app.vercel.app/onboarding\")",
+      "Bash(python -)"
     ]
   }
 }

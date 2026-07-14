@@ -78,7 +78,7 @@ export default async function AdminWritersPage() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#FAF7F0] tracking-tight">Escritores</h1>
-                <p className="text-[#666] text-sm mt-1">Performance y gestion de todos los creadores de bio.me</p>
+                <p className="text-[#666] text-sm mt-1">Performance y gestion de todos los creadores de Pergamo</p>
             </div>
 
             {/* Summary stats */}
@@ -122,7 +122,7 @@ export default async function AdminWritersPage() {
                                 <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Posts</th>
                                 <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Followers</th>
                                 <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Revenue Bruto</th>
-                                <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Para bio.me</th>
+                                <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Para Pergamo</th>
                                 <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Estado</th>
                                 <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-3 py-3">Perfil</th>
                             </tr>

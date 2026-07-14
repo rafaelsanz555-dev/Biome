@@ -104,7 +104,7 @@ export function DashboardNav({ isCreator, username }: DashboardNavProps) {
                             </div>
                             <div className="min-w-0">
                                 <p className="text-xs font-bold leading-tight">Ver mi perfil</p>
-                                <p className="text-[10px] text-gray-400 truncate">bio.me/{username}</p>
+                                <p className="text-[10px] text-gray-400 truncate">Pergamo/{username}</p>
                             </div>
                         </div>
                         <ExternalLink size={12} className="text-gray-500 group-hover:text-[#C9A84C] transition shrink-0" />

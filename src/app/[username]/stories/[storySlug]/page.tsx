@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
     if (!story) return {}
 
     const title = `${story.season.title} by ${story.profile.full_name || story.profile.username}`
-    const description = story.season.tagline || story.season.description || story.season.promise || `Read ${story.season.title} on bio.me.`
+    const description = story.season.tagline || story.season.description || story.season.promise || `Read ${story.season.title} on Pergamo.`
 
     return {
         title,
@@ -147,7 +147,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
                                 )}
                                 <ShareStoryButton
                                     title={season.title}
-                                    text={season.tagline || season.description || `Lee ${season.title} en bio.me.`}
+                                    text={season.tagline || season.description || `Lee ${season.title} en Pergamo.`}
                                     className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#FAF7F0]/20 px-6 text-sm font-black text-[#FAF7F0] transition hover:border-[#C9A84C] hover:text-[#C9A84C]"
                                 />
                             </div>

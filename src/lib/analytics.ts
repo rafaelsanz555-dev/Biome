@@ -1,5 +1,5 @@
 /**
- * bio.me · Product Analytics Wrapper
+ * Pergamo · Product Analytics Wrapper
  *
  * Thin layer sobre PostHog. Funciona tanto en client como server.
  * Cuando `NEXT_PUBLIC_POSTHOG_KEY` no está configurado, todos los calls son no-op.

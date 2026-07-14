@@ -63,7 +63,7 @@ export function TextHighlightShare({ creatorUsername, episodeTitle }: TextHighli
     if (!popup) return null
 
     const url = typeof window !== 'undefined' ? window.location.href : ''
-    const tweetText = `"${popup.text.length > 180 ? popup.text.slice(0, 180) + '…' : popup.text}"\n— @${creatorUsername} en bio.me`
+    const tweetText = `"${popup.text.length > 180 ? popup.text.slice(0, 180) + '…' : popup.text}"\n— @${creatorUsername} en Pergamo`
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`
 
     async function copyLink() {

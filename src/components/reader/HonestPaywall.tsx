@@ -77,7 +77,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
                     {isVerified && (
                         <div className="flex items-center gap-2.5 text-sm">
                             <ShieldCheck className="text-[#D8BA63]" size={14} />
-                            <span className="text-gray-300">Storyteller verificado por bio.me</span>
+                            <span className="text-gray-300">Storyteller verificado por Pergamo</span>
                         </div>
                     )}
                 </div>

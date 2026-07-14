@@ -18,8 +18,8 @@ export default async function Image({ params }: { params: Promise<{ username: st
         .eq('username', username.toLowerCase())
         .maybeSingle()
 
-    let title = 'bio.me'
-    let tagline = 'Your story. Your income.'
+    let title = 'Pergamo'
+    let tagline = 'Real stories, chapter by chapter.'
     let author = username
 
     if (profile) {
@@ -53,8 +53,8 @@ export default async function Image({ params }: { params: Promise<{ username: st
                 }}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ color: '#C9A84C', fontSize: 30, fontWeight: 800 }}>bio.me</div>
-                    <div style={{ color: '#C9A84C', fontSize: 22 }}>Your story. Your income.</div>
+                    <div style={{ color: '#C9A84C', fontSize: 30, fontWeight: 800 }}>Pergamo</div>
+                    <div style={{ color: '#C9A84C', fontSize: 22 }}>Real stories, chapter by chapter.</div>
                 </div>
                 <div>
                     <div style={{ color: '#C9A84C', fontSize: 24, letterSpacing: 6, textTransform: 'uppercase' }}>Story</div>

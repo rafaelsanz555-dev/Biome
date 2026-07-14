@@ -55,7 +55,7 @@ export async function moderateText(text: string): Promise<ModerationResult | nul
 }
 
 /**
- * Maps OpenAI moderation category to bio.me flag_type enum.
+ * Maps OpenAI moderation category to Pergamo flag_type enum.
  */
 export function categoryToFlagType(cat: string | null): 'explicit' | 'hate' | 'self_harm' | 'similarity' {
     if (!cat) return 'explicit'

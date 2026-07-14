@@ -277,7 +277,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                             <div className="space-y-2 border-t border-gray-800 pt-5">
                                 <label htmlFor="soundtrack_url" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
                                     <Music size={12} className="text-[#C9A84C]" />
-                                    Banda sonora <span className="normal-case font-medium text-[#C9A84C] ml-1">· nuevo en bio.me</span>
+                                    Banda sonora <span className="normal-case font-medium text-[#C9A84C] ml-1">· nuevo en Pergamo</span>
                                 </label>
                                 <p className="text-xs text-gray-500 -mt-1">
                                     Agrega la canción que acompaña este capítulo. Los lectores la escuchan mientras te leen.

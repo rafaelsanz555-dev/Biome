@@ -69,7 +69,7 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
 
             {/* Grid de themes oficiales */}
             <div>
-                <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500 mb-3">Oficiales · curados por bio.me</p>
+                <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500 mb-3">Oficiales · curados por Pergamo</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {themes.filter(t => t.type === 'official').map(theme => (
                         <ThemeCard
@@ -124,7 +124,7 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
             )}
 
             <p className="text-[11px] text-gray-600 italic pt-2 border-t border-gray-800">
-                💡 Los themes solo aplican a tu perfil y a tus episodios. El feed global de bio.me mantiene su estilo neutral para que las historias se diferencien por su voz, no solo por su look.
+                💡 Los themes solo aplican a tu perfil y a tus episodios. El feed global de Pergamo mantiene su estilo neutral para que las historias se diferencien por su voz, no solo por su look.
             </p>
         </div>
     )

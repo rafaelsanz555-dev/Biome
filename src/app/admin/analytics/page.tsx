@@ -134,7 +134,7 @@ export default async function AdminAnalyticsPage() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#FAF7F0] tracking-tight">Analytics</h1>
-                <p className="text-[#666] text-sm mt-1">Metricas de crecimiento y tendencias de bio.me</p>
+                <p className="text-[#666] text-sm mt-1">Metricas de crecimiento y tendencias de Pergamo</p>
             </div>
 
             {/* Growth cards - 30 day comparison */}

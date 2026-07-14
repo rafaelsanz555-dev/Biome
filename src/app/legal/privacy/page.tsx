@@ -1,4 +1,4 @@
-export const metadata = { title: 'Política de Privacidad · bio.me [BORRADOR]' }
+export const metadata = { title: 'Política de Privacidad · Pergamo [BORRADOR]' }
 
 export default function PrivacyPage() {
     return (
@@ -6,10 +6,10 @@ export default function PrivacyPage() {
             <h1>Política de Privacidad</h1>
             <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
 
-            <p>Esta política describe qué datos personales recolecta bio.me, cómo se usan, con quién se comparten y cuáles son tus derechos.</p>
+            <p>Esta política describe qué datos personales recolecta Pergamo, cómo se usan, con quién se comparten y cuáles son tus derechos.</p>
 
             <h2>1. Quién es el responsable de tus datos</h2>
-            <p>El responsable del tratamiento es Rafael Bernardo Sanz Espinoza, operador de bio.me. Contacto: <strong>privacy@bio.me</strong> (pendiente de configurar).</p>
+            <p>El responsable del tratamiento es Rafael Bernardo Sanz Espinoza, operador de Pergamo. Contacto: <strong>privacy@Pergamo</strong> (pendiente de configurar).</p>
 
             <h2>2. Datos que recolectamos</h2>
 
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
             </ul>
 
             <h2>4. Con quién compartimos tus datos</h2>
-            <p>Solo compartimos datos con proveedores estrictamente necesarios para operar bio.me:</p>
+            <p>Solo compartimos datos con proveedores estrictamente necesarios para operar Pergamo:</p>
             <table>
                 <thead><tr><th>Proveedor</th><th>Datos compartidos</th><th>Propósito</th></tr></thead>
                 <tbody>
@@ -85,16 +85,16 @@ export default function PrivacyPage() {
                 <li><strong>Oposición:</strong> opt-out de analytics no esenciales</li>
                 <li><strong>No discriminación:</strong> ejercer tus derechos no afecta tu uso del servicio</li>
             </ul>
-            <p>Para ejercer cualquier derecho: <strong>privacy@bio.me</strong>. Respondemos dentro de 30 días.</p>
+            <p>Para ejercer cualquier derecho: <strong>privacy@Pergamo</strong>. Respondemos dentro de 30 días.</p>
 
             <h2>7. Cookies</h2>
             <p>Usamos cookies esenciales (sesión, preferencia de idioma) sin requerir consentimiento explícito porque son necesarias para operar el servicio. Para analytics opcionales (PostHog), respetamos tu opt-out.</p>
 
             <h2>8. Menores de edad</h2>
-            <p>bio.me NO está dirigido a menores de 18 años. Si descubrimos que un menor creó cuenta, la eliminamos inmediatamente. Si eres padre/madre y crees que tu hijo creó cuenta sin permiso, contacta privacy@bio.me.</p>
+            <p>Pergamo NO está dirigido a menores de 18 años. Si descubrimos que un menor creó cuenta, la eliminamos inmediatamente. Si eres padre/madre y crees que tu hijo creó cuenta sin permiso, contacta privacy@Pergamo.</p>
 
             <h2>9. Transferencias internacionales</h2>
-            <p>bio.me opera con infraestructura en Estados Unidos (Vercel, Supabase). Si estás en EU/UK/Brasil, tus datos se transfieren a USA bajo cláusulas contractuales estándar (Standard Contractual Clauses) según aplique. <strong>[PENDIENTE — confirmar con attorney]</strong></p>
+            <p>Pergamo opera con infraestructura en Estados Unidos (Vercel, Supabase). Si estás en EU/UK/Brasil, tus datos se transfieren a USA bajo cláusulas contractuales estándar (Standard Contractual Clauses) según aplique. <strong>[PENDIENTE — confirmar con attorney]</strong></p>
 
             <h2>10. Cambios a esta política</h2>
             <p>Cualquier cambio significativo se notifica por email con 14 días de anticipación.</p>

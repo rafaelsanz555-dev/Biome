@@ -1,4 +1,4 @@
-export const metadata = { title: 'Creator Terms · bio.me [BORRADOR]' }
+export const metadata = { title: 'Creator Terms · Pergamo [BORRADOR]' }
 
 export default function CreatorTermsPage() {
     return (
@@ -6,10 +6,10 @@ export default function CreatorTermsPage() {
             <h1>Creator Terms</h1>
             <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
 
-            <p>Estos Creator Terms aplican adicionalmente a los <a href="/legal/terms">Términos de Servicio</a> generales si tienes cuenta de tipo "Creator / Storyteller" en bio.me.</p>
+            <p>Estos Creator Terms aplican adicionalmente a los <a href="/legal/terms">Términos de Servicio</a> generales si tienes cuenta de tipo "Creator / Storyteller" en Pergamo.</p>
 
             <h2>1. Definición de Creator</h2>
-            <p>Un Creator es un usuario que publica contenido en bio.me y opcionalmente lo monetiza vía suscripciones, pagos por episodio (PPV), o recibiendo regalos.</p>
+            <p>Un Creator es un usuario que publica contenido en Pergamo y opcionalmente lo monetiza vía suscripciones, pagos por episodio (PPV), o recibiendo regalos.</p>
 
             <h2>2. Modelo de monetización</h2>
 
@@ -18,16 +18,16 @@ export default function CreatorTermsPage() {
             <ul>
                 <li>Cuenta de creator gratuita (sin fee mensual)</li>
                 <li>Badge permanente "Founding Storyteller" en el perfil</li>
-                <li><strong>Plan gratuito de por vida</strong> cuando bio.me empiece a cobrar fee mensual a nuevos creadores</li>
+                <li><strong>Plan gratuito de por vida</strong> cuando Pergamo empiece a cobrar fee mensual a nuevos creadores</li>
                 <li>Acceso prioritario a nuevas features</li>
-                <li>Línea directa de comunicación con el equipo de bio.me</li>
+                <li>Línea directa de comunicación con el equipo de Pergamo</li>
             </ul>
-            <p>Después de los primeros 300-500 creators, bio.me podrá introducir un fee mensual para nuevos registros (estimado en $5/mes), pero los Founding Storytellers mantienen su gratuidad.</p>
+            <p>Después de los primeros 300-500 creators, Pergamo podrá introducir un fee mensual para nuevos registros (estimado en $5/mes), pero los Founding Storytellers mantienen su gratuidad.</p>
 
             <h3>2.2. Comisiones de plataforma</h3>
-            <p>bio.me retiene un <strong>12% de comisión</strong> sobre cada transacción del creador:</p>
+            <p>Pergamo retiene un <strong>12% de comisión</strong> sobre cada transacción del creador:</p>
             <table>
-                <thead><tr><th>Tipo</th><th>Creator recibe</th><th>bio.me retiene</th></tr></thead>
+                <thead><tr><th>Tipo</th><th>Creator recibe</th><th>Pergamo retiene</th></tr></thead>
                 <tbody>
                     <tr><td>Suscripción mensual</td><td>88%</td><td>12%</td></tr>
                     <tr><td>Pay-per-view (PPV)</td><td>88%</td><td>12%</td></tr>
@@ -44,15 +44,15 @@ export default function CreatorTermsPage() {
             </ul>
 
             <h2>3. Pagos via Stripe Connect</h2>
-            <p>bio.me usa Stripe Connect (modelo Express). Para recibir pagos, debes:</p>
+            <p>Pergamo usa Stripe Connect (modelo Express). Para recibir pagos, debes:</p>
             <ul>
-                <li>Crear cuenta de Stripe Connect (proceso integrado en bio.me)</li>
+                <li>Crear cuenta de Stripe Connect (proceso integrado en Pergamo)</li>
                 <li>Completar verificación de identidad (KYC) requerida por Stripe</li>
                 <li>Proveer información bancaria para depósitos</li>
                 <li>Aceptar los términos de Stripe Connect además de los nuestros</li>
             </ul>
             <p>Los pagos se depositan automáticamente en tu cuenta bancaria según el schedule de Stripe (típicamente diario o semanal).</p>
-            <p>bio.me no tiene control directo sobre los fondos en tu cuenta Stripe Connect. Si hay disputas, contacta directamente a Stripe.</p>
+            <p>Pergamo no tiene control directo sobre los fondos en tu cuenta Stripe Connect. Si hay disputas, contacta directamente a Stripe.</p>
 
             <h2>4. Reembolsos y disputas</h2>
 
@@ -64,14 +64,14 @@ export default function CreatorTermsPage() {
             <ul>
                 <li>Error técnico que impidió el acceso</li>
                 <li>Contenido removido por moderación dentro de las 48h del pago</li>
-                <li>Solicitud aprobada por bio.me a discreción</li>
+                <li>Solicitud aprobada por Pergamo a discreción</li>
             </ul>
 
             <h3>4.3. Disputes (chargebacks)</h3>
             <p>Si un lector hace chargeback con su banco:</p>
             <ul>
                 <li>El monto del chargeback + fees de Stripe se restan de tus earnings</li>
-                <li>Si el chargeback es fraudulento, bio.me apoya con evidencia disponible</li>
+                <li>Si el chargeback es fraudulento, Pergamo apoya con evidencia disponible</li>
                 <li>Múltiples chargebacks pueden derivar en revisión o suspensión de tu cuenta</li>
             </ul>
 
@@ -82,7 +82,7 @@ export default function CreatorTermsPage() {
                 <li>Los lectores que se suscriban verán warning antes de pagar</li>
                 <li>Tu serie se marcará automáticamente como "en pausa"</li>
             </ul>
-            <p>bio.me NO obliga publicación regular ni penaliza pausas legítimas. Pero la transparencia con los lectores es responsabilidad del creator.</p>
+            <p>Pergamo NO obliga publicación regular ni penaliza pausas legítimas. Pero la transparencia con los lectores es responsabilidad del creator.</p>
 
             <h2>6. Calidad y moderación de contenido</h2>
             <ul>
@@ -101,10 +101,10 @@ export default function CreatorTermsPage() {
             </ul>
 
             <h2>8. Impuestos</h2>
-            <p><strong>Tú eres responsable</strong> de declarar y pagar los impuestos sobre tus earnings en tu jurisdicción. bio.me y Stripe pueden emitir documentos fiscales (1099 en USA, etc.) según aplique. Consulta con tu contador.</p>
+            <p><strong>Tú eres responsable</strong> de declarar y pagar los impuestos sobre tus earnings en tu jurisdicción. Pergamo y Stripe pueden emitir documentos fiscales (1099 en USA, etc.) según aplique. Consulta con tu contador.</p>
 
             <h2>9. Restricciones geográficas</h2>
-            <p>Stripe Connect no opera en todos los países. Si tu país no está soportado, no podrás recibir pagos a través de bio.me. Lista actualizada: <a href="https://stripe.com/global" target="_blank">stripe.com/global</a>.</p>
+            <p>Stripe Connect no opera en todos los países. Si tu país no está soportado, no podrás recibir pagos a través de Pergamo. Lista actualizada: <a href="https://stripe.com/global" target="_blank">stripe.com/global</a>.</p>
 
             <h2>10. Tu marca personal</h2>
             <p>Como creator, puedes:</p>
@@ -112,9 +112,9 @@ export default function CreatorTermsPage() {
                 <li>Personalizar tu theme visual (color, tipografía, fondo, imagen propia)</li>
                 <li>Configurar tu manifesto, frecuencia, intereses</li>
                 <li>Recibir badge "Storyteller Verificado" tras verificación de identidad</li>
-                <li>Compartir el link de tu perfil bio.me/{'{tu_username}'} libremente</li>
+                <li>Compartir el link de tu perfil Pergamo/{'{tu_username}'} libremente</li>
             </ul>
-            <p>bio.me no reclama derechos sobre tu marca personal, audiencia o lista de suscriptores. Si te vas, te vas con tu identidad intacta.</p>
+            <p>Pergamo no reclama derechos sobre tu marca personal, audiencia o lista de suscriptores. Si te vas, te vas con tu identidad intacta.</p>
 
             <h2>11. Modificaciones a estos Creator Terms</h2>
             <p>Cambios significativos al modelo de monetización (% comisión, fee fijo) requieren <strong>30 días de notificación previa</strong> por email. Los Founding Storytellers mantienen sus condiciones originales.</p>

@@ -130,6 +130,52 @@ async function isOldestPublishedChapter(
     return data?.id === episodeId
 }
 
+/**
+ * Fan-out de notificaciones al publicar: avisa a los seguidores del escritor
+ * y a los seguidores de la historia (deduplicados). Usa admin client porque
+ * la RLS de notifications no permite insertar filas para otros usuarios.
+ * Nunca lanza — publicar jamás debe fallar por una notificación.
+ */
+async function notifyFollowersOfNewEpisode(
+    creatorId: string,
+    episodeId: string,
+    title: string,
+    seasonId: string | null,
+) {
+    try {
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const admin = createAdminClient()
+
+        const [followsRes, storyRes] = await Promise.all([
+            admin.from('follows').select('follower_id').eq('creator_id', creatorId),
+            seasonId
+                ? admin.from('story_follows').select('follower_id').eq('season_id', seasonId)
+                : Promise.resolve({ data: [] as { follower_id: string }[] }),
+        ])
+
+        const ids = new Set<string>()
+        followsRes.data?.forEach((r) => ids.add(r.follower_id))
+        storyRes.data?.forEach((r) => ids.add(r.follower_id))
+        ids.delete(creatorId)
+        if (ids.size === 0) return
+
+        const rows = Array.from(ids).map((uid) => ({
+            user_id: uid,
+            actor_id: creatorId,
+            type: 'new_episode',
+            reference_id: episodeId,
+            message: `Publicó un nuevo capítulo: «${title}»`,
+        }))
+        // Lotes de 500 por si el escritor tiene muchos seguidores
+        for (let i = 0; i < rows.length; i += 500) {
+            const { error } = await admin.from('notifications').insert(rows.slice(i, i + 500))
+            if (error) console.error('[notify followers] insert failed:', error.message)
+        }
+    } catch (e: any) {
+        console.error('[notify followers] failed:', e?.message)
+    }
+}
+
 export async function createEpisode(formData: FormData) {
     const guard = await requireCreatorAction()
     if (!guard.ok) return { error: guard.error }
@@ -144,7 +190,7 @@ export async function createEpisode(formData: FormData) {
 
     const seasonId = values.season_id || null
     const firstChapter = values.is_published ? await hasNoPublishedChapter(supabase, user.id, seasonId) : false
-    // Regla bio.me: el primer capítulo de cada historia siempre es gratis.
+    // Regla Pergamo: el primer capítulo de cada historia siempre es gratis.
     // Si forzamos el cambio, se lo avisamos al escritor vía query param.
     const monetization = firstChapter ? 'free' : values.monetization
     const forcedFree = firstChapter && values.monetization !== 'free' && values.is_published
@@ -181,6 +227,8 @@ export async function createEpisode(formData: FormData) {
         runEpisodeChecks(inserted.id, values.full_text).catch((e) =>
             console.error('[moderation] background failed', e)
         )
+        // El loop de retención: avisar a los seguidores que hay capítulo nuevo
+        await notifyFollowersOfNewEpisode(user.id, inserted.id, values.title, seasonId)
     }
 
     revalidatePath('/dashboard/episodes')
@@ -209,7 +257,7 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
 
     const { data: existing, error: fetchErr } = await supabase
         .from('episodes')
-        .select('id, creator_id')
+        .select('id, creator_id, is_published')
         .eq('id', episodeId)
         .maybeSingle()
     if (fetchErr || !existing) return { error: 'Episodio no encontrado' }
@@ -255,6 +303,12 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
     if (error) {
         console.error('[updateEpisode] update failed:', error.message)
         return { error: friendlyDbError(error.message) }
+    }
+
+    // Solo notificar la PRIMERA vez que pasa de borrador a publicado —
+    // editar un capítulo ya publicado no debe spamear a los seguidores.
+    if (!existing.is_published && values.is_published) {
+        await notifyFollowersOfNewEpisode(user.id, episodeId, values.title, seasonId)
     }
 
     revalidatePath('/dashboard/episodes')

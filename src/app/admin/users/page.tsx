@@ -43,7 +43,7 @@ export default async function AdminUsersPage() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#FAF7F0] tracking-tight">Usuarios</h1>
-                <p className="text-[#666] text-sm mt-1">Gestion de todos los usuarios registrados en bio.me</p>
+                <p className="text-[#666] text-sm mt-1">Gestion de todos los usuarios registrados en Pergamo</p>
             </div>
 
             {/* Quick stats */}

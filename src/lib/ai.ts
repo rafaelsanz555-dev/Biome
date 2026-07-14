@@ -53,7 +53,7 @@ async function callClaude({ system, user, maxTokens = 1024, temperature = 0.7, c
     }
 }
 
-const SYSTEM_IMPROVE = `Eres un editor literario expert@ ayudando a un storyteller que cuenta historias reales de su vida en bio.me.
+const SYSTEM_IMPROVE = `Eres un editor literario expert@ ayudando a un storyteller que cuenta historias reales de su vida en Pergamo.
 
 Tu rol: pulir y mejorar el texto MANTENIENDO la voz del autor. NUNCA inventes hechos. NUNCA cambies el sentido. NUNCA reemplaces detalles personales.
 
@@ -66,11 +66,11 @@ Reglas estrictas:
 
 Si el texto está bien como está, devuélvelo casi idéntico.`
 
-const SYSTEM_TITLES = `Eres un editor de bio.me, una plataforma editorial para narrativa real.
+const SYSTEM_TITLES = `Eres un editor de Pergamo, una plataforma editorial para narrativa real.
 
 Tarea: dado un fragmento o capítulo, genera 5 propuestas de título alternativas.
 
-Criterios de buen título en bio.me:
+Criterios de buen título en Pergamo:
 - Específico, no genérico ("Mi historia" ❌, "El día que mi madre escondió las llaves" ✓)
 - Evoca curiosidad sin spoilear
 - 30-65 caracteres

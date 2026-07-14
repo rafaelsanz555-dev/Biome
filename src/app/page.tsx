@@ -50,17 +50,18 @@ export default async function LandingPage() {
                         </p>
 
                         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                            <Link
-                                href={ctaHref}
-                                className="inline-flex h-13 items-center justify-center rounded-md bg-[#0D0D0D] px-7 text-sm font-black uppercase tracking-[0.14em] text-[#FAF7F0] transition hover:bg-[#2A2117]"
-                            >
-                                {ctaLabel}
-                            </Link>
+                            {/* Lector primero: explorar historias es el CTA principal */}
                             <Link
                                 href="/discover"
-                                className="inline-flex h-13 items-center justify-center rounded-md border border-[#0D0D0D]/20 bg-[#FAF7F0]/80 px-7 text-sm font-black uppercase tracking-[0.14em] text-[#0D0D0D] transition hover:border-[#C9A84C]"
+                                className="inline-flex h-13 items-center justify-center rounded-md bg-[#0D0D0D] px-7 text-sm font-black uppercase tracking-[0.14em] text-[#FAF7F0] transition hover:bg-[#2A2117]"
                             >
                                 {t('cta_read')}
+                            </Link>
+                            <Link
+                                href={ctaHref}
+                                className="inline-flex h-13 items-center justify-center rounded-md border border-[#0D0D0D]/20 bg-[#FAF7F0]/80 px-7 text-sm font-black uppercase tracking-[0.14em] text-[#0D0D0D] transition hover:border-[#C9A84C]"
+                            >
+                                {ctaLabel}
                             </Link>
                         </div>
                     </div>
@@ -121,11 +122,11 @@ export default async function LandingPage() {
 
             <footer className="border-t border-[#0D0D0D]/10 bg-[#0D0D0D] px-6 py-10 text-[#FAF7F0]">
                 <div className="mx-auto flex max-w-6xl flex-col justify-between gap-4 md:flex-row md:items-center">
-                    <p className="text-2xl font-black tracking-normal">bio<span className="text-[#C9A84C]">.me</span></p>
+                    <p className="text-2xl font-black tracking-normal">Pergamo<span className="text-[#C9A84C]">.</span></p>
                     <div className="flex flex-col gap-4 text-sm text-[#B9AD98] md:flex-row md:items-center">
                         <Link href="/legal/terms" className="transition hover:text-[#C9A84C]">{tLegal('terms')}</Link>
                         <Link href="/legal/privacy" className="transition hover:text-[#C9A84C]">{tLegal('privacy')}</Link>
-                        <p>2026 bio.me · {t('footer_note')}</p>
+                        <p>2026 Pergamo · {t('footer_note')}</p>
                     </div>
                 </div>
             </footer>

@@ -5,7 +5,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── bio.me Design System — Stitch Green ────────────── */
+/* ── Pergamo Design System — Stitch Green ────────────── */
 /* Deep dark palette with Emerald accents based on Stitch mockup */
 
 :root {
@@ -29,9 +29,9 @@
 
   /* ── Creator Branding (Pilar 1) ──
    * Variables semánticas inyectadas por CreatorBrandProvider.
-   * Fallback a los defaults de bio.me cuando no hay override.
+   * Fallback a los defaults de Pergamo cuando no hay override.
    */
-  --brand-accent:      #C9A84C;                /* Cobalt Rich — bio.me default brand */
+  --brand-accent:      #C9A84C;                /* Cobalt Rich — Pergamo default brand */
   --brand-accent-soft: rgba(201, 168, 76, 0.12); /* fallback soft */
   --brand-accent-ring: rgba(201, 168, 76, 0.32); /* fallback ring */
   --brand-font:        var(--font-inter);       /* fallback a Inter */

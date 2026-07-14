@@ -1,5 +1,5 @@
 /**
- * Reglas de monetización de bio.me — ÚNICA fuente de verdad.
+ * Reglas de monetización de Pergamo — ÚNICA fuente de verdad.
  *
  * Si cambias la comisión, cámbiala SOLO aquí: el webhook, el checkout de
  * regalos y las pantallas de ingresos leen estas constantes.

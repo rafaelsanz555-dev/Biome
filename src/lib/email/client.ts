@@ -1,5 +1,5 @@
 /**
- * bio.me · Email transactional client (Resend)
+ * Pergamo · Email transactional client (Resend)
  *
  * Wrapper sobre Resend SDK con graceful degradation: si RESEND_API_KEY
  * no está configurado, los emails son no-op (no rompen la app).
@@ -8,7 +8,7 @@
 import { Resend } from 'resend'
 
 const apiKey = process.env.RESEND_API_KEY
-const fromAddress = process.env.RESEND_FROM_ADDRESS || 'bio.me <noreply@bio.me>'
+const fromAddress = process.env.RESEND_FROM_ADDRESS || 'Pergamo <noreply@pergamo.co>'
 
 let resendClient: Resend | null = null
 function getClient(): Resend | null {

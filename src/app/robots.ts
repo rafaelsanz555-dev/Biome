@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/dashboard/', '/api/', '/auth/'],
             },
         ],
-        sitemap: 'https://bio.me/sitemap.xml',
-        host: 'https://bio.me',
+        sitemap: 'https://pergamo.co/sitemap.xml',
+        host: 'https://pergamo.co',
     }
 }

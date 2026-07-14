@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Bell, Gift, Star, DollarSign } from 'lucide-react'
+import { Bell, BookOpen, Gift, Star, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function NotificationsPage() {
@@ -52,12 +52,17 @@ export default async function NotificationsPage() {
                         {notifications.map((notif: any) => {
                             const isGift = notif.type === 'gift'
                             const isSub = notif.type === 'subscription'
-                            const Icon = isGift ? Gift : isSub ? Star : DollarSign
+                            const isNewEpisode = notif.type === 'new_episode'
+                            const Icon = isGift ? Gift : isSub ? Star : isNewEpisode ? BookOpen : DollarSign
                             const iconColor = isGift ? 'text-pink-500' : isSub ? 'text-yellow-400' : 'text-[#D8BA63]'
                             const iconBg = isGift ? 'bg-pink-500/10' : isSub ? 'bg-yellow-400/10' : 'bg-[#C9A84C]/10'
-                            
+
                             const actorName = notif.actor?.username || 'Alguien'
                             const actorAvatar = notif.actor?.avatar_url
+                            // Nuevo capítulo: el click lleva directo a leerlo
+                            const episodeHref = isNewEpisode && notif.reference_id && notif.actor?.username
+                                ? `/${notif.actor.username}/${notif.reference_id}`
+                                : null
 
                             return (
                                 <div key={notif.id} className={`p-4 flex gap-4 transition-colors hover:bg-[#1A1C23] ${!notif.is_read ? 'bg-[#C9A84C]/5' : ''}`}>
@@ -79,7 +84,13 @@ export default async function NotificationsPage() {
                                             <Link href={`/${actorName}`} className="font-bold text-white hover:underline">@{actorName}</Link>
                                             {' '}{!notif.is_read && <span className="inline-block w-2 h-2 rounded-full bg-[#C9A84C] ml-1"></span>}
                                         </p>
-                                        <p className="text-base text-gray-100 mt-0.5">{notif.message}</p>
+                                        {episodeHref ? (
+                                            <Link href={episodeHref} className="block text-base text-gray-100 mt-0.5 hover:text-[#D8BA63] transition">
+                                                {notif.message} <span className="text-xs font-bold text-[#C9A84C]">Leer →</span>
+                                            </Link>
+                                        ) : (
+                                            <p className="text-base text-gray-100 mt-0.5">{notif.message}</p>
+                                        )}
                                         <p className="text-xs text-gray-600 mt-2 font-medium">
                                             {new Date(notif.created_at).toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </p>

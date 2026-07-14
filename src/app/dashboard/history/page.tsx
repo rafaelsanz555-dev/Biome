@@ -45,7 +45,7 @@ export default async function HistoryPage() {
                     <Clock size={22} className="text-[#C9A84C]" />
                     Historial
                 </h1>
-                <p className="text-sm text-gray-500">Tu actividad reciente en bio.me.</p>
+                <p className="text-sm text-gray-500">Tu actividad reciente en Pergamo.</p>
             </div>
 
             {activity.length === 0 ? (

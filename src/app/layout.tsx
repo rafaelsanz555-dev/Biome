@@ -37,20 +37,20 @@ const ibmPlex = IBM_Plex_Serif({
 })
 
 export const metadata: Metadata = {
-    title: { default: 'bio.me — Tu historia. Tus ingresos.', template: '%s · bio.me' },
+    title: { default: 'Pergamo — Historias reales, contadas capítulo a capítulo.', template: '%s · Pergamo' },
     description: 'La plataforma para storytellers. Publica tu vida en capítulos y gana ingresos reales de quienes no pueden dejar de leerte.',
-    metadataBase: new URL('https://bio.me'),
+    metadataBase: new URL('https://pergamo.co'),
     openGraph: {
         type: 'website',
         locale: 'es_ES',
-        url: 'https://bio.me',
-        siteName: 'bio.me',
-        title: 'bio.me — Tu historia. Tus ingresos.',
+        url: 'https://pergamo.co',
+        siteName: 'Pergamo',
+        title: 'Pergamo — Historias reales, contadas capítulo a capítulo.',
         description: 'La plataforma para storytellers. Publica tu vida en capítulos y gana ingresos reales.',
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'bio.me — Tu historia. Tus ingresos.',
+        title: 'Pergamo — Historias reales, contadas capítulo a capítulo.',
         description: 'La plataforma para storytellers.',
     },
     robots: { index: true, follow: true },

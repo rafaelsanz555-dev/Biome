@@ -134,22 +134,22 @@ export default async function AdminRevenuePage() {
                 <div className="rounded-2xl border border-[#C9A84C]/20 bg-[#111] p-5">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C9A84C]/70 mb-1">Suscripciones</p>
                     <p className="text-2xl font-bold text-[#C9A84C]">${subscriptionRevenue.toFixed(2)}</p>
-                    <p className="text-xs text-[#666] mt-1">${(subscriptionRevenue * 0.10).toFixed(2)} para bio.me</p>
+                    <p className="text-xs text-[#666] mt-1">${(subscriptionRevenue * 0.10).toFixed(2)} para Pergamo</p>
                 </div>
                 <div className="rounded-2xl border border-[#FFB74D]/20 bg-[#111] p-5">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#FFB74D]/70 mb-1">Pay-Per-View</p>
                     <p className="text-2xl font-bold text-[#FFB74D]">${ppvRevenue.toFixed(2)}</p>
-                    <p className="text-xs text-[#666] mt-1">${(ppvRevenue * 0.10).toFixed(2)} para bio.me</p>
+                    <p className="text-xs text-[#666] mt-1">${(ppvRevenue * 0.10).toFixed(2)} para Pergamo</p>
                 </div>
                 <div className="rounded-2xl border border-[#F48FB1]/20 bg-[#111] p-5">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#F48FB1]/70 mb-1">Regalos</p>
                     <p className="text-2xl font-bold text-[#F48FB1]">${totalGiftRevenue.toFixed(2)}</p>
-                    <p className="text-xs text-[#666] mt-1">${totalGiftPlatformFee.toFixed(2)} para bio.me (12%)</p>
+                    <p className="text-xs text-[#666] mt-1">${totalGiftPlatformFee.toFixed(2)} para Pergamo (12%)</p>
                 </div>
                 <div className="rounded-2xl border border-[#64B5F6]/20 bg-[#111] p-5">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#64B5F6]/70 mb-1">Propinas</p>
                     <p className="text-2xl font-bold text-[#64B5F6]">${tipRevenue.toFixed(2)}</p>
-                    <p className="text-xs text-[#666] mt-1">${(tipRevenue * 0.10).toFixed(2)} para bio.me</p>
+                    <p className="text-xs text-[#666] mt-1">${(tipRevenue * 0.10).toFixed(2)} para Pergamo</p>
                 </div>
             </div>
 
@@ -168,7 +168,7 @@ export default async function AdminRevenuePage() {
                                 <th className="text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-6 py-3">Tipo</th>
                                 <th className="text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">De</th>
                                 <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Monto</th>
-                                <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Para bio.me</th>
+                                <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Para Pergamo</th>
                                 <th className="text-center text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Estado</th>
                                 <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-6 py-3">Fecha</th>
                             </tr>
@@ -234,7 +234,7 @@ export default async function AdminRevenuePage() {
                                 <th className="text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">De</th>
                                 <th className="text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Para</th>
                                 <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Monto</th>
-                                <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">bio.me (12%)</th>
+                                <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Pergamo (12%)</th>
                                 <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-4 py-3">Escritor (88%)</th>
                                 <th className="text-right text-[10px] font-semibold uppercase tracking-[0.15em] text-[#666] px-6 py-3">Fecha</th>
                             </tr>

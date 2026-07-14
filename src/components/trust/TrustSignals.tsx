@@ -72,7 +72,7 @@ export function TrustSignals({
                         <p className="text-xs text-gray-500 mt-0.5">
                             {verificationMethod === 'id' && 'Identidad confirmada por documento'}
                             {verificationMethod === 'social' && 'Verificado por redes sociales'}
-                            {verificationMethod === 'manual' && 'Revisado por el equipo de bio.me'}
+                            {verificationMethod === 'manual' && 'Revisado por el equipo de Pergamo'}
                             {!verificationMethod && 'Cuenta verificada'}
                         </p>
                     </div>
@@ -130,7 +130,7 @@ export function TrustSignals({
             )}
 
             <p className="text-[10px] text-gray-600 italic pt-2 border-t border-gray-800">
-                bio.me aumenta la confianza en cada perfil pero no certifica la veracidad absoluta de cada historia.
+                Pergamo aumenta la confianza en cada perfil pero no certifica la veracidad absoluta de cada historia.
             </p>
         </div>
     )

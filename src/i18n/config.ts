@@ -1,5 +1,5 @@
 /**
- * bio.me · i18n configuration
+ * Pergamo · i18n configuration
  *
  * Estrategia: NO route-based locale (ni /es/... ni /en/...).
  * El idioma vive en una cookie `NEXT_LOCALE` + `profiles.preferred_language`.

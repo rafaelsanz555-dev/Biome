@@ -27,7 +27,7 @@ export async function Navbar() {
 
                 <div className="flex items-center gap-8">
                     <Link href="/" className="font-bold text-2xl text-[#0D0D0D] hover:opacity-80 transition-opacity tracking-tight">
-                        bio<span className="text-[#C9A84C]">.me</span>
+                        Pergamo<span className="text-[#C9A84C]">.</span>
                     </Link>
                     <nav className="hidden md:flex items-center gap-2">
                         <Link href="/discover" className="text-sm font-semibold text-[#5D5142] hover:text-[#0D0D0D] hover:bg-[#0D0D0D]/5 px-3 py-2 rounded-lg transition-all">

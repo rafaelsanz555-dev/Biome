@@ -25,25 +25,25 @@ export default function OnboardingPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#0A0B0E] text-white">
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#FAF7F0] text-[#0D0D0D]">
             <div className="w-full max-w-md flex flex-col items-center space-y-8 relative z-10">
 
                 <div className="text-center">
-                    <Link href="/" className="font-bold text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-[#C9A84C]">
-                        bio<span className="text-white">.me</span>
+                    <Link href="/" className="font-black text-4xl tracking-tight hover:opacity-80 transition-opacity inline-block text-[#0D0D0D]">
+                        Pergamo<span className="text-[#C9A84C]">.</span>
                     </Link>
-                    <p className="text-gray-500 font-medium tracking-wide text-sm mt-1">
-                        Tu historia. Tu ingreso.
+                    <p className="text-[#0D0D0D]/50 font-medium tracking-wide text-sm mt-1">
+                        Historias reales, capítulo a capítulo.
                     </p>
                 </div>
 
-                <div className="w-full rounded-2xl p-8 bg-[#15171C] border border-gray-800 shadow-2xl">
+                <div className="w-full rounded-3xl p-8 bg-white border border-[#0D0D0D]/10 shadow-xl">
                     <div className="mb-6">
-                        <h1 className="font-bold text-xl text-white tracking-tight mb-1">
+                        <h1 className="font-serif font-black text-2xl text-[#0D0D0D] tracking-tight mb-1">
                             Completa tu perfil
                         </h1>
-                        <p className="text-sm text-gray-400">
-                            Elige tu nombre de usuario y cómo quieres usar bio.me.
+                        <p className="text-sm text-[#0D0D0D]/58">
+                            Elige tu nombre de usuario y cómo quieres usar Pergamo.
                         </p>
                     </div>
 
@@ -51,12 +51,12 @@ export default function OnboardingPage() {
 
                         {/* Username */}
                         <div className="space-y-2">
-                            <label htmlFor="username" className="text-sm font-bold text-gray-300">
+                            <label htmlFor="username" className="text-sm font-black text-[#0D0D0D]">
                                 Nombre de usuario
                             </label>
-                            <div className="flex rounded-xl overflow-hidden bg-[#1A1C23] border border-gray-700 focus-within:border-[#C9A84C]/50 transition">
-                                <span className="inline-flex items-center px-3 text-xs font-medium shrink-0 text-gray-500 bg-[#0A0B0E] border-r border-gray-700">
-                                    bio.me/@
+                            <div className="flex rounded-xl overflow-hidden bg-[#FAF7F0] border border-[#0D0D0D]/12 focus-within:border-[#C9A84C] transition">
+                                <span className="inline-flex items-center px-3 text-xs font-bold shrink-0 text-[#0D0D0D]/45 bg-[#0D0D0D]/5 border-r border-[#0D0D0D]/10">
+                                    pergamo.co/
                                 </span>
                                 <input
                                     id="username"
@@ -69,18 +69,18 @@ export default function OnboardingPage() {
                                     pattern="[a-z0-9_]+"
                                     autoFocus
                                     onChange={(e) => { e.target.value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }}
-                                    className="flex-1 h-11 text-sm font-medium px-3 bg-transparent text-white placeholder:text-gray-600 focus:outline-none"
+                                    className="flex-1 h-11 text-sm font-medium px-3 bg-transparent text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus:outline-none"
                                 />
                             </div>
-                            <p className="text-xs text-gray-600">
-                                3–20 caracteres. Solo minúsculas, números y guiones bajos. Tu URL será <code className="text-[#D8BA63] font-mono">bio.me/tunombre</code>.
+                            <p className="text-xs text-[#0D0D0D]/45">
+                                3–20 caracteres. Solo minúsculas, números y guiones bajos. Tu URL será <code className="text-[#8A6A1C] font-mono">pergamo.co/tunombre</code>.
                             </p>
                         </div>
 
                         {/* Role */}
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-gray-300 block">
-                                ¿Qué vienes a hacer en bio.me?
+                            <label className="text-sm font-black text-[#0D0D0D] block">
+                                ¿Qué vienes a hacer en Pergamo?
                             </label>
                             <input type="hidden" name="role" value={selectedRole} />
                             <div className="grid grid-cols-2 gap-3">
@@ -90,26 +90,26 @@ export default function OnboardingPage() {
                                     onClick={() => setSelectedRole('creator')}
                                     className={`relative flex flex-col gap-2 p-4 rounded-xl transition-all text-left ${
                                         selectedRole === 'creator'
-                                            ? 'border-2 border-[#C9A84C] bg-[#C9A84C]/10 shadow-lg shadow-[#C9A84C]/20 scale-[1.02]'
-                                            : 'border-2 border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
+                                            ? 'border-2 border-[#C9A84C] bg-[#C9A84C]/10 shadow-lg shadow-[#C9A84C]/10 scale-[1.02]'
+                                            : 'border-2 border-[#0D0D0D]/10 bg-[#FAF7F0] hover:border-[#0D0D0D]/25'
                                     }`}
                                 >
                                     {selectedRole === 'creator' && (
                                         <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-[#C9A84C] flex items-center justify-center">
-                                            <Check size={12} className="text-black stroke-[3]" />
+                                            <Check size={12} className="text-[#0D0D0D] stroke-[3]" />
                                         </div>
                                     )}
                                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                                        selectedRole === 'creator' ? 'bg-[#C9A84C]/20' : 'bg-gray-800/50'
+                                        selectedRole === 'creator' ? 'bg-[#C9A84C]/20' : 'bg-[#0D0D0D]/5'
                                     }`}>
-                                        <PenLine size={17} className={selectedRole === 'creator' ? 'text-[#D8BA63]' : 'text-gray-400'} />
+                                        <PenLine size={17} className={selectedRole === 'creator' ? 'text-[#8A6A1C]' : 'text-[#0D0D0D]/50'} />
                                     </div>
                                     <div>
-                                        <div className={`text-sm font-bold ${selectedRole === 'creator' ? 'text-white' : 'text-gray-300'}`}>
+                                        <div className="text-sm font-black text-[#0D0D0D]">
                                             Escribir
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-0.5 leading-snug">
-                                            Publicar mi historia y ganar dinero
+                                        <div className="text-xs text-[#0D0D0D]/55 mt-0.5 leading-snug">
+                                            Contar mi historia por capítulos
                                         </div>
                                     </div>
                                 </button>
@@ -119,26 +119,26 @@ export default function OnboardingPage() {
                                     onClick={() => setSelectedRole('reader')}
                                     className={`relative flex flex-col gap-2 p-4 rounded-xl transition-all text-left ${
                                         selectedRole === 'reader'
-                                            ? 'border-2 border-[#C9A84C] bg-[#C9A84C]/10 shadow-lg shadow-[#C9A84C]/20 scale-[1.02]'
-                                            : 'border-2 border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
+                                            ? 'border-2 border-[#C9A84C] bg-[#C9A84C]/10 shadow-lg shadow-[#C9A84C]/10 scale-[1.02]'
+                                            : 'border-2 border-[#0D0D0D]/10 bg-[#FAF7F0] hover:border-[#0D0D0D]/25'
                                     }`}
                                 >
                                     {selectedRole === 'reader' && (
                                         <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-[#C9A84C] flex items-center justify-center">
-                                            <Check size={12} className="text-black stroke-[3]" />
+                                            <Check size={12} className="text-[#0D0D0D] stroke-[3]" />
                                         </div>
                                     )}
                                     <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                                        selectedRole === 'reader' ? 'bg-[#C9A84C]/20' : 'bg-gray-800/50'
+                                        selectedRole === 'reader' ? 'bg-[#C9A84C]/20' : 'bg-[#0D0D0D]/5'
                                     }`}>
-                                        <BookOpen size={17} className={selectedRole === 'reader' ? 'text-[#D8BA63]' : 'text-gray-400'} />
+                                        <BookOpen size={17} className={selectedRole === 'reader' ? 'text-[#8A6A1C]' : 'text-[#0D0D0D]/50'} />
                                     </div>
                                     <div>
-                                        <div className={`text-sm font-bold ${selectedRole === 'reader' ? 'text-white' : 'text-gray-300'}`}>
+                                        <div className="text-sm font-black text-[#0D0D0D]">
                                             Leer
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-0.5 leading-snug">
-                                            Seguir y leer a mis escritores favoritos
+                                        <div className="text-xs text-[#0D0D0D]/55 mt-0.5 leading-snug">
+                                            Seguir y leer a mis autores favoritos
                                         </div>
                                     </div>
                                 </button>
@@ -147,40 +147,40 @@ export default function OnboardingPage() {
                         </div>
 
                         {state?.error && (
-                            <div className="text-sm p-3 rounded-xl text-red-400 bg-red-500/10 border border-red-500/20">
+                            <div className="text-sm p-3 rounded-xl text-red-700 bg-red-500/10 border border-red-500/20 font-bold">
                                 {state.error}
                             </div>
                         )}
 
                         {/* Aceptación de términos */}
-                        <label className="flex items-start gap-3 p-4 rounded-xl border border-gray-800 bg-[#0A0B0E] cursor-pointer hover:border-gray-700 transition">
+                        <label className="flex items-start gap-3 p-4 rounded-xl border border-[#0D0D0D]/10 bg-[#FAF7F0] cursor-pointer hover:border-[#0D0D0D]/25 transition">
                             <input
                                 type="checkbox"
                                 name="accept_terms"
                                 required
                                 className="mt-0.5 w-4 h-4 accent-[#C9A84C] cursor-pointer shrink-0"
                             />
-                            <span className="text-xs text-gray-400 leading-relaxed">
+                            <span className="text-xs text-[#0D0D0D]/65 leading-relaxed">
                                 He leído y acepto los{' '}
-                                <a href="/legal/terms" target="_blank" className="text-[#D8BA63] hover:underline">Términos de Servicio</a>,{' '}
+                                <a href="/legal/terms" target="_blank" className="text-[#8A6A1C] font-bold hover:underline">Términos de Servicio</a>,{' '}
                                 la{' '}
-                                <a href="/legal/privacy" target="_blank" className="text-[#D8BA63] hover:underline">Política de Privacidad</a>,{' '}
+                                <a href="/legal/privacy" target="_blank" className="text-[#8A6A1C] font-bold hover:underline">Política de Privacidad</a>,{' '}
                                 la{' '}
-                                <a href="/legal/content-policy" target="_blank" className="text-[#D8BA63] hover:underline">Política de Contenido</a>
+                                <a href="/legal/content-policy" target="_blank" className="text-[#8A6A1C] font-bold hover:underline">Política de Contenido</a>
                                 {selectedRole === 'creator' && (
                                     <>{' '}y los{' '}
-                                    <a href="/legal/creator-terms" target="_blank" className="text-[#D8BA63] hover:underline">Creator Terms</a></>
+                                    <a href="/legal/creator-terms" target="_blank" className="text-[#8A6A1C] font-bold hover:underline">Creator Terms</a></>
                                 )}
-                                {' '}de bio.me. Confirmo que tengo al menos 18 años.
+                                {' '}de Pergamo. Confirmo que tengo al menos 18 años.
                             </span>
                         </label>
 
                         <button
                             type="submit"
                             disabled={pending}
-                            className="w-full h-12 font-bold text-sm tracking-wide bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] rounded-xl shadow-lg shadow-[#C9A84C]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full h-12 font-black text-sm tracking-wide bg-[#0D0D0D] hover:bg-[#2A2418] text-[#FAF7F0] rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {pending ? 'Guardando...' : 'Empezar en bio.me →'}
+                            {pending ? 'Guardando...' : 'Empezar en Pergamo →'}
                         </button>
                     </form>
                 </div>
@@ -188,5 +188,3 @@ export default function OnboardingPage() {
         </div>
     )
 }
-
-

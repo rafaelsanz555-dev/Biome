@@ -61,7 +61,7 @@ export default async function SettingsPage() {
             <div className="mb-10 border-b border-white/5 pb-6">
                 <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#C9A84C]">Ajustes</p>
                 <h1 className="mb-2 font-serif text-4xl font-black tracking-tight text-white">
-                    {isCreator ? 'Tu perfil de escritor' : 'Tu cuenta en bio.me'}
+                    {isCreator ? 'Tu perfil de escritor' : 'Tu cuenta en Pergamo'}
                 </h1>
                 <p className="max-w-xl text-sm leading-relaxed text-gray-400">
                     {isCreator
@@ -75,7 +75,7 @@ export default async function SettingsPage() {
                         className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#C9A84C] transition hover:text-[#D8BA63]"
                     >
                         <ExternalLink size={12} />
-                        Ver mi perfil público en bio.me/{profile.username}
+                        Ver mi perfil público en Pergamo/{profile.username}
                     </Link>
                 )}
             </div>

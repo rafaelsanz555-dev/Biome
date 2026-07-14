@@ -48,7 +48,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         <Play size={12} fill="currentColor" className="text-white ml-0.5" />
                     </div>
                     <Link href="/dashboard" className="text-xl font-bold tracking-tight text-white hover:opacity-80 transition">
-                        bio.me
+                        Pergamo
                     </Link>
                 </div>
 
@@ -123,7 +123,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         <Play size={8} fill="currentColor" className="text-white ml-0.5" />
                     </div>
                     <Link href="/dashboard" className="font-bold text-lg text-white tracking-tight">
-                        bio.me
+                        Pergamo
                     </Link>
                 </div>
                 <div className="flex items-center gap-3">

@@ -8,7 +8,7 @@
  * Usa CSS variables scopadas al contenedor (no globales) → no hay leaking.
  *
  * Fallback: si el creator no tiene branding configurado, usa los defaults
- * de bio.me definidos en globals.css.
+ * de Pergamo definidos en globals.css.
  */
 
 interface CreatorBranding {
@@ -63,7 +63,7 @@ export function CreatorBrandProvider({ branding, children, className }: CreatorB
     const font = fontVarFor(branding?.font_family)
 
     // Solo inyectamos las vars que el creador customizó.
-    // Lo que no setea hereda del scope global (defaults de bio.me).
+    // Lo que no setea hereda del scope global (defaults de Pergamo).
     const style: React.CSSProperties = {}
     if (accent) {
         // @ts-expect-error: CSS custom properties

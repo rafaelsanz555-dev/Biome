@@ -1,5 +1,5 @@
 /**
- * bio.me · Email templates (HTML responsivos con marca cobalt)
+ * Pergamo · Email templates (HTML responsivos con marca cobalt)
  *
  * Diseño: minimalista, editorial, dark tone con accent cobalto.
  * Compatible con Gmail / Outlook / Apple Mail.
@@ -25,7 +25,7 @@ function layout(opts: { preheader: string; bodyHtml: string }): string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>bio.me</title>
+<title>Pergamo</title>
 </head>
 <body style="margin:0;padding:0;background:#0A0B0E;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#E5E7EB;">
 <div style="display:none;max-height:0;overflow:hidden;color:transparent;">${opts.preheader}</div>
@@ -35,8 +35,8 @@ function layout(opts: { preheader: string; bodyHtml: string }): string {
 
 <!-- HEADER -->
 <tr><td style="padding:32px 32px 16px;border-bottom:1px solid #1f2937;">
-<div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#FFFFFF;">bio<span style="color:#2563EB;">.me</span></div>
-<div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">Tu historia · Tus ingresos</div>
+<div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#FFFFFF;">Pergamo<span style="color:#C9A84C;">.</span></div>
+<div style="font-size:11px;color:#6B7280;text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">Historias reales, capítulo a capítulo</div>
 </td></tr>
 
 <!-- BODY -->
@@ -44,9 +44,9 @@ function layout(opts: { preheader: string; bodyHtml: string }): string {
 
 <!-- FOOTER -->
 <tr><td style="padding:24px 32px;border-top:1px solid #1f2937;font-size:12px;color:#6B7280;">
-<p style="margin:0 0 8px;">bio.me — la plataforma para storytellers que cuentan vida real.</p>
+<p style="margin:0 0 8px;">Pergamo — la plataforma para storytellers que cuentan vida real.</p>
 <p style="margin:0;">
-<a href="${APP_URL}" style="color:#2563EB;text-decoration:none;">Visitar bio.me</a>
+<a href="${APP_URL}" style="color:#2563EB;text-decoration:none;">Visitar Pergamo</a>
 &nbsp;·&nbsp;
 <a href="${APP_URL}/legal/privacy" style="color:#6B7280;text-decoration:none;">Privacidad</a>
 &nbsp;·&nbsp;
@@ -85,24 +85,24 @@ function hint(text: string): string {
 export function welcomeEmail(opts: { username: string; fullName?: string; isCreator: boolean }): { subject: string; html: string; text: string } {
     const name = opts.fullName || opts.username
     const subject = opts.isCreator
-        ? `Bienvenido a bio.me, ${name} — ya eres Founding Storyteller`
-        : `Bienvenido a bio.me, ${name}`
+        ? `Bienvenido a Pergamo, ${name} — ya eres Founding Storyteller`
+        : `Bienvenido a Pergamo, ${name}`
 
     const body = opts.isCreator
         ? h1(`Hola, ${name}. Bienvenido al club fundador.`) +
-          p(`Eres uno de los primeros escritores en bio.me. Eso te hace <strong>Founding Storyteller</strong> — un badge permanente en tu perfil y plan gratuito de por vida cuando empecemos a cobrar.`) +
-          p(`Tu perfil está en <a href="${APP_URL}/${opts.username}" style="color:#60A5FA;">bio.me/${opts.username}</a>. Lo primero: completa tu identidad, escoge tu tema visual y publica tu primer episodio.`) +
+          p(`Eres uno de los primeros escritores en Pergamo. Eso te hace <strong>Founding Storyteller</strong> — un badge permanente en tu perfil y plan gratuito de por vida cuando empecemos a cobrar.`) +
+          p(`Tu perfil está en <a href="${APP_URL}/${opts.username}" style="color:#60A5FA;">Pergamo/${opts.username}</a>. Lo primero: completa tu identidad, escoge tu tema visual y publica tu primer episodio.`) +
           button('Ir a mi dashboard', `${APP_URL}/dashboard`) +
           hint('Tip: el primer episodio siempre es gratis para todos. Es tu hook. Empezá fuerte.')
         : h1(`Hola, ${name}.`) +
-          p(`Bienvenido a bio.me — la plataforma de narrativa real. Aquí leés vidas, no posts. Personas reales contando lo que vivieron.`) +
+          p(`Bienvenido a Pergamo — la plataforma de narrativa real. Aquí leés vidas, no posts. Personas reales contando lo que vivieron.`) +
           p(`Empieza explorando los escritores que ya están publicando.`) +
           button('Explorar creadores', `${APP_URL}/discover`)
 
     return {
         subject,
         html: layout({ preheader: subject, bodyHtml: body }),
-        text: `${name},\n\n${opts.isCreator ? 'Bienvenido al club fundador de bio.me.' : 'Bienvenido a bio.me.'}\n\nIr a tu dashboard: ${APP_URL}/dashboard`,
+        text: `${name},\n\n${opts.isCreator ? 'Bienvenido al club fundador de Pergamo.' : 'Bienvenido a Pergamo.'}\n\nIr a tu dashboard: ${APP_URL}/dashboard`,
     }
 }
 
@@ -110,18 +110,18 @@ export function welcomeEmail(opts: { username: string; fullName?: string; isCrea
 // 2. VERIFY EMAIL
 // ═══════════════════════════════════════════════════
 export function verifyEmailEmail(opts: { confirmUrl: string }): { subject: string; html: string; text: string } {
-    const subject = 'Confirma tu email en bio.me'
+    const subject = 'Confirma tu email en Pergamo'
     const body =
         h1('Un click para confirmar tu cuenta') +
-        p('Hiciste registro en bio.me. Para activar tu cuenta y empezar a leer/escribir, confirma que este email es tuyo.') +
+        p('Hiciste registro en Pergamo. Para activar tu cuenta y empezar a leer/escribir, confirma que este email es tuyo.') +
         button('Confirmar mi email', opts.confirmUrl) +
         p(`Si el botón no funciona, copia este link en tu navegador:<br><span style="color:#60A5FA;word-break:break-all;font-size:13px;">${opts.confirmUrl}</span>`) +
         hint('Si no creaste esta cuenta, ignora este email. El link expira en 24h.')
 
     return {
         subject,
-        html: layout({ preheader: 'Confirma tu cuenta de bio.me', bodyHtml: body }),
-        text: `Confirma tu cuenta de bio.me:\n\n${opts.confirmUrl}\n\nSi no fuiste tú, ignora este email.`,
+        html: layout({ preheader: 'Confirma tu cuenta de Pergamo', bodyHtml: body }),
+        text: `Confirma tu cuenta de Pergamo:\n\n${opts.confirmUrl}\n\nSi no fuiste tú, ignora este email.`,
     }
 }
 
@@ -129,7 +129,7 @@ export function verifyEmailEmail(opts: { confirmUrl: string }): { subject: strin
 // 3. RESET PASSWORD
 // ═══════════════════════════════════════════════════
 export function resetPasswordEmail(opts: { resetUrl: string }): { subject: string; html: string; text: string } {
-    const subject = 'Recupera tu contraseña de bio.me'
+    const subject = 'Recupera tu contraseña de Pergamo'
     const body =
         h1('Cambia tu contraseña') +
         p('Recibimos una solicitud para resetear tu contraseña. Click en el botón para crear una nueva.') +
@@ -139,8 +139,8 @@ export function resetPasswordEmail(opts: { resetUrl: string }): { subject: strin
 
     return {
         subject,
-        html: layout({ preheader: 'Reset password bio.me', bodyHtml: body }),
-        text: `Reset password bio.me:\n\n${opts.resetUrl}\n\nIgnora si no fuiste tú.`,
+        html: layout({ preheader: 'Reset password Pergamo', bodyHtml: body }),
+        text: `Reset password Pergamo:\n\n${opts.resetUrl}\n\nIgnora si no fuiste tú.`,
     }
 }
 
@@ -182,7 +182,7 @@ export function subscriptionSuccessCreatorEmail(opts: {
     amount: number
     earnings: number
 }): { subject: string; html: string; text: string } {
-    const subject = `🎉 Tienes un nuevo suscriptor en bio.me`
+    const subject = `🎉 Tienes un nuevo suscriptor en Pergamo`
     const body =
         h1(`¡Felicidades, ${opts.creatorName}!`) +
         p(`<strong style="color:#FFFFFF;">${opts.subscriberName}</strong> se acaba de suscribir a tu serie. Eso significa que tu narrativa los enganchó lo suficiente para que apoyen tu trabajo cada mes.`) +
@@ -190,7 +190,7 @@ export function subscriptionSuccessCreatorEmail(opts: {
 <tr><td style="padding:20px;">
 <p style="margin:0;font-size:13px;color:#9CA3AF;">Tu ganancia este mes</p>
 <p style="margin:4px 0 0;font-size:24px;font-weight:700;color:#60A5FA;">$${opts.earnings.toFixed(2)}</p>
-<p style="margin:8px 0 0;font-size:11px;color:#6B7280;">88% del pago de $${opts.amount.toFixed(2)} · 12% comisión bio.me</p>
+<p style="margin:8px 0 0;font-size:11px;color:#6B7280;">88% del pago de $${opts.amount.toFixed(2)} · 12% comisión Pergamo</p>
 </td></tr></table>` +
         button('Ver mi panel de monetización', `${APP_URL}/dashboard/billing`) +
         hint('Sigue publicando con la frecuencia que prometiste. La constancia es lo que convierte un suscriptor en lector de por vida.')

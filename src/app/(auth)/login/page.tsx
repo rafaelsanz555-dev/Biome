@@ -29,27 +29,27 @@ export default async function LoginPage({
             <div className="grid min-h-screen md:grid-cols-[1fr_520px]">
                 <section className="hidden border-r border-[#0D0D0D]/10 bg-[#0D0D0D] p-10 text-[#FAF7F0] md:flex md:flex-col md:justify-between">
                     <Link href="/" className="text-3xl font-black tracking-tight">
-                        bio<span className="text-[#C9A84C]">.me</span>
+                        Pergamo<span className="text-[#C9A84C]">.</span>
                     </Link>
                     <div>
-                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#C9A84C]">Your story. Your income.</p>
+                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#C9A84C]">Historias reales, capítulo a capítulo</p>
                         <h1 className="mt-4 max-w-xl font-serif text-6xl font-black leading-tight">
-                            Entra al estudio donde tu historia empieza a vender.
+                            Cada vida es una serie que merece contarse.
                         </h1>
                         <p className="mt-5 max-w-lg text-sm leading-7 text-[#FAF7F0]/64">
-                            Publica el primer capitulo gratis, crea una serie, mide lectores y convierte apoyo en ingresos dignos.
+                            Lee vidas reales publicadas como series, sigue a sus autores y — si tienes una historia — cuéntala capítulo a capítulo.
                         </p>
                     </div>
-                    <p className="text-xs font-bold text-[#FAF7F0]/42">Publicar es gratis para los primeros escritores. Leer el primer capítulo, siempre.</p>
+                    <p className="text-xs font-bold text-[#FAF7F0]/42">El primer capítulo de cada historia es gratis, siempre.</p>
                 </section>
 
                 <main className="flex items-center justify-center px-4 py-10">
                     <div className="w-full max-w-md">
                         <div className="mb-8 text-center md:hidden">
                             <Link href="/" className="text-4xl font-black tracking-tight">
-                                bio<span className="text-[#C9A84C]">.me</span>
+                                Pergamo<span className="text-[#C9A84C]">.</span>
                             </Link>
-                            <p className="mt-2 text-sm font-bold text-[#0D0D0D]/50">Tu historia. Tu ingreso.</p>
+                            <p className="mt-2 text-sm font-bold text-[#0D0D0D]/50">Historias reales, capítulo a capítulo.</p>
                         </div>
 
                         <div className="rounded-3xl border border-[#0D0D0D]/10 bg-white p-7 shadow-xl md:p-9">

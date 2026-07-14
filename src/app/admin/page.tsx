@@ -88,7 +88,7 @@ export default async function AdminOverview() {
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#FAF7F0] tracking-tight">Panel General</h1>
-                <p className="text-[#666] text-sm mt-1">Vista general de bio.me en tiempo real</p>
+                <p className="text-[#666] text-sm mt-1">Vista general de Pergamo en tiempo real</p>
             </div>
 
             {/* Revenue highlight */}
@@ -129,8 +129,8 @@ export default async function AdminOverview() {
             {/* Content & Financial stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard label="Episodios Totales" value={stats.totalEpisodes} sub={`${stats.totalPublished} publicados`} />
-                <StatCard label="Transacciones" value={stats.transactionCount} sub={`$${stats.platformFeeFromTransactions.toFixed(2)} para bio.me`} />
-                <StatCard label="Regalos Enviados" value={stats.giftCount} sub={`$${stats.platformFeeFromGifts.toFixed(2)} para bio.me (12%)`} accent />
+                <StatCard label="Transacciones" value={stats.transactionCount} sub={`$${stats.platformFeeFromTransactions.toFixed(2)} para Pergamo`} />
+                <StatCard label="Regalos Enviados" value={stats.giftCount} sub={`$${stats.platformFeeFromGifts.toFixed(2)} para Pergamo (12%)`} accent />
                 <StatCard label="Revenue Bruto" value={`$${stats.totalGrossRevenue.toFixed(2)}`} sub="Generado por escritores" />
             </div>
 

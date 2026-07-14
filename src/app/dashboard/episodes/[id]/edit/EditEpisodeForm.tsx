@@ -271,7 +271,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                 )}
                 {forcedFreeNotice && (
                     <div className="p-3 rounded-lg bg-[#C9A84C]/10 border border-[#C9A84C]/30 text-sm text-[#D8BA63]">
-                        Este es el primer capítulo de la historia, así que se publicó <strong>gratis</strong> (regla bio.me: el gancho siempre es gratis).
+                        Este es el primer capítulo de la historia, así que se publicó <strong>gratis</strong> (regla Pergamo: el gancho siempre es gratis).
                     </div>
                 )}
 

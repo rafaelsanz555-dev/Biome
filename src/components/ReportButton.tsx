@@ -79,7 +79,7 @@ export function ReportButton({ targetType, targetId, compact = false }: Props) {
                             </div>
                         ) : (
                             <>
-                                <p className="text-sm text-gray-400 mb-4">Ayúdanos a mantener bio.me un espacio seguro. Cuéntanos qué pasó.</p>
+                                <p className="text-sm text-gray-400 mb-4">Ayúdanos a mantener Pergamo un espacio seguro. Cuéntanos qué pasó.</p>
                                 <div className="space-y-2 mb-4">
                                     {REASONS.map((r) => (
                                         <label key={r.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reason === r.value ? 'border-[#C9A84C]/50 bg-[#C9A84C]/5' : 'border-gray-800 hover:border-gray-700'}`}>

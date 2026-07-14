@@ -5,7 +5,7 @@ import { updateBranding } from './brandingActions'
 import { track } from '@/lib/analytics'
 import { Check, Palette, Type, Sparkles } from 'lucide-react'
 
-// 12 acentos curados (la paleta premium) — Gold es el nuevo default de bio.me
+// 12 acentos curados (la paleta premium) — Gold es el nuevo default de Pergamo
 const ACCENTS = [
     { code: '#C9A84C', name: 'Gold' },
     { code: '#EF4444', name: 'Crimson' },
