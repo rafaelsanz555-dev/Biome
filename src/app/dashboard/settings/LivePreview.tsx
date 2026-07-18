@@ -137,15 +137,15 @@ export function LivePreview({ initial }: LivePreviewProps) {
             </div>
 
             {/* Mock browser frame */}
-            <div className="rounded-2xl overflow-hidden border border-gray-800 shadow-2xl bg-[#0A0B0E]">
+            <div className="overflow-hidden border border-[#171512]/12 bg-[#EEE5D5] shadow-xl">
                 {/* Fake URL bar */}
-                <div className="flex items-center gap-2 p-2 bg-[#15171C] border-b border-gray-800">
+                <div className="flex items-center gap-2 border-b border-[#171512]/10 bg-[#F8F4EA] p-2">
                     <div className="flex gap-1">
                         <span className="w-2 h-2 rounded-full bg-red-500/50"></span>
                         <span className="w-2 h-2 rounded-full bg-yellow-500/50"></span>
                         <span className="w-2 h-2 rounded-full bg-[#C9A84C]/50"></span>
                     </div>
-                    <div className="flex-1 px-2 py-1 rounded-md bg-[#0A0B0E] text-[10px] text-gray-500 font-mono truncate">
+                    <div className="flex-1 truncate bg-white/55 px-2 py-1 font-mono text-[10px] text-[#8A8174]">
                         Pergamo/{initial?.username || 'tu-perfil'}
                     </div>
                 </div>
@@ -277,4 +277,3 @@ export function LivePreview({ initial }: LivePreviewProps) {
         </div>
     )
 }
-

@@ -76,12 +76,12 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
 
     return (
         <section id="comments" className="mt-12 space-y-6 scroll-mt-20">
-            <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
-                <MessageCircle className="text-[#D8BA63]" size={20} />
-                <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
+            <div className="flex items-center gap-3 border-b border-[#171512]/10 pb-4">
+                <MessageCircle className="text-[#A63D2D]" size={20} />
+                <h2 className="font-serif text-lg font-bold text-[#171512]">
                     {t('section_title')}
                 </h2>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-[#746A5C]">
                     {totalCount === 0
                         ? t('count_zero')
                         : totalCount === 1
@@ -93,14 +93,14 @@ export async function CommentSection({ episodeId, creatorId }: Props) {
             {user ? (
                 <CommentComposer episodeId={episodeId} parentId={null} />
             ) : (
-                <div className="rounded-xl border border-gray-800 bg-[#0F1114] p-5 text-sm text-gray-400">
-                    <Link href="/login" className="text-[#D8BA63] hover:text-[#E2C96E] font-semibold">Login</Link>
+                <div className="border border-[#171512]/10 bg-[#FFFCF5] p-5 text-sm text-[#746A5C]">
+                    <Link href="/login" className="font-semibold text-[#A63D2D] hover:text-[#7F2D22]">Login</Link>
                     {' '}{t('login_prompt')}
                 </div>
             )}
 
             {roots.length === 0 ? (
-                <p className="text-sm text-gray-500 italic py-8 text-center">
+                <p className="py-8 text-center text-sm italic text-[#746A5C]">
                     {t('empty_state')}
                 </p>
             ) : (

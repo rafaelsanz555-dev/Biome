@@ -4,7 +4,6 @@ import { Lock, Calendar, BookOpen, ShieldCheck, Heart, X } from 'lucide-react'
 
 interface HonestPaywallProps {
     creatorUsername: string
-    creatorName: string
     subPrice: number
     creatorIdForSub: string
     episodeId: string
@@ -25,47 +24,47 @@ interface HonestPaywallProps {
  */
 export function HonestPaywall(props: HonestPaywallProps) {
     const {
-        creatorUsername, creatorName, subPrice, creatorIdForSub, episodeId,
+        creatorUsername, subPrice, creatorIdForSub, episodeId,
         ppvPrice, isSubscriptionOnly,
         seriesStatus, frequencyPromise, postingFrequency,
         totalEpisodes, isVerified, daysSinceLastEpisode,
     } = props
 
     return (
-        <div className="rounded-2xl border border-gray-800 bg-gradient-to-b from-[#15171C] to-[#0F1114] overflow-hidden my-8">
+        <div className="my-8 overflow-hidden border border-[#171512]/10 bg-[#FFFCF5]">
             <div className="p-8 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center mx-auto mb-5">
-                    <Lock className="w-6 h-6 text-[#D8BA63]" />
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center bg-[#A63D2D]/8">
+                    <Lock className="h-6 w-6 text-[#A63D2D]" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                <h2 className="mb-2 font-serif text-2xl font-bold text-[#171512]">
                     Continúa la historia
                 </h2>
-                <p className="text-gray-400 text-sm max-w-md mx-auto mb-6">
-                    Suscríbete a <strong className="text-white">@{creatorUsername}</strong> y desbloquea todo el archivo + cada nuevo episodio.
+                <p className="mx-auto mb-6 max-w-md text-sm text-[#746A5C]">
+                    Suscríbete a <strong className="text-[#171512]">@{creatorUsername}</strong> y desbloquea todo el archivo + cada nuevo episodio.
                 </p>
 
                 {/* Trust + continuity panel */}
-                <div className="bg-black/30 rounded-xl p-4 mb-6 max-w-sm mx-auto space-y-2.5 text-left">
+                <div className="mx-auto mb-6 max-w-sm space-y-2.5 bg-[#F0E8D9] p-4 text-left">
                     {totalEpisodes && totalEpisodes > 0 && (
                         <div className="flex items-center gap-2.5 text-sm">
                             <BookOpen className="text-[#D8BA63]" size={14} />
-                            <span className="text-gray-300">
-                                <strong className="text-white">{totalEpisodes}</strong> episodios ya publicados
+                            <span className="text-[#5F574B]">
+                                <strong className="text-[#171512]">{totalEpisodes}</strong> episodios ya publicados
                             </span>
                         </div>
                     )}
                     {(frequencyPromise || (postingFrequency && postingFrequency !== 'irregular')) && (
                         <div className="flex items-center gap-2.5 text-sm">
                             <Calendar className="text-[#D8BA63]" size={14} />
-                            <span className="text-gray-300">
-                                Publica <strong className="text-white">{frequencyPromise || postingFrequency}</strong>
+                            <span className="text-[#5F574B]">
+                                Publica <strong className="text-[#171512]">{frequencyPromise || postingFrequency}</strong>
                             </span>
                         </div>
                     )}
                     {seriesStatus === 'active' && (
                         <div className="flex items-center gap-2.5 text-sm">
                             <span className="w-2 h-2 rounded-full bg-[#D8BA63] animate-pulse"></span>
-                            <span className="text-gray-300">Serie activa — historias en curso</span>
+                            <span className="text-[#5F574B]">Serie activa — historias en curso</span>
                         </div>
                     )}
                     {seriesStatus === 'paused' && (
@@ -77,7 +76,7 @@ export function HonestPaywall(props: HonestPaywallProps) {
                     {isVerified && (
                         <div className="flex items-center gap-2.5 text-sm">
                             <ShieldCheck className="text-[#D8BA63]" size={14} />
-                            <span className="text-gray-300">Storyteller verificado por Pergamo</span>
+                            <span className="text-[#5F574B]">Storyteller verificado por Pergamo</span>
                         </div>
                     )}
                 </div>
@@ -91,9 +90,9 @@ export function HonestPaywall(props: HonestPaywallProps) {
 
                 {!isSubscriptionOnly && ppvPrice && (
                     <div className="mt-3">
-                        <span className="text-gray-500 text-[10px] uppercase tracking-widest block mb-2">o solo este episodio</span>
+                        <span className="mb-2 block text-[10px] uppercase tracking-widest text-[#746A5C]">o solo este episodio</span>
                         <form action={`/api/checkout?type=ppv&episodeId=${episodeId}`} method="POST">
-                            <Button type="submit" variant="outline" className="border-gray-700 bg-transparent text-gray-300 hover:bg-white/5 font-semibold h-10 px-6 rounded-xl">
+                            <Button type="submit" variant="outline" className="h-10 border-[#171512]/15 bg-transparent px-6 font-semibold text-[#171512] hover:bg-[#F0E8D9]">
                                 Desbloquear por ${ppvPrice}
                             </Button>
                         </form>
@@ -101,12 +100,12 @@ export function HonestPaywall(props: HonestPaywallProps) {
                 )}
 
                 {/* Honest fineprint */}
-                <div className="mt-6 pt-6 border-t border-gray-800 text-[11px] text-gray-500 space-y-1.5 max-w-sm mx-auto">
+                <div className="mx-auto mt-6 max-w-sm space-y-1.5 border-t border-[#171512]/10 pt-6 text-[11px] text-[#746A5C]">
                     <p className="flex items-center justify-center gap-2">
-                        <X size={11} className="text-gray-600" /> Cancela cuando quieras, sin preguntas
+                        <X size={11} className="text-[#8A8174]" /> Cancela cuando quieras, sin preguntas
                     </p>
                     <p className="flex items-center justify-center gap-2">
-                        <Heart size={11} className="text-gray-600" /> El escritor recibe el 88% de cada suscripción
+                        <Heart size={11} className="text-[#8A8174]" /> El escritor recibe el 88% de cada suscripción
                     </p>
                     {daysSinceLastEpisode !== null && daysSinceLastEpisode !== undefined && daysSinceLastEpisode > 60 && (
                         <p className="text-amber-400 pt-2 italic">
@@ -118,5 +117,3 @@ export function HonestPaywall(props: HonestPaywallProps) {
         </div>
     )
 }
-
-

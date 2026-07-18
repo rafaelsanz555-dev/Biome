@@ -21,19 +21,20 @@ export default async function DraftsPage({ searchParams }: { searchParams: Promi
     return (
         <div className="space-y-6">
             {saved === '1' && (
-                <div className="rounded-xl border border-[#C9A84C]/30 bg-[#C9A84C]/10 px-4 py-3 text-sm text-[#D8BA63]">
+                <div className="border border-[#274C43]/20 bg-[#274C43]/8 px-4 py-3 text-sm text-[#274C43]">
                     <strong>✓ Borrador guardado.</strong> Cuando lo termines, ábrelo y actívalo como publicado.
                 </div>
             )}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold mb-1 text-white">Borradores</h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">Mesa de trabajo</p>
+                    <h1 className="mt-2 font-serif text-4xl font-black text-[#171512]">Borradores</h1>
+                    <p className="mt-2 text-sm text-[#746A5C]">
                         {drafts?.length || 0} borrador{drafts?.length !== 1 ? 'es' : ''} sin publicar — solo tú los ves
                     </p>
                 </div>
                 <Link href="/dashboard/episodes/new">
-                    <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] transition-all shadow-lg shadow-[#C9A84C]/20">
+                    <button className="inline-flex h-11 items-center gap-2 rounded-full bg-[#A63D2D] px-5 text-sm font-black text-white transition hover:bg-[#873023]">
                         <PenLine size={14} />
                         Escribir nuevo
                     </button>
@@ -41,14 +42,14 @@ export default async function DraftsPage({ searchParams }: { searchParams: Promi
             </div>
 
             {!drafts || drafts.length === 0 ? (
-                <div className="p-14 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-[#C9A84C]/10">
-                        <FileText size={22} className="text-[#C9A84C]" />
+                <div className="border border-dashed border-[#171512]/18 bg-white/35 p-14 text-center">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center bg-[#A63D2D]/8">
+                        <FileText size={22} className="text-[#A63D2D]" />
                     </div>
-                    <p className="text-xl font-bold mb-2 text-white">Sin borradores</p>
-                    <p className="text-sm mb-6 text-gray-400">Guarda ideas antes de publicarlas.</p>
+                    <p className="mb-2 font-serif text-2xl font-black text-[#171512]">Sin borradores</p>
+                    <p className="mb-6 text-sm text-[#746A5C]">Guarda ideas antes de publicarlas.</p>
                     <Link href="/dashboard/episodes/new">
-                        <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C] text-[#0D0D0D] hover:bg-[#C9A84C] transition-colors shadow-lg shadow-[#C9A84C]/20">
+                        <button className="inline-flex items-center gap-2 rounded-full bg-[#171512] px-6 py-2.5 text-sm font-black text-white transition hover:bg-[#A63D2D]">
                             <PlusCircle size={15} />
                             Empezar un borrador
                         </button>
@@ -59,11 +60,11 @@ export default async function DraftsPage({ searchParams }: { searchParams: Promi
                     {drafts.map((episode: any) => (
                         <div
                             key={episode.id}
-                            className="rounded-2xl border border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center overflow-hidden bg-[#15171C] hover:border-gray-700 transition-all"
+                            className="flex flex-col items-start justify-between overflow-hidden border border-[#171512]/10 bg-[#FFFCF5] transition hover:border-[#A63D2D]/30 sm:flex-row sm:items-center"
                         >
                             <div className="p-5 flex-1 min-w-0">
                                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                                    <h2 className="font-bold text-white text-base truncate">{episode.title}</h2>
+                                    <h2 className="truncate font-serif text-lg font-black text-[#171512]">{episode.title}</h2>
                                     <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-md bg-gray-800 text-gray-400">Borrador</span>
                                     {episode.seasons?.title && (
                                         <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border border-gray-700 text-gray-400">{episode.seasons.title}</span>
@@ -77,7 +78,7 @@ export default async function DraftsPage({ searchParams }: { searchParams: Promi
                             <div className="pb-4 sm:pb-0 px-5 sm:px-6 flex items-center gap-3 shrink-0">
                                 <Link
                                     href={`/dashboard/episodes/${episode.id}/edit`}
-                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-white/5 text-gray-200 hover:bg-[#C9A84C] hover:text-[#0D0D0D] transition"
+                                    className="inline-flex items-center gap-2 border border-[#171512]/12 px-4 py-2 text-xs font-bold text-[#574F45] transition hover:border-[#A63D2D]/35 hover:text-[#A63D2D]"
                                 >
                                     <Edit3 size={13} /> Editar y publicar
                                 </Link>
@@ -89,5 +90,4 @@ export default async function DraftsPage({ searchParams }: { searchParams: Promi
         </div>
     )
 }
-
 

@@ -24,7 +24,6 @@ export function AutosaveIndicator({ triggerKey, onSave, debounceMs = 4000 }: Pro
 
     useEffect(() => {
         if (!triggerKey) return
-        setStatus('idle')
         const t = setTimeout(async () => {
             setStatus('saving')
             try {

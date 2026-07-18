@@ -6,6 +6,7 @@ import { sendEmail } from '@/lib/email/client'
 import { welcomeEmail } from '@/lib/email/templates'
 import { z } from 'zod'
 import { profileRoleSchema, usernameSchema } from '@/lib/validation'
+import { recordLegalAcceptances, type LegalDocument } from '@/lib/legal'
 
 const onboardingSchema = z.object({
     username: usernameSchema,
@@ -71,6 +72,24 @@ export async function completeOnboarding(prevState: { error: string }, formData:
             console.error('[onboarding] creators.insert failed:', creatorError.message)
             return { error: 'No pudimos crear tu perfil de escritor. Intenta de nuevo en unos segundos.' }
         }
+    }
+
+    const documents: LegalDocument[] = ['terms', 'privacy', 'content_policy']
+    if (role === 'creator') documents.push('creator_terms')
+    try {
+        await recordLegalAcceptances({
+            userId: user.id,
+            documents,
+            context: 'onboarding',
+            metadata: { role },
+        })
+    } catch (acceptanceError) {
+        if (role === 'creator') {
+            await supabase.from('creators').delete().eq('profile_id', user.id)
+        }
+        await supabase.from('profiles').delete().eq('id', user.id)
+        console.error('[onboarding] legal acceptance failed:', acceptanceError)
+        return { error: 'No pudimos registrar tu aceptacion legal. Intenta de nuevo.' }
     }
 
     if (user.email) {

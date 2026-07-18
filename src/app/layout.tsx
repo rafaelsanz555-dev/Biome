@@ -82,7 +82,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     const messages = await getMessages()
 
     return (
-        <html lang={locale} suppressHydrationWarning>
+        <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
             <body
                 className={`${inter.variable} ${playfair.variable} ${crimson.variable} ${ibmPlex.variable} font-sans antialiased`}
                 suppressHydrationWarning

@@ -6,7 +6,7 @@ import { parseJsonBody } from '@/lib/validation'
 const reportSchema = z.object({
     target_type: z.enum(['episode', 'profile', 'comment']),
     target_id: z.string().min(8).max(80),
-    reason: z.enum(['copyright', 'harassment', 'explicit', 'spam', 'other']),
+    reason: z.enum(['copyright', 'harassment', 'explicit', 'privacy', 'impersonation', 'underage', 'spam', 'other']),
     description: z.string().trim().max(1000).optional().nullable(),
 })
 

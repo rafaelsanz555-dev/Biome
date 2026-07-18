@@ -1,91 +1,87 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Clock, Compass } from 'lucide-react'
+import { Bookmark, BookOpen, Compass } from 'lucide-react'
 
 export default async function HistoryPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Use transactions as a proxy for "recently engaged with" episodes
-    const { data: transactions } = await supabase
-        .from('transactions')
-        .select('*, profiles!creator_id(username, full_name, avatar_url)')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(20)
+    const { data: bookmarks } = user
+        ? await supabase
+            .from('reading_bookmarks')
+            .select('episode_id, reached_percent, completed, updated_at')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false })
+            .limit(40)
+        : { data: [] }
 
-    const { data: gifts } = await supabase
-        .from('gifts')
-        .select('*, profiles!recipient_id(username, full_name, avatar_url)')
-        .eq('sender_id', user?.id)
-        .order('created_at', { ascending: false })
-        .limit(20)
+    const episodeIds = (bookmarks || []).map((bookmark) => bookmark.episode_id)
+    const { data: episodes } = episodeIds.length
+        ? await supabase
+            .from('episodes')
+            .select('id, title, cover_image_url, creator_id')
+            .in('id', episodeIds)
+            .eq('is_published', true)
+        : { data: [] }
 
-    const activity = [
-        ...(transactions || []).map((t: any) => ({
-            id: 't-' + t.id,
-            type: t.transaction_type === 'subscription' ? 'Suscripción' : t.transaction_type === 'ppv' ? 'Compra de episodio' : t.transaction_type === 'tip' ? 'Propina' : 'Transacción',
-            date: t.created_at,
-            amount: t.amount,
-            profiles: t.profiles,
-        })),
-        ...(gifts || []).map((g: any) => ({
-            id: 'g-' + g.id,
-            type: `Regalo ${g.emoji || '✨'}`,
-            date: g.created_at,
-            amount: g.amount,
-            profiles: g.profiles,
-        })),
-    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    const creatorIds = Array.from(new Set((episodes || []).map((episode) => episode.creator_id)))
+    const { data: creators } = creatorIds.length
+        ? await supabase.from('profiles').select('id, username, full_name').in('id', creatorIds)
+        : { data: [] }
+
+    const episodeMap = new Map((episodes || []).map((episode) => [episode.id, episode]))
+    const creatorMap = new Map((creators || []).map((creator) => [creator.id, creator]))
+    const saved = (bookmarks || []).flatMap((bookmark) => {
+        const episode = episodeMap.get(bookmark.episode_id)
+        if (!episode) return []
+        return [{ ...bookmark, episode, creator: creatorMap.get(episode.creator_id) }]
+    })
 
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold mb-1 text-white flex items-center gap-2">
-                    <Clock size={22} className="text-[#C9A84C]" />
-                    Historial
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">Tu biblioteca</p>
+                <h1 className="mt-2 flex items-center gap-2 font-serif text-4xl font-black text-[#171512]">
+                    <Bookmark size={24} className="text-[#A63D2D]" />
+                    Guardados
                 </h1>
-                <p className="text-sm text-gray-500">Tu actividad reciente en Pergamo.</p>
+                <p className="mt-2 text-sm text-[#746A5C]">Lecturas abiertas y capítulos terminados, ordenados por tu última visita.</p>
             </div>
 
-            {activity.length === 0 ? (
-                <div className="p-14 text-center rounded-2xl border border-dashed border-gray-800 bg-[#15171C]">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-[#C9A84C]/10">
-                        <Clock size={22} className="text-[#C9A84C]" />
+            {saved.length === 0 ? (
+                <div className="border border-dashed border-[#171512]/18 bg-white/35 p-14 text-center">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center bg-[#A63D2D]/8">
+                        <BookOpen size={22} className="text-[#A63D2D]" />
                     </div>
-                    <p className="text-xl font-bold mb-2 text-white">Sin actividad todavía</p>
-                    <p className="text-sm mb-6 text-gray-400">Suscríbete a un escritor o manda un regalo para empezar.</p>
-                    <Link href="/discover">
-                        <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C] text-[#0D0D0D] hover:bg-[#C9A84C] transition-colors shadow-lg shadow-[#C9A84C]/20">
-                            <Compass size={15} />
-                            Explorar escritores
-                        </button>
+                    <p className="mb-2 font-serif text-2xl font-black text-[#171512]">Tu biblioteca está vacía</p>
+                    <p className="mb-6 text-sm text-[#746A5C]">Empieza una lectura y Pergamo guardará tu lugar automáticamente.</p>
+                    <Link href="/discover" className="inline-flex items-center gap-2 rounded-full bg-[#171512] px-6 py-2.5 text-sm font-black text-white transition hover:bg-[#A63D2D]">
+                        <Compass size={15} /> Descubrir historias
                     </Link>
                 </div>
             ) : (
-                <div className="rounded-2xl overflow-hidden bg-[#15171C] border border-gray-800">
-                    <div className="divide-y divide-gray-800">
-                        {activity.map((item: any) => (
-                            <div key={item.id} className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors">
-                                <div className="flex items-center gap-3 min-w-0">
-                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-[#C9A84C]/10 flex items-center justify-center text-sm font-bold text-[#D8BA63] shrink-0">
-                                        {item.profiles?.avatar_url ? (
-                                            <img src={item.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
-                                        ) : (
-                                            (item.profiles?.full_name || item.profiles?.username || '?').charAt(0).toUpperCase()
-                                        )}
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-sm font-bold text-white truncate">{item.type}</p>
-                                        <p className="text-xs text-gray-500 truncate">
-                                            con @{item.profiles?.username || 'anónimo'} · {new Date(item.date).toLocaleDateString('es-ES')}
-                                        </p>
-                                    </div>
+                <div className="overflow-hidden border border-[#171512]/10 bg-[#FFFCF5]">
+                    <div className="divide-y divide-[#171512]/8">
+                        {saved.map(({ episode, creator, reached_percent, completed, updated_at }) => (
+                            <Link
+                                key={episode.id}
+                                href={creator?.username ? `/${creator.username}/${episode.id}` : '/discover'}
+                                className="grid grid-cols-[56px_1fr_auto] items-center gap-4 px-4 py-4 transition hover:bg-[#F8F4EA] sm:px-5"
+                            >
+                                <div className="flex h-14 w-14 items-center justify-center overflow-hidden border border-[#171512]/10 bg-[#EEE5D5]">
+                                    {episode.cover_image_url
+                                        ? <img src={episode.cover_image_url} alt="" className="h-full w-full object-cover" />
+                                        : <BookOpen size={18} className="text-[#A63D2D]" />}
                                 </div>
-                                <span className="text-sm font-bold text-gray-400 shrink-0 ml-4">
-                                    ${Number(item.amount || 0).toFixed(2)}
-                                </span>
-                            </div>
+                                <div className="min-w-0">
+                                    <p className="truncate font-serif text-lg font-black text-[#171512]">{episode.title}</p>
+                                    <p className="truncate text-xs text-[#746A5C]">{creator?.full_name || `@${creator?.username || 'autor'}`} · {new Date(updated_at).toLocaleDateString('es-ES')}</p>
+                                </div>
+                                <div className="min-w-14 text-right">
+                                    <p className="text-xs font-black text-[#A63D2D]">{completed ? 'Leído' : `${Math.max(1, reached_percent || 0)}%`}</p>
+                                    {!completed && <div className="mt-2 h-1.5 w-14 overflow-hidden bg-[#171512]/10"><div className="h-full bg-[#A63D2D]" style={{ width: `${Math.max(2, reached_percent || 0)}%` }} /></div>}
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
@@ -93,5 +89,3 @@ export default async function HistoryPage() {
         </div>
     )
 }
-
-

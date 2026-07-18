@@ -48,7 +48,7 @@ export function CancelButton({ entitlementId, creatorName, validUntil, cancelAtP
             <button
                 type="button"
                 onClick={handleCancel}
-                className="text-[10px] text-gray-500 hover:text-red-400 font-semibold uppercase tracking-wider transition"
+                className="text-[10px] font-semibold uppercase tracking-wider text-[#8A8174] transition hover:text-[#A63D2D]"
                 title="Cancelar suscripción"
             >
                 Cancelar
@@ -56,19 +56,19 @@ export function CancelButton({ entitlementId, creatorName, validUntil, cancelAtP
 
             {showConfirm && (
                 <div
-                    className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[200] flex items-center justify-center bg-[#171512]/70 p-4 backdrop-blur-sm"
                     onClick={(e) => { if (!isPending && !done) { e.stopPropagation(); setShowConfirm(false); setError(null) } }}
                 >
                     <div
-                        className="w-full max-w-md bg-[#0F1114] border border-gray-800 rounded-2xl p-6"
+                        className="w-full max-w-md border border-[#171512]/12 bg-[#FFFCF5] p-6 shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {done ? (
                             <div className="text-center py-4">
                                 <div className="text-[#D8BA63] text-4xl mb-3">✓</div>
-                                <h3 className="text-lg font-bold text-white mb-2">Suscripción cancelada</h3>
-                                <p className="text-sm text-gray-400">
-                                    Mantienes acceso hasta el <strong className="text-white">{new Date(validUntil).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>. Después no se renovará.
+                                <h3 className="mb-2 font-serif text-xl font-black text-[#171512]">Suscripción cancelada</h3>
+                                <p className="text-sm text-[#746A5C]">
+                                    Mantienes acceso hasta el <strong className="text-[#171512]">{new Date(validUntil).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>. Después no se renovará.
                                 </p>
                             </div>
                         ) : (
@@ -78,9 +78,9 @@ export function CancelButton({ entitlementId, creatorName, validUntil, cancelAtP
                                         <AlertCircle className="text-amber-400" size={18} />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-white mb-1">¿Cancelar suscripción a @{creatorName}?</h3>
-                                        <p className="text-sm text-gray-400 leading-relaxed">
-                                            Mantendrás acceso al contenido hasta el <strong className="text-white">{new Date(validUntil).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>.
+                                        <h3 className="mb-1 font-serif text-xl font-black text-[#171512]">¿Cancelar suscripción a @{creatorName}?</h3>
+                                        <p className="text-sm leading-relaxed text-[#746A5C]">
+                                            Mantendrás acceso al contenido hasta el <strong className="text-[#171512]">{new Date(validUntil).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>.
                                             No se realizará el próximo cobro. <strong className="text-amber-300">Sin reembolsos.</strong>
                                         </p>
                                     </div>
@@ -94,7 +94,7 @@ export function CancelButton({ entitlementId, creatorName, validUntil, cancelAtP
                                     <button
                                         onClick={() => { setShowConfirm(false); setError(null) }}
                                         disabled={isPending}
-                                        className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-bold transition"
+                                        className="flex-1 border border-[#171512]/12 px-4 py-2.5 text-sm font-bold text-[#574F45] transition hover:bg-[#F8F4EA]"
                                     >
                                         No, mantener
                                     </button>

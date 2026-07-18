@@ -41,19 +41,47 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true })
 }
 
-export async function GET(_req: Request) {
+export async function GET() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ bookmarks: [] })
 
-    const { data } = await supabase
+    const { data: bookmarks, error } = await supabase
         .from('reading_bookmarks')
-        .select('episode_id, reached_percent, completed, updated_at, episodes(id, title, cover_image_url, creator_id, profiles:creator_id(username, full_name, avatar_url))')
+        .select('episode_id, reached_percent, completed, updated_at')
         .eq('user_id', user.id)
         .eq('completed', false)
         .gt('reached_percent', 5)
         .order('updated_at', { ascending: false })
         .limit(8)
 
-    return NextResponse.json({ bookmarks: data ?? [] })
+    if (error || !bookmarks?.length) return NextResponse.json({ bookmarks: [] })
+
+    const episodeIds = bookmarks.map((bookmark) => bookmark.episode_id)
+    const { data: episodes } = await supabase
+        .from('episodes')
+        .select('id, title, cover_image_url, creator_id')
+        .in('id', episodeIds)
+        .eq('is_published', true)
+
+    const creatorIds = Array.from(new Set((episodes ?? []).map((episode) => episode.creator_id)))
+    const { data: profiles } = creatorIds.length
+        ? await supabase
+            .from('profiles')
+            .select('id, username, full_name, avatar_url')
+            .in('id', creatorIds)
+        : { data: [] }
+
+    const profilesById = new Map((profiles ?? []).map((profile) => [profile.id, profile]))
+    const episodesById = new Map((episodes ?? []).map((episode) => [episode.id, {
+        ...episode,
+        profiles: profilesById.get(episode.creator_id) ?? null,
+    }]))
+
+    return NextResponse.json({
+        bookmarks: bookmarks.flatMap((bookmark) => {
+            const episode = episodesById.get(bookmark.episode_id)
+            return episode ? [{ ...bookmark, episodes: episode }] : []
+        }),
+    })
 }

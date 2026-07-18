@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getStripe } from '@/lib/stripe'
 import { z } from 'zod'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 const checkoutQuerySchema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('ppv'), episodeId: z.string().uuid() }),
@@ -10,6 +11,9 @@ const checkoutQuerySchema = z.discriminatedUnion('type', [
 ])
 
 export async function POST(req: Request) {
+    if (!MONETIZATION_ENABLED) {
+        return NextResponse.json({ error: 'La monetizacion todavia no esta habilitada.' }, { status: 503 })
+    }
     try {
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()

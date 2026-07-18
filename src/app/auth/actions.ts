@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { recordLegalAcceptances } from '@/lib/legal'
 
 const credentialsSchema = z.object({
     email: z.string().trim().email(),
@@ -54,6 +55,9 @@ export async function signup(formData: FormData) {
     if (confirmPassword !== password) {
         redirect('/login?mode=registro&error=password_mismatch')
     }
+    if (formData.get('accept_legal') !== 'on') {
+        redirect('/login?mode=registro&error=legal_required')
+    }
 
     const { data, error } = await supabase.auth.signUp({
         email,
@@ -70,6 +74,14 @@ export async function signup(formData: FormData) {
     // If user needs email confirmation (shouldn't happen with confirm OFF)
     if (data?.user?.identities?.length === 0) {
         redirect('/login?error=existe')
+    }
+
+    if (data.user) {
+        await recordLegalAcceptances({
+            userId: data.user.id,
+            documents: ['terms', 'privacy', 'content_policy'],
+            context: 'signup',
+        })
     }
 
     redirect('/onboarding')

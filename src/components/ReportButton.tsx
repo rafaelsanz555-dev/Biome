@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { Flag, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type TargetType = 'episode' | 'profile' | 'comment'
-type Reason = 'copyright' | 'harassment' | 'explicit' | 'spam' | 'other'
+type Reason = 'copyright' | 'harassment' | 'explicit' | 'privacy' | 'impersonation' | 'underage' | 'spam' | 'other'
 
 interface Props {
     targetType: TargetType
@@ -12,15 +13,11 @@ interface Props {
     compact?: boolean
 }
 
-const REASONS: { value: Reason; label: string; desc: string }[] = [
-    { value: 'copyright', label: 'Copyright', desc: 'Contenido copiado o plagiado' },
-    { value: 'harassment', label: 'Acoso', desc: 'Comportamiento abusivo o amenazante' },
-    { value: 'explicit', label: 'Explícito', desc: 'Contenido sexual o violento no apropiado' },
-    { value: 'spam', label: 'Spam', desc: 'Publicidad engañosa o contenido repetitivo' },
-    { value: 'other', label: 'Otro', desc: 'Otra razón — explica abajo' },
-]
+const REASONS: Reason[] = ['copyright', 'harassment', 'explicit', 'privacy', 'impersonation', 'underage', 'spam', 'other']
 
 export function ReportButton({ targetType, targetId, compact = false }: Props) {
+    const t = useTranslations('report')
+    const tCommon = useTranslations('common')
     const [open, setOpen] = useState(false)
     const [reason, setReason] = useState<Reason>('copyright')
     const [description, setDescription] = useState('')
@@ -58,35 +55,35 @@ export function ReportButton({ targetType, targetId, compact = false }: Props) {
                         ? 'text-xs text-gray-500 hover:text-red-400 transition flex items-center gap-1.5'
                         : 'px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition flex items-center gap-1.5'
                 }
-                title="Reportar"
+                title={t('button')}
             >
-                <Flag size={12} /> Reportar
+                <Flag size={12} /> {t('button')}
             </button>
 
             {open && (
                 <div className="fixed inset-0 z-[150] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => !submitting && setOpen(false)}>
-                    <div className="w-full max-w-md bg-[#0F1114] border border-gray-800 rounded-2xl p-6" onClick={(e) => e.stopPropagation()}>
+                    <div className="w-full max-w-md border border-[#171512]/15 bg-[#F8F4EA] p-6 text-[#171512]" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold text-white">Reportar contenido</h3>
-                            <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-white"><X size={18} /></button>
+                            <h3 className="font-serif text-xl font-black">{t('title')}</h3>
+                            <button onClick={() => setOpen(false)} className="text-[#746A5C] hover:text-[#171512]"><X size={18} /></button>
                         </div>
 
                         {done ? (
                             <div className="py-8 text-center">
-                                <div className="text-[#D8BA63] text-4xl mb-2">✓</div>
-                                <p className="text-white font-semibold">Reporte enviado</p>
-                                <p className="text-gray-400 text-sm mt-1">Nuestro equipo lo revisará pronto.</p>
+                                <div className="mb-2 text-4xl text-[#A63D2D]">✓</div>
+                                <p className="font-semibold">{t('sent')}</p>
+                                <p className="mt-1 text-sm text-[#746A5C]">{t('sent_description')}</p>
                             </div>
                         ) : (
                             <>
-                                <p className="text-sm text-gray-400 mb-4">Ayúdanos a mantener Pergamo un espacio seguro. Cuéntanos qué pasó.</p>
-                                <div className="space-y-2 mb-4">
-                                    {REASONS.map((r) => (
-                                        <label key={r.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reason === r.value ? 'border-[#C9A84C]/50 bg-[#C9A84C]/5' : 'border-gray-800 hover:border-gray-700'}`}>
-                                            <input type="radio" name="reason" value={r.value} checked={reason === r.value} onChange={() => setReason(r.value)} className="mt-0.5" />
+                                <p className="mb-4 text-sm text-[#655C4F]">{t('description')}</p>
+                                <div className="mb-4 max-h-72 space-y-2 overflow-y-auto pr-1">
+                                    {REASONS.map((item) => (
+                                        <label key={item} className={`flex cursor-pointer items-start gap-3 border p-3 transition ${reason === item ? 'border-[#A63D2D]/50 bg-[#A63D2D]/5' : 'border-[#171512]/12 hover:border-[#171512]/30'}`}>
+                                            <input type="radio" name="reason" value={item} checked={reason === item} onChange={() => setReason(item)} className="mt-0.5" />
                                             <div>
-                                                <div className="text-sm font-semibold text-white">{r.label}</div>
-                                                <div className="text-xs text-gray-500">{r.desc}</div>
+                                                <div className="text-sm font-semibold">{t(`reason_${item}`)}</div>
+                                                <div className="text-xs text-[#746A5C]">{t(`reason_${item}_desc`)}</div>
                                             </div>
                                         </label>
                                     ))}
@@ -94,16 +91,16 @@ export function ReportButton({ targetType, targetId, compact = false }: Props) {
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value.slice(0, 1000))}
-                                    placeholder="Detalles adicionales (opcional)"
+                                    placeholder={t('additional_details')}
                                     rows={3}
-                                    className="w-full bg-[#0A0B0E] border border-gray-800 rounded-lg p-3 text-sm text-white placeholder:text-gray-600 focus:border-gray-600 focus:outline-none mb-4"
+                                    className="mb-4 w-full border border-[#171512]/15 bg-[#FFFCF5] p-3 text-sm placeholder:text-[#9A9082] focus:border-[#A63D2D] focus:outline-none"
                                 />
                                 <div className="flex gap-2">
-                                    <button onClick={() => setOpen(false)} disabled={submitting} className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold transition">
-                                        Cancelar
+                                    <button onClick={() => setOpen(false)} disabled={submitting} className="flex-1 border border-[#171512]/15 px-4 py-2.5 text-sm font-semibold transition hover:bg-[#171512]/5">
+                                        {tCommon('cancel')}
                                     </button>
-                                    <button onClick={submit} disabled={submitting} className="flex-1 px-4 py-2.5 rounded-lg bg-red-500/90 hover:bg-red-500 text-white text-sm font-semibold transition disabled:opacity-50">
-                                        {submitting ? 'Enviando...' : 'Enviar reporte'}
+                                    <button onClick={submit} disabled={submitting} className="flex-1 bg-[#A63D2D] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#873023] disabled:opacity-50">
+                                        {submitting ? t('sending') : t('submit')}
                                     </button>
                                 </div>
                             </>
@@ -114,4 +111,3 @@ export function ReportButton({ targetType, targetId, compact = false }: Props) {
         </>
     )
 }
-

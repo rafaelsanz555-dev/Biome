@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Share2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface ShareStoryButtonProps {
     title: string
@@ -10,6 +11,7 @@ interface ShareStoryButtonProps {
 }
 
 export function ShareStoryButton({ title, text, className }: ShareStoryButtonProps) {
+    const t = useTranslations('story_page')
     const [copied, setCopied] = useState(false)
 
     async function share() {
@@ -38,7 +40,7 @@ export function ShareStoryButton({ title, text, className }: ShareStoryButtonPro
             className={className || 'inline-flex h-12 items-center justify-center gap-2 rounded-full border px-6 text-sm font-black'}
         >
             <Share2 size={16} />
-            {copied ? 'Copiado' : 'Compartir'}
+            {copied ? t('copied') : t('share')}
         </button>
     )
 }

@@ -4,12 +4,12 @@ export default function PrivacyPage() {
     return (
         <>
             <h1>Política de Privacidad</h1>
-            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
+            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.2-beta · Última edición: julio 2026</p>
 
             <p>Esta política describe qué datos personales recolecta Pergamo, cómo se usan, con quién se comparten y cuáles son tus derechos.</p>
 
             <h2>1. Quién es el responsable de tus datos</h2>
-            <p>El responsable del tratamiento es Rafael Bernardo Sanz Espinoza, operador de Pergamo. Contacto: <strong>privacy@Pergamo</strong> (pendiente de configurar).</p>
+            <p>El responsable del tratamiento es Rafael Bernardo Sanz Espinoza, operador de Pergamo. Las solicitudes de privacidad se reciben mediante el canal de soporte disponible dentro de la plataforma.</p>
 
             <h2>2. Datos que recolectamos</h2>
 

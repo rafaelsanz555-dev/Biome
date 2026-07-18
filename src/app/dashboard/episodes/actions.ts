@@ -8,6 +8,9 @@ import { runEpisodeChecks } from '@/lib/moderation/runChecks'
 import { z } from 'zod'
 import { formString } from '@/lib/validation'
 import { sanitizeTipTapContent } from '@/lib/content-security'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
+import { AGE_RATINGS, parseContentWarnings, resolveContentType } from '@/lib/editorial'
+import { LEGAL_VERSIONS, recordLegalAcceptances } from '@/lib/legal'
 
 const episodeFormSchema = z.object({
     title: z.string().trim().min(1).max(160),
@@ -24,6 +27,10 @@ const episodeFormSchema = z.object({
     is_published: z.boolean(),
     monetization: z.enum(['free', 'subscription', 'ppv']),
     ppv_price: z.coerce.number().min(0.99).max(999.99).optional().nullable(),
+    age_rating: z.enum(AGE_RATINGS).default('all'),
+    content_warnings: z.array(z.string().trim().min(1).max(60)).max(12).default([]),
+    accept_publish_terms: z.boolean().default(false),
+    rights_confirmed: z.boolean().default(false),
 })
 
 // Mensajes de error legibles por campo — el reviewer reportó que los errores
@@ -47,13 +54,22 @@ function formatEpisodeErrors(error: z.ZodError): string {
 
 const MIN_PUBLISH_WORDS = 30
 
-function publishValidationError(values: z.infer<typeof episodeFormSchema>): string | null {
+function publishValidationError(
+    values: z.infer<typeof episodeFormSchema>,
+    requireConsent: boolean,
+): string | null {
     if (!values.is_published) return null
     if (values.word_count < MIN_PUBLISH_WORDS) {
         return `Para publicar, tu historia necesita al menos ${MIN_PUBLISH_WORDS} palabras (llevas ${values.word_count}). Puedes guardarla como borrador mientras la terminas.`
     }
     if (values.monetization === 'ppv' && !values.ppv_price) {
         return 'Elegiste "Pago único" pero falta el precio de desbloqueo.'
+    }
+    if (requireConsent && !values.rights_confirmed) {
+        return 'Confirma que tienes los derechos para publicar este contenido.'
+    }
+    if (requireConsent && !values.accept_publish_terms) {
+        return 'Acepta la Política de Contenido y los Términos para Creadores antes de publicar.'
     }
     return null
 }
@@ -74,6 +90,10 @@ function parseEpisodeForm(formData: FormData) {
         is_published: formString(formData, 'is_published') === 'true',
         monetization,
         ppv_price: monetization === 'ppv' ? formString(formData, 'ppv_price') : null,
+        age_rating: formString(formData, 'age_rating') || 'all',
+        content_warnings: parseContentWarnings(formData.get('content_warnings')),
+        accept_publish_terms: formString(formData, 'accept_publish_terms') === 'on',
+        rights_confirmed: formString(formData, 'rights_confirmed') === 'on',
     })
 }
 
@@ -93,6 +113,35 @@ function parseContentJson(raw: string) {
     } catch {
         return null
     }
+}
+
+function isEditorialMigrationMissing(message: string) {
+    return /schema cache|content_type|age_rating|content_warnings|rights_confirmed_at|legal_version/i.test(message)
+}
+
+async function persistEditorialMetadata(
+    supabase: Awaited<ReturnType<typeof createClient>>,
+    episodeId: string,
+    creatorId: string,
+    values: z.infer<typeof episodeFormSchema>,
+    seasonId: string | null,
+    confirmRights: boolean,
+) {
+    const payload: Record<string, unknown> = {
+        content_type: resolveContentType(seasonId),
+        age_rating: values.age_rating,
+        content_warnings: values.content_warnings,
+        legal_version: LEGAL_VERSIONS.creator_terms,
+    }
+    if (confirmRights) payload.rights_confirmed_at = new Date().toISOString()
+
+    const { error } = await supabase
+        .from('episodes')
+        .update(payload)
+        .eq('id', episodeId)
+        .eq('creator_id', creatorId)
+
+    if (error && !isEditorialMigrationMissing(error.message)) throw error
 }
 
 async function hasNoPublishedChapter(
@@ -164,7 +213,9 @@ async function notifyFollowersOfNewEpisode(
             actor_id: creatorId,
             type: 'new_episode',
             reference_id: episodeId,
-            message: `Publicó un nuevo capítulo: «${title}»`,
+            message: seasonId
+                ? `Publicó un nuevo capítulo: «${title}»`
+                : `Publicó una nueva entrada: «${title}»`,
         }))
         // Lotes de 500 por si el escritor tiene muchos seguidores
         for (let i = 0; i < rows.length; i += 500) {
@@ -185,15 +236,15 @@ export async function createEpisode(formData: FormData) {
     if (!parsed.success) return { error: formatEpisodeErrors(parsed.error) }
 
     const values = parsed.data
-    const publishError = publishValidationError(values)
+    const publishError = publishValidationError(values, values.is_published)
     if (publishError) return { error: publishError }
 
     const seasonId = values.season_id || null
     const firstChapter = values.is_published ? await hasNoPublishedChapter(supabase, user.id, seasonId) : false
     // Regla Pergamo: el primer capítulo de cada historia siempre es gratis.
-    // Si forzamos el cambio, se lo avisamos al escritor vía query param.
-    const monetization = firstChapter ? 'free' : values.monetization
-    const forcedFree = firstChapter && values.monetization !== 'free' && values.is_published
+    // MVP: con monetización apagada, TODO capítulo nuevo nace gratis.
+    const monetization = !MONETIZATION_ENABLED || firstChapter ? 'free' : values.monetization
+    const forcedFree = MONETIZATION_ENABLED && firstChapter && values.monetization !== 'free' && values.is_published
     const contentJson = parseContentJson(formString(formData, 'content_json'))
 
     const { data: inserted, error } = await supabase
@@ -221,6 +272,29 @@ export async function createEpisode(formData: FormData) {
     if (error) {
         console.error('[createEpisode] insert failed:', error.message)
         return { error: friendlyDbError(error.message) }
+    }
+
+    if (inserted?.id) {
+        try {
+            await persistEditorialMetadata(supabase, inserted.id, user.id, values, seasonId, values.is_published)
+            if (values.is_published) {
+                await recordLegalAcceptances({
+                    userId: user.id,
+                    documents: ['content_policy', 'creator_terms'],
+                    context: 'publish',
+                    resourceId: inserted.id,
+                    metadata: {
+                        content_type: resolveContentType(seasonId),
+                        age_rating: values.age_rating,
+                        rights_confirmed: true,
+                    },
+                })
+            }
+        } catch (acceptanceError) {
+            await supabase.from('episodes').delete().eq('id', inserted.id).eq('creator_id', user.id)
+            console.error('[createEpisode] editorial/legal metadata failed:', acceptanceError)
+            return { error: 'No pudimos registrar tus derechos y aceptación legal. No se publicó nada; intenta otra vez.' }
+        }
     }
 
     if (inserted?.id && values.is_published) {
@@ -267,7 +341,8 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
     if (!parsed.success) return { error: formatEpisodeErrors(parsed.error) }
 
     const values = parsed.data
-    const publishError = publishValidationError(values)
+    const firstPublication = !existing.is_published && values.is_published
+    const publishError = publishValidationError(values, firstPublication)
     if (publishError) return { error: publishError }
 
     const seasonId = values.season_id || null
@@ -275,8 +350,27 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
         ? await hasNoPublishedChapter(supabase, user.id, seasonId)
             || await isOldestPublishedChapter(supabase, episodeId, user.id, seasonId)
         : false
-    const monetization = firstChapter ? 'free' : values.monetization
+    const monetization = !MONETIZATION_ENABLED || firstChapter ? 'free' : values.monetization
     const forcedFree = firstChapter && values.monetization !== 'free'
+
+    if (firstPublication) {
+        try {
+            await recordLegalAcceptances({
+                userId: user.id,
+                documents: ['content_policy', 'creator_terms'],
+                context: 'publish',
+                resourceId: episodeId,
+                metadata: {
+                    content_type: resolveContentType(seasonId),
+                    age_rating: values.age_rating,
+                    rights_confirmed: true,
+                },
+            })
+        } catch (acceptanceError) {
+            console.error('[updateEpisode] legal acceptance failed:', acceptanceError)
+            return { error: 'No pudimos registrar tu aceptación legal. El contenido sigue como borrador.' }
+        }
+    }
 
     const { error } = await supabase
         .from('episodes')
@@ -303,6 +397,13 @@ export async function updateEpisode(episodeId: string, formData: FormData) {
     if (error) {
         console.error('[updateEpisode] update failed:', error.message)
         return { error: friendlyDbError(error.message) }
+    }
+
+    try {
+        await persistEditorialMetadata(supabase, episodeId, user.id, values, seasonId, firstPublication)
+    } catch (metadataError: any) {
+        console.error('[updateEpisode] editorial metadata failed:', metadataError?.message)
+        return { error: 'El contenido se guardó, pero no pudimos guardar su clasificación editorial. Intenta otra vez.' }
     }
 
     // Solo notificar la PRIMERA vez que pasa de borrador a publicado —

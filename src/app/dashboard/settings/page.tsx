@@ -57,13 +57,13 @@ export default async function SettingsPage() {
     const sections = isCreator ? creatorSections : readerSections
 
     return (
-        <div className="mx-auto max-w-3xl">
-            <div className="mb-10 border-b border-white/5 pb-6">
-                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#C9A84C]">Ajustes</p>
-                <h1 className="mb-2 font-serif text-4xl font-black tracking-tight text-white">
+        <div className="mx-auto max-w-3xl px-5 py-8 pb-24 sm:px-7">
+            <div className="mb-10 border-b border-[#171512]/12 pb-6">
+                <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em] text-[#A63D2D]">Ajustes</p>
+                <h1 className="mb-2 font-serif text-4xl font-black tracking-tight text-[#171512]">
                     {isCreator ? 'Tu perfil de escritor' : 'Tu cuenta en Pergamo'}
                 </h1>
-                <p className="max-w-xl text-sm leading-relaxed text-gray-400">
+                <p className="max-w-xl text-sm leading-relaxed text-[#746A5C]">
                     {isCreator
                         ? 'Tu cara pública, tu precio y el look de tu perfil.'
                         : 'Tu foto, tu nombre y cómo te ven los demás.'}
@@ -72,7 +72,7 @@ export default async function SettingsPage() {
                     <Link
                         href={`/${profile.username}`}
                         target="_blank"
-                        className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#C9A84C] transition hover:text-[#D8BA63]"
+                        className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#A63D2D] transition hover:text-[#873023]"
                     >
                         <ExternalLink size={12} />
                         Ver mi perfil público en Pergamo/{profile.username}
@@ -87,13 +87,13 @@ export default async function SettingsPage() {
                         <a
                             key={section.num}
                             href={`#section-${section.num}`}
-                            className="group flex flex-col items-center gap-1.5 rounded-xl border border-white/5 bg-white/[0.02] p-3 text-center transition hover:border-[#C9A84C]/25 hover:bg-[#C9A84C]/5"
+                            className="group flex flex-col items-center gap-1.5 border border-[#171512]/10 bg-[#FFFCF5] p-3 text-center transition hover:border-[#A63D2D]/30"
                         >
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#C9A84C]/10 text-[#C9A84C]">
+                            <div className="flex h-8 w-8 items-center justify-center bg-[#A63D2D]/8 text-[#A63D2D]">
                                 <Icon size={14} />
                             </div>
-                            <span className="text-[10px] font-bold text-white">{section.num}. {section.label}</span>
-                            <span className="hidden text-[9px] text-gray-500 sm:block">{section.desc}</span>
+                            <span className="text-[10px] font-bold text-[#171512]">{section.num}. {section.label}</span>
+                            <span className="hidden text-[9px] text-[#8A8174] sm:block">{section.desc}</span>
                         </a>
                     )
                 })}
@@ -174,15 +174,15 @@ export default async function SettingsPage() {
 function SectionHeader({ num, label, desc, icon: Icon }: { num: number; label: string; desc: string; icon: any }) {
     return (
         <div className="mb-5 flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#C9A84C]/20 bg-[#C9A84C]/10">
-                <Icon className="text-[#C9A84C]" size={20} />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-[#A63D2D]/20 bg-[#A63D2D]/8">
+                <Icon className="text-[#A63D2D]" size={20} />
             </div>
             <div>
                 <div className="mb-0.5 flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C9A84C]">Sección {num}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">Sección {num}</span>
                 </div>
-                <h2 className="font-serif text-2xl font-black text-white">{label}</h2>
-                <p className="mt-1 text-sm text-gray-500">{desc}</p>
+                <h2 className="font-serif text-2xl font-black text-[#171512]">{label}</h2>
+                <p className="mt-1 text-sm text-[#746A5C]">{desc}</p>
             </div>
         </div>
     )

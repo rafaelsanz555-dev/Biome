@@ -8,6 +8,7 @@ const seasonSchema = z.object({
     title: z.string().trim().min(1).max(120),
     description: z.string().trim().max(500).optional().default(''),
     format: z.enum(['series', 'thread']).optional().default('series'),
+    story_type: z.enum(['life_story', 'fiction']).optional().default('life_story'),
 })
 
 // POST /api/seasons — crear una serie inline desde el form de publicar
@@ -27,9 +28,9 @@ export async function POST(req: NextRequest) {
 
     const parsed = parseJsonBody(seasonSchema, await req.json().catch(() => null))
     if (!parsed.ok) return NextResponse.json({ error: 'invalid_body', details: parsed.error }, { status: 400 })
-    const { title, description, format } = parsed.data
+    const { title, description, format, story_type } = parsed.data
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
         .from('seasons')
         .insert({
             creator_id: user.id,
@@ -38,9 +39,27 @@ export async function POST(req: NextRequest) {
             slug: `${slugify(title)}-${Date.now().toString(36).slice(-4)}`,
             sort_order: 1,
             format,
+            story_type,
         })
-        .select('id, title, format, slug')
+        .select('id, title, format, story_type, slug')
         .single()
+
+    if (error && /story_type|schema cache/i.test(error.message)) {
+        const fallback = await supabase
+            .from('seasons')
+            .insert({
+                creator_id: user.id,
+                title,
+                description: description || null,
+                slug: `${slugify(title)}-${Date.now().toString(36).slice(-4)}`,
+                sort_order: 1,
+                format,
+            })
+            .select('id, title, format, slug')
+            .single()
+        data = fallback.data ? { ...fallback.data, story_type } : null
+        error = fallback.error
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true, season: data })

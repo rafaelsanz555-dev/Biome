@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Sparkles } from 'lucide-react'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
+import { useTranslations } from 'next-intl'
 
 interface CreatorCardProps {
     creator: {
@@ -8,6 +10,7 @@ interface CreatorCardProps {
         full_name: string | null
         avatar_url: string | null
         bio: string | null
+        cover_image_url?: string | null
         story_themes?: string[] | null
         creators?: {
             subscription_price: number | null
@@ -25,12 +28,7 @@ interface CreatorCardProps {
     }
 }
 
-const COVER_PALETTES = [
-    'from-[#0D0D0D] via-[#2A2418] to-[#C9A84C]',
-    'from-[#1B1711] via-[#553B21] to-[#FAF7F0]',
-    'from-[#0D0D0D] via-[#243128] to-[#C9A84C]',
-    'from-[#2A1612] via-[#4B3022] to-[#C9A84C]',
-]
+const COVER_COLORS = ['#274C43', '#8E4E3E', '#42667A', '#6B5C3B']
 
 function hashUsername(username: string): number {
     let h = 0
@@ -41,21 +39,23 @@ function hashUsername(username: string): number {
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
-    const palette = COVER_PALETTES[hashUsername(creator.username) % COVER_PALETTES.length]
+    const t = useTranslations('editorial_discover')
+    const coverColor = COVER_COLORS[hashUsername(creator.username) % COVER_COLORS.length]
     const name = creator.full_name || creator.username
     const initial = name.charAt(0).toUpperCase()
     const creatorMeta = Array.isArray(creator.creators) ? creator.creators[0] : creator.creators
     const price = creatorMeta?.subscription_price || 5
-    const tagline = creatorMeta?.brand_tagline || creator.bio || 'Construyendo una audiencia alrededor de una historia real.'
+    const tagline = creatorMeta?.brand_tagline || creator.bio || t('default_tagline')
     const themes = creator.story_themes?.slice(0, 2) || []
 
     return (
         <Link href={`/${creator.username}`} className="group block h-full">
             <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#0D0D0D]/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#C9A84C]/55 hover:shadow-xl">
-                <div className={`relative h-32 bg-gradient-to-br ${palette}`}>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(250,247,240,0.36),transparent_32%),linear-gradient(180deg,transparent,rgba(13,13,13,0.45))]" />
-                    <div className="absolute right-3 top-3 rounded-full border border-[#FAF7F0]/25 bg-[#0D0D0D]/50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#FAF7F0] backdrop-blur">
-                        Capitulo 1 gratis
+                <div className="relative h-32 overflow-hidden" style={{ backgroundColor: coverColor }}>
+                    {creator.cover_image_url && <img src={creator.cover_image_url} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute right-3 top-3 bg-[#FFFCF5] px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#A63D2D]">
+                        {t('author_to_follow')}
                     </div>
                 </div>
 
@@ -70,10 +70,10 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                                 </div>
                             )}
                         </div>
-                        <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-[#C9A84C]/14 px-3 py-1 text-[11px] font-black text-[#765B15]">
+                        {MONETIZATION_ENABLED && <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-[#C9A84C]/14 px-3 py-1 text-[11px] font-black text-[#765B15]">
                             <Sparkles size={12} />
-                            ${price}/mes
-                        </span>
+                            ${price}/{t('month')}
+                        </span>}
                     </div>
 
                     <div>
@@ -98,7 +98,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                     <div className="mt-auto flex items-center justify-between border-t border-[#0D0D0D]/8 pt-5">
                         <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-[#8A6A1C]">
                             <BookOpen size={14} />
-                            Perfil escritor
+                            {t('writer_profile')}
                         </span>
                         <ArrowRight size={17} className="text-[#0D0D0D]/38 transition group-hover:translate-x-1 group-hover:text-[#C9A84C]" />
                     </div>

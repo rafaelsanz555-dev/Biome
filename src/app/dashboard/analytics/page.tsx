@@ -21,6 +21,8 @@ export default async function AnalyticsPage() {
               .from('episode_views')
               .select('id, episode_id, country_code, device_type, referrer, started_at')
               .in('episode_id', episodeIds)
+              // Dynamic server page: the rolling 30-day boundary is intentionally calculated per request.
+              // eslint-disable-next-line react-hooks/purity
               .gte('started_at', new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString())
         : { data: [] as any[] }
 
@@ -84,11 +86,12 @@ export default async function AnalyticsPage() {
     const avgCompletion = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0
 
     return (
-        <div className="min-h-screen bg-[#0A0B0E] text-white py-8 px-6">
+        <div className="min-h-full px-5 py-8 text-[#171512] sm:px-7">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold">Analítica</h1>
-                    <p className="text-gray-400 mt-1">Últimos 30 días</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#A63D2D]">Lectura y retención</p>
+                    <h1 className="mt-2 font-serif text-4xl font-black">Estadísticas</h1>
+                    <p className="mt-1 text-[#746A5C]">Últimos 30 días</p>
                 </div>
 
                 {/* Top stats */}
@@ -102,8 +105,8 @@ export default async function AnalyticsPage() {
                 <AnalyticsCharts buckets={buckets} topCountries={topCountries} deviceData={deviceData} episodeStats={episodeStats} />
 
                 {totalViews === 0 && (
-                    <div className="mt-8 p-6 rounded-xl border border-gray-800 bg-[#0F1114] text-center">
-                        <p className="text-gray-400">Aún no tienes lecturas registradas. Los datos aparecerán aquí cuando tus lectores empiecen a llegar.</p>
+                    <div className="mt-8 border border-[#171512]/12 bg-[#FFFCF5] p-6 text-center">
+                        <p className="text-[#746A5C]">Aún no tienes lecturas registradas. Los datos aparecerán aquí cuando tus lectores empiecen a llegar.</p>
                     </div>
                 )}
             </div>
@@ -113,9 +116,9 @@ export default async function AnalyticsPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
     return (
-        <div className="bg-[#0F1114] border border-gray-800 rounded-xl p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">{label}</p>
-            <p className="text-2xl font-bold mt-1">{value}</p>
+        <div className="border border-[#171512]/10 bg-[#F8F4EA] p-4">
+            <p className="text-xs uppercase tracking-wider text-[#746A5C]">{label}</p>
+            <p className="mt-1 font-serif text-2xl font-black">{value}</p>
         </div>
     )
 }

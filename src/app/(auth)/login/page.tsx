@@ -3,14 +3,11 @@ import { login, signup } from '@/app/auth/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { getTranslations } from 'next-intl/server'
 
-const ERROR_MESSAGES: Record<string, string> = {
-    credenciales: 'Email o contraseña incorrectos.',
-    campos: 'Completa todos los campos.',
-    existe: 'Ya existe una cuenta con ese email. Inicia sesión.',
-    registro: 'No se pudo crear la cuenta. Intenta de nuevo.',
-    password_corto: 'La contraseña debe tener al menos 6 caracteres.',
-    password_mismatch: 'Las contraseñas no coinciden. Escríbelas de nuevo.',
+const ERROR_KEYS: Record<string, string> = {
+    credenciales: 'error_credentials', campos: 'error_fields', existe: 'error_exists', registro: 'error_signup',
+    password_corto: 'error_password_short', password_mismatch: 'error_password_mismatch', legal_required: 'error_legal',
 }
 
 export default async function LoginPage({
@@ -19,10 +16,11 @@ export default async function LoginPage({
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     const params = await searchParams
+    const t = await getTranslations('auth')
     const isRegistro = params.mode === 'registro'
     const errorKey = params.error as string
     const debugMsg = params.debug as string
-    const errorMsg = errorKey ? ERROR_MESSAGES[errorKey] || `Error: ${debugMsg || 'Intenta de nuevo.'}` : null
+    const errorMsg = errorKey ? (ERROR_KEYS[errorKey] ? t(ERROR_KEYS[errorKey]) : `${t('error_generic')}: ${debugMsg || t('try_again')}`) : null
 
     return (
         <div className="min-h-screen bg-[#FAF7F0] text-[#0D0D0D]">
@@ -32,15 +30,15 @@ export default async function LoginPage({
                         Pergamo<span className="text-[#C9A84C]">.</span>
                     </Link>
                     <div>
-                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#C9A84C]">Historias reales, capítulo a capítulo</p>
+                        <p className="text-xs font-black uppercase tracking-[0.24em] text-[#C9A84C]">{t('tagline')}</p>
                         <h1 className="mt-4 max-w-xl font-serif text-6xl font-black leading-tight">
-                            Cada vida es una serie que merece contarse.
+                            {t('side_title')}
                         </h1>
                         <p className="mt-5 max-w-lg text-sm leading-7 text-[#FAF7F0]/64">
-                            Lee vidas reales publicadas como series, sigue a sus autores y — si tienes una historia — cuéntala capítulo a capítulo.
+                            {t('side_description')}
                         </p>
                     </div>
-                    <p className="text-xs font-bold text-[#FAF7F0]/42">El primer capítulo de cada historia es gratis, siempre.</p>
+                    <p className="text-xs font-bold text-[#FAF7F0]/42">{t('first_chapter_note')}</p>
                 </section>
 
                 <main className="flex items-center justify-center px-4 py-10">
@@ -49,26 +47,26 @@ export default async function LoginPage({
                             <Link href="/" className="text-4xl font-black tracking-tight">
                                 Pergamo<span className="text-[#C9A84C]">.</span>
                             </Link>
-                            <p className="mt-2 text-sm font-bold text-[#0D0D0D]/50">Historias reales, capítulo a capítulo.</p>
+                            <p className="mt-2 text-sm font-bold text-[#0D0D0D]/50">{t('tagline')}</p>
                         </div>
 
                         <div className="rounded-3xl border border-[#0D0D0D]/10 bg-white p-7 shadow-xl md:p-9">
                             <div className="mb-8 text-center">
                                 <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8A6A1C]">
-                                    {isRegistro ? 'Crear cuenta' : 'Bienvenido'}
+                                    {isRegistro ? t('create_account') : t('welcome')}
                                 </p>
                                 <h2 className="mt-3 font-serif text-3xl font-black text-[#0D0D0D]">
-                                    {isRegistro ? 'Empieza tu historia' : 'Bienvenido de vuelta'}
+                                    {isRegistro ? t('start_story') : t('welcome_back')}
                                 </h2>
                                 <p className="mt-2 text-sm leading-6 text-[#0D0D0D]/58">
-                                    {isRegistro ? 'Crea tu acceso con email y contraseña.' : 'Ingresa con tu email y contraseña.'}
+                                    {isRegistro ? t('signup_description') : t('login_description')}
                                 </p>
                             </div>
 
                             <form action={isRegistro ? signup : login} className="space-y-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="email" className="text-sm font-black text-[#0D0D0D]">
-                                        Correo electrónico
+                                        {t('email_label')}
                                     </Label>
                                     <Input
                                         id="email"
@@ -83,13 +81,13 @@ export default async function LoginPage({
 
                                 <div className="space-y-2">
                                     <Label htmlFor="password" className="text-sm font-black text-[#0D0D0D]">
-                                        Contraseña
+                                        {t('password_label')}
                                     </Label>
                                     <Input
                                         id="password"
                                         name="password"
                                         type="password"
-                                        placeholder={isRegistro ? 'Mínimo 6 caracteres' : '••••••••'}
+                                        placeholder={isRegistro ? t('password_placeholder') : '••••••••'}
                                         required
                                         minLength={6}
                                         className="h-12 rounded-xl border-[#0D0D0D]/12 bg-[#FAF7F0] text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus-visible:ring-[#C9A84C]"
@@ -99,18 +97,27 @@ export default async function LoginPage({
                                 {isRegistro && (
                                     <div className="space-y-2">
                                         <Label htmlFor="confirm_password" className="text-sm font-black text-[#0D0D0D]">
-                                            Confirmar contraseña
+                                            {t('confirm_password')}
                                         </Label>
                                         <Input
                                             id="confirm_password"
                                             name="confirm_password"
                                             type="password"
-                                            placeholder="Repite tu contraseña"
+                                            placeholder={t('repeat_password')}
                                             required
                                             minLength={6}
                                             className="h-12 rounded-xl border-[#0D0D0D]/12 bg-[#FAF7F0] text-[#0D0D0D] placeholder:text-[#0D0D0D]/35 focus-visible:ring-[#C9A84C]"
                                         />
                                     </div>
+                                )}
+
+                                {isRegistro && (
+                                    <label className="flex cursor-pointer items-start gap-3 border border-[#0D0D0D]/10 bg-[#FAF7F0] p-4 text-xs leading-5 text-[#4B4032]">
+                                        <input type="checkbox" name="accept_legal" required className="mt-1 h-4 w-4 accent-[#A63D2D]" />
+                                        <span>
+                                            {t('legal_prefix')} <Link href="/legal/terms" target="_blank" className="font-black text-[#A63D2D] underline">{t('legal_terms')}</Link>, {t('legal_joiner')} <Link href="/legal/privacy" target="_blank" className="font-black text-[#A63D2D] underline">{t('legal_privacy')}</Link> {t('legal_and')} <Link href="/legal/content-policy" target="_blank" className="font-black text-[#A63D2D] underline">{t('legal_content')}</Link> ({t('legal_version')}).
+                                        </span>
+                                    </label>
                                 )}
 
                                 {errorMsg && (
@@ -120,23 +127,23 @@ export default async function LoginPage({
                                 )}
 
                                 <Button type="submit" className="h-12 w-full rounded-xl bg-[#0D0D0D] text-base font-black text-[#FAF7F0] hover:bg-[#2A2418]">
-                                    {isRegistro ? 'Crear cuenta' : 'Entrar'}
+                                    {isRegistro ? t('create_account') : t('login_button')}
                                 </Button>
                             </form>
 
                             <div className="mt-6 text-center">
                                 {isRegistro ? (
                                     <p className="text-sm text-[#0D0D0D]/55">
-                                        ¿Ya tienes cuenta?{' '}
+                                        {t('have_account')}{' '}
                                         <Link href="/login" className="font-black text-[#8A6A1C] hover:underline">
-                                            Inicia sesión
+                                            {t('login_link')}
                                         </Link>
                                     </p>
                                 ) : (
                                     <p className="text-sm text-[#0D0D0D]/55">
-                                        ¿No tienes cuenta?{' '}
+                                        {t('no_account')}{' '}
                                         <Link href="/login?mode=registro" className="font-black text-[#8A6A1C] hover:underline">
-                                            Regístrate
+                                            {t('sign_up_free')}
                                         </Link>
                                     </p>
                                 )}

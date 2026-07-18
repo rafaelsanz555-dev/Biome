@@ -1,15 +1,13 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { Button } from '@/components/ui/button'
-import { GiftPanel } from '@/components/GiftPanel'
-import { Navbar } from '@/components/Navbar'
-import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
-import { ThemeProvider, extractTheme } from '@/components/theme/ThemeProvider'
-import { CreatorBioCard } from '@/components/trust/CreatorBioCard'
 import Link from 'next/link'
-import { Lock, Heart, Gift, MessageCircle } from 'lucide-react'
-import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
+import { BookOpen, CheckCircle2, MapPin, PenLine, ShieldCheck } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+import { Navbar } from '@/components/Navbar'
 import { FollowButton } from '@/components/FollowButton'
+import { ReportButton } from '@/components/ReportButton'
+import { ThemeProvider, extractTheme } from '@/components/theme/ThemeProvider'
+import { ProfileContentTabs } from '@/components/content/ProfileContentTabs'
+import { getTranslations } from 'next-intl/server'
 
 interface ProfilePageProps {
     params: Promise<{ username: string }>
@@ -18,397 +16,213 @@ interface ProfilePageProps {
 export default async function CreatorProfilePage({ params }: ProfilePageProps) {
     const { username } = await params
     const supabase = await createClient()
+    const t = await getTranslations('profile_public')
 
     const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*, creators!profile_id(subscription_price, accent_color, font_family, card_style, brand_tagline, cover_pattern, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write, theme_id, themes(id, slug, name, description, type, style, config, is_animated))')
+        .select('*, creators!profile_id(subscription_price, accent_color, font_family, card_style, brand_tagline, posting_frequency, frequency_promise, series_status, is_verified_storyteller, verification_method, why_i_write, theme_id, themes(id, slug, name, description, type, style, config, is_animated))')
         .eq('username', username.toLowerCase())
-        .single()
+        .maybeSingle()
+    if (error || !profile || profile.role !== 'creator') notFound()
 
-    if (error || !profile) notFound()
+    const creator = Array.isArray(profile.creators) ? profile.creators[0] : profile.creators
+    const { theme, fallback } = extractTheme(creator)
 
-    const { data: episodes } = await supabase
+    const { data: legacyEpisodes } = await supabase
         .from('episodes')
-        .select('id, title, preview_text, cover_image_url, is_subscription_only, ppv_price, created_at, season_id, seasons(id, title, description, slug, tagline, promise, central_question, audience, transformation, tone)')
+        .select('id, title, preview_text, cover_image_url, created_at, season_id, seasons(id, title, description, slug, tagline, promise, format)')
         .eq('creator_id', profile.id)
         .eq('is_published', true)
         .order('created_at', { ascending: true })
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const episodes = (legacyEpisodes || []).map((episode: any) => ({
+        ...episode,
+        age_rating: 'all',
+        content_warnings: [] as string[],
+    }))
+    const episodeIds = episodes.map((episode) => episode.id)
 
-    let isSubscribed = false
-    const ppvUnlocked = new Set<string>()
-    if (user) {
-        const { data: entitlement } = await supabase
-            .from('entitlements')
-            .select('id')
-            .eq('user_id', user.id)
-            .eq('creator_id', profile.id)
-            .eq('entitlement_type', 'subscription')
-            .gte('valid_until', new Date().toISOString())
-            .maybeSingle()
-        isSubscribed = !!entitlement
-
-        // Episodios comprados con pago único: el lector que pagó debe verlos desbloqueados
-        const { data: ppvRows } = await supabase
-            .from('entitlements')
-            .select('episode_id')
-            .eq('user_id', user.id)
-            .eq('entitlement_type', 'ppv')
-            .not('episode_id', 'is', null)
-        ppvRows?.forEach((r) => { if (r.episode_id) ppvUnlocked.add(r.episode_id) })
-    }
-
-    const isOwnProfile = user?.id === profile.id
-    const subscriptionPrice = profile.creators?.subscription_price || 5
-    const initial = (profile.full_name || profile.username).charAt(0).toUpperCase()
-
-    // Reactions (likes ❤️) por episodio — para alimentar el action bar
-    const episodeIds = (episodes || []).map((e) => e.id)
-    const likeCountByEp: Record<string, number> = {}
-    const likedByMe: Record<string, boolean> = {}
-    if (episodeIds.length > 0) {
-        const { data: heartRows } = await supabase
-            .from('reactions')
-            .select('episode_id, user_id')
-            .in('episode_id', episodeIds)
-            .eq('emoji', '❤️')
-        heartRows?.forEach((r) => {
-            likeCountByEp[r.episode_id] = (likeCountByEp[r.episode_id] || 0) + 1
-            if (user && r.user_id === user.id) likedByMe[r.episode_id] = true
+    if (episodeIds.length) {
+        const { data: editorialMeta } = await supabase
+            .from('episodes')
+            .select('id, age_rating, content_warnings')
+            .in('id', episodeIds)
+        editorialMeta?.forEach((meta: any) => {
+            const target = episodes.find((episode) => episode.id === meta.id)
+            if (target) {
+                target.age_rating = meta.age_rating || 'all'
+                target.content_warnings = meta.content_warnings || []
+            }
         })
     }
 
-    // Subscriber count (social proof in CTA) — RPC security definer:
-    // RLS de entitlements no permite contar suscriptores ajenos desde el cliente
-    const { data: subCountData } = await supabase
-        .rpc('public_subscriber_count', { p_creator: profile.id })
-    const subCount = typeof subCountData === 'number' ? subCountData : 0
+    const { data: { user } } = await supabase.auth.getUser()
+    const isOwnProfile = user?.id === profile.id
 
-    const { count: followerCount } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('creator_id', profile.id)
+    const [{ count: followerCount }, { data: creatorFollow }, { data: reactions }] = await Promise.all([
+        supabase.from('follows').select('*', { count: 'exact', head: true }).eq('creator_id', profile.id),
+        user
+            ? supabase.from('follows').select('creator_id').eq('follower_id', user.id).eq('creator_id', profile.id).maybeSingle()
+            : Promise.resolve({ data: null }),
+        episodeIds.length
+            ? supabase.from('reactions').select('episode_id, user_id').in('episode_id', episodeIds)
+            : Promise.resolve({ data: [] as { episode_id: string; user_id: string }[] }),
+    ])
 
-    let isFollowingCreator = false
-    if (user && !isOwnProfile) {
-        const { data: followRow } = await supabase
-            .from('follows')
-            .select('creator_id')
-            .eq('follower_id', user.id)
-            .eq('creator_id', profile.id)
-            .maybeSingle()
-        isFollowingCreator = !!followRow
+    const likeCountByEpisode: Record<string, number> = {}
+    const likedByEpisode: Record<string, boolean> = {}
+    reactions?.forEach((reaction: any) => {
+        likeCountByEpisode[reaction.episode_id] = (likeCountByEpisode[reaction.episode_id] || 0) + 1
+        if (user?.id === reaction.user_id) likedByEpisode[reaction.episode_id] = true
+    })
+
+    const entries = episodes.filter((episode) => !episode.season_id)
+    const workMap = new Map<string, any>()
+    episodes.filter((episode) => episode.season_id).forEach((episode: any) => {
+        const season = Array.isArray(episode.seasons) ? episode.seasons[0] : episode.seasons
+        if (!season) return
+        const current = workMap.get(season.id) || {
+            id: season.id,
+            title: season.title,
+            slug: season.slug,
+            description: season.description || season.promise,
+            format: season.format || 'series',
+            storyType: 'life_story',
+            coverUrl: null,
+            initialFollowing: false,
+            episodes: [],
+        }
+        current.episodes.push(episode)
+        if (!current.coverUrl && episode.cover_image_url) current.coverUrl = episode.cover_image_url
+        workMap.set(season.id, current)
+    })
+    const works = Array.from(workMap.values())
+
+    if (works.length) {
+        const workIds = works.map((work) => work.id)
+        const [{ data: workMeta }, { data: storyFollows }] = await Promise.all([
+            supabase.from('seasons').select('id, story_type, cover_image_url').in('id', workIds),
+            user
+                ? supabase.from('story_follows').select('season_id').eq('follower_id', user.id).in('season_id', workIds)
+                : Promise.resolve({ data: [] as { season_id: string }[] }),
+        ])
+        workMeta?.forEach((meta: any) => {
+            const work = works.find((item) => item.id === meta.id)
+            if (work) {
+                work.storyType = meta.story_type || 'life_story'
+                work.coverUrl = meta.cover_image_url || work.coverUrl
+            }
+        })
+        const followedIds = new Set(storyFollows?.map((item: any) => item.season_id) || [])
+        works.forEach((work) => { work.initialFollowing = followedIds.has(work.id) })
     }
 
-    const branding = extractBranding(profile.creators)
-    const { theme, fallback } = extractTheme(profile.creators)
-    const cardStyle = profile.creators?.card_style || 'editorial'
+    const saved: any[] = []
+    if (isOwnProfile && user) {
+        const { data: bookmarks } = await supabase
+            .from('reading_bookmarks')
+            .select('episode_id, reached_percent')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false })
+            .limit(30)
 
-    // Agrupar episodios por temporada (Historia)
-    const groupedEpisodes = (episodes || []).reduce((acc: any, episode: any) => {
-        const seasonId = episode.season_id || 'standalone';
-        if (!acc[seasonId]) {
-            acc[seasonId] = {
-                season: episode.seasons || null,
-                episodes: []
-            };
-        }
-        acc[seasonId].episodes.push(episode);
-        return acc;
-    }, {});
-    
-    // Convertir a array y ordenar (Las historias más recientes arriba, basadas en su último capítulo)
-    const groupedList = Object.values(groupedEpisodes).sort((a: any, b: any) => {
-        if (a.season && !b.season) return -1;
-        if (!a.season && b.season) return 1;
-        const lastDateA = new Date(a.episodes[a.episodes.length - 1].created_at).getTime();
-        const lastDateB = new Date(b.episodes[b.episodes.length - 1].created_at).getTime();
-        return lastDateB - lastDateA; // Descending order of update
-    });
+        const savedEpisodeIds = bookmarks?.map((bookmark) => bookmark.episode_id) || []
+        const { data: savedEpisodes } = savedEpisodeIds.length
+            ? await supabase
+                .from('episodes')
+                .select('id, title, preview_text, cover_image_url, created_at, season_id, creator_id')
+                .in('id', savedEpisodeIds)
+                .eq('is_published', true)
+            : { data: [] }
+        const savedCreatorIds = Array.from(new Set((savedEpisodes || []).map((episode) => episode.creator_id)))
+        const { data: savedAuthors } = savedCreatorIds.length
+            ? await supabase.from('profiles').select('id, username, full_name').in('id', savedCreatorIds)
+            : { data: [] }
+        const savedEpisodesById = new Map((savedEpisodes || []).map((episode) => [episode.id, episode]))
+        const savedAuthorsById = new Map((savedAuthors || []).map((author) => [author.id, author]))
+
+        bookmarks?.forEach((bookmark) => {
+            const episode = savedEpisodesById.get(bookmark.episode_id)
+            if (!episode) return
+            const author = savedAuthorsById.get(episode.creator_id)
+            saved.push({
+                ...episode,
+                username: author?.username || profile.username,
+                authorName: author?.full_name || author?.username || t('pergamo_author'),
+                reachedPercent: Number(bookmark.reached_percent || 0),
+            })
+        })
+    }
+
+    const authorName = profile.full_name || profile.username
+    const initial = authorName.charAt(0).toUpperCase()
+    const latest = episodes.at(-1)
+    const postingLabel = creator?.frequency_promise || creator?.posting_frequency || (latest ? t('publishing') : t('preparing'))
 
     return (
-        <ThemeProvider theme={theme} fallbackBranding={fallback} className="min-h-screen text-gray-100 font-sans pb-20">
+        <div className="min-h-screen bg-[#F8F4EA] text-[#171512]">
             <Navbar />
 
-            {/* Espacio superior — deja respirar el theme arriba sin taparlo con un bg sólido */}
-            <div className="h-32 md:h-48"></div>
-
-            <main className="max-w-2xl mx-auto px-4 sm:px-6">
-
-                {/* Profile Info Card — semi-transparente con blur para que el theme se vea atrás */}
-                <div className="bg-[#15171C]/85 backdrop-blur-md rounded-2xl border border-white/10 p-6 -mt-16 relative z-10 shadow-2xl mb-8">
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-5">
-                        
-                        {/* Avatar */}
-                        <div className="w-24 h-24 shrink-0 rounded-full overflow-hidden border-4 border-[#15171C] bg-[#0A0B0E] shadow-[0_0_20px_rgba(0,0,0,0.5)] -mt-12 md:-mt-16">
-                            {profile.avatar_url ? (
-                                <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center font-bold text-3xl bg-[#C9A84C]/10 text-[#C9A84C]">
-                                    {initial}
+            <ThemeProvider theme={theme} fallbackBranding={fallback} className="border-b border-[#171512]/10 bg-[#EDE3D1]">
+                <section className="relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(248,244,234,0.96),rgba(248,244,234,0.78),rgba(248,244,234,0.35))]" />
+                    <div className="relative mx-auto max-w-6xl px-5 py-10 sm:px-7 sm:py-14">
+                        <div className="grid items-start gap-7 md:grid-cols-[132px_1fr_auto]">
+                            <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-[#F8F4EA] bg-[var(--brand-accent,#A63D2D)] shadow-xl sm:h-32 sm:w-32">
+                                {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full w-full items-center justify-center font-serif text-4xl font-black text-white">{initial}</span>}
+                            </div>
+                            <div>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h1 className="font-serif text-4xl font-black leading-none text-[#171512] sm:text-5xl">{authorName}</h1>
+                                    {creator?.is_verified_storyteller && <span title={t('verified')} className="text-[var(--brand-accent,#A63D2D)]"><CheckCircle2 size={19} fill="currentColor" className="text-white" /></span>}
                                 </div>
-                            )}
+                                <p className="mt-2 text-sm font-bold text-[#776E61]">@{profile.username}{profile.country_code ? ` · ${profile.country_code}` : ''}</p>
+                                {creator?.brand_tagline && <p className="mt-4 max-w-2xl font-serif text-xl font-bold italic text-[var(--brand-accent,#A63D2D)]">{creator.brand_tagline}</p>}
+                                <p className="mt-4 max-w-2xl text-sm leading-7 text-[#5F574B]">{profile.bio || creator?.why_i_write || t('new_voice')}</p>
+                                <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs font-bold text-[#746A5C]">
+                                    <span><strong className="text-[#171512]">{followerCount || 0}</strong> {t('followers')}</span>
+                                    <span><strong className="text-[#171512]">{entries.length}</strong> {t('entries')}</span>
+                                    <span><strong className="text-[#171512]">{works.length}</strong> {t('works')}</span>
+                                    <span className="inline-flex items-center gap-1"><PenLine size={12} /> {postingLabel}</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                                {isOwnProfile ? (
+                                    <Link href="/dashboard/settings" className="inline-flex h-10 items-center justify-center rounded-full bg-[#171512] px-5 text-xs font-black text-white">{t('customize')}</Link>
+                                ) : (
+                                    <FollowButton targetType="creator" targetId={profile.id} initialFollowing={!!creatorFollow} isAuthenticated={!!user} className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[var(--brand-accent,#A63D2D)] px-5 text-xs font-black text-white" />
+                                )}
+                                {!isOwnProfile && <ReportButton targetType="profile" targetId={profile.id} compact />}
+                            </div>
                         </div>
 
-                        {/* Details */}
-                        <div className="flex-1 text-center md:text-left">
-                            <div className="mb-2">
-                                <h1 className="font-bold text-2xl text-white flex items-center justify-center md:justify-start gap-2">
-                                    {profile.full_name || profile.username}
-                                    {/* El check solo si está verificado — antes se mostraba a todos */}
-                                    {profile.creators?.is_verified_storyteller && (
-                                        <span className="text-[#C9A84C] text-sm bg-[#C9A84C]/10 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
-                                    )}
-                                </h1>
-                                <p className="text-sm font-medium text-gray-500">@{profile.username}</p>
-                                {profile.creators?.brand_tagline && (
-                                    <p className="text-sm font-semibold text-[#D8BA63] mt-1.5 italic" style={{ fontFamily: 'Georgia, serif' }}>
-                                        {profile.creators.brand_tagline}
-                                    </p>
-                                )}
-                                <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 font-medium justify-center md:justify-start">
-                                    <span><strong className="text-white">{subCount || 0}</strong> suscriptores</span>
-                                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-                                    <span><strong className="text-white">{followerCount || 0}</strong> seguidores</span>
-                                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-                                    <span><strong className="text-white">{episodes?.length || 0}</strong> episodios</span>
-                                </div>
-                            </div>
-                            
-                            <p className="text-sm text-gray-300 leading-relaxed mb-6 max-w-lg mx-auto md:mx-0">
-                                {profile.bio || 'Compartiendo mi historia y contenido exclusivo en Pergamo.'}
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row items-center gap-3">
-                                {!isOwnProfile ? (
-                                    <>
-                                        {!isSubscribed ? (
-                                            <div className="w-full sm:w-auto flex flex-col items-center sm:items-start gap-1">
-                                                <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`} className="w-full sm:w-auto">
-                                                    <Button className="w-full sm:w-auto font-bold px-8 h-11 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] shadow-lg shadow-[#C9A84C]/20">
-                                                        Suscribirse · ${subscriptionPrice}/mes
-                                                    </Button>
-                                                </Link>
-                                                {(subCount || 0) > 0 && (
-                                                    <p className="text-[11px] text-gray-500 font-medium">
-                                                        Únete a <strong className="text-gray-300">{subCount}</strong> {subCount === 1 ? 'lector' : 'lectores'} que ya lo apoyan
-                                                    </p>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-[#C9A84C]/10 text-[#D8BA63] border border-[#C9A84C]/20 w-full sm:w-auto justify-center">
-                                                ✓ Suscrito
-                                            </span>
-                                        )}
-                                        <FollowButton
-                                            targetType="creator"
-                                            targetId={profile.id}
-                                            initialFollowing={isFollowingCreator}
-                                            isAuthenticated={!!user}
-                                            className="inline-flex w-full sm:w-auto h-11 items-center justify-center gap-2 rounded-xl border border-gray-700 bg-[#1A1C23] px-5 text-sm font-bold text-gray-300 transition hover:bg-gray-800 hover:text-white"
-                                        />
-                                    </>
-                                ) : (
-                                    <Link href="/dashboard" className="w-full sm:w-auto">
-                                        <Button className="w-full sm:w-auto h-11 rounded-xl font-bold bg-gray-800 text-white hover:bg-gray-700">
-                                            Dashboard
-                                        </Button>
-                                    </Link>
-                                )}
-                            </div>
+                        <div className="mt-8 grid gap-3 border-t border-[#171512]/10 pt-5 sm:grid-cols-3">
+                            <TrustItem icon={ShieldCheck} label={creator?.is_verified_storyteller ? t('identity_verified') : t('public_profile')} />
+                            <TrustItem icon={BookOpen} label={works.length ? t('works_in_progress', { count: works.length }) : t('independent_entries')} />
+                            <TrustItem icon={MapPin} label={profile.story_themes?.slice(0, 2).join(' · ') || t('original_voice')} />
                         </div>
                     </div>
-                </div>
+                </section>
+            </ThemeProvider>
 
-                {/* Gift Panel / Tipping Area for whole profile */}
-                {!isOwnProfile && (
-                    <div className="mb-8">
-                        <GiftPanel recipientId={profile.id} recipientUsername={profile.username} />
-                    </div>
-                )}
-
-                {/* Bio + Trust signals (Loop refinement Round 1) */}
-                <div className="mb-10">
-                    <CreatorBioCard
-                        bio={profile.bio}
-                        whyIWrite={profile.creators?.why_i_write}
-                        storyThemes={profile.story_themes}
-                        languages={profile.languages}
-                        countryCode={profile.country_code}
-                        pronouns={profile.pronouns}
-                        isVerified={profile.creators?.is_verified_storyteller}
-                        verificationMethod={profile.creators?.verification_method}
-                        seriesStatus={profile.creators?.series_status}
-                        postingFrequency={profile.creators?.posting_frequency}
-                        frequencyPromise={profile.creators?.frequency_promise}
-                        totalEpisodes={episodes?.length || 0}
-                        daysSinceLastEpisode={
-                            episodes && episodes.length > 0
-                                // El array viene ordenado ascendente: el ÚLTIMO es el más reciente
-                                ? Math.floor((Date.now() - new Date(episodes[episodes.length - 1].created_at).getTime()) / 86400000)
-                                : null
-                        }
-                    />
-                </div>
-
-                {/* Feed (Agrupado por Historia/Temporada) */}
-                <div className="space-y-12 bio-card-style-root" data-card-style={cardStyle}>
-                    {(!episodes || episodes.length === 0) ? (
-                        <div className="bg-[#15171C] border border-gray-800 rounded-2xl py-16 text-center text-gray-500">
-                            Aún no hay publicaciones.
-                        </div>
-                    ) : (
-                        groupedList.map((group: any, idx: number) => (
-                            <div key={idx} className="relative">
-                                {/* Encabezado de la Historia */}
-                                {group.season ? (
-                                    <div className="mb-6 pl-4 border-l-4 border-[var(--brand-accent)]">
-                                        <Link href={`/${profile.username}/stories/${group.season.slug || group.season.id}`} className="group inline-block">
-                                            <h2 className="text-2xl font-serif font-bold text-white mb-2 transition group-hover:text-[var(--brand-accent)]">{group.season.title}</h2>
-                                        </Link>
-                                        {(group.season.tagline || group.season.promise) && (
-                                            <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--brand-accent)]">
-                                                {group.season.tagline || group.season.promise}
-                                            </p>
-                                        )}
-                                        {group.season.description && (
-                                            <p className="text-sm text-gray-400 max-w-2xl leading-relaxed">{group.season.description}</p>
-                                        )}
-                                        {(group.season.central_question || group.season.audience) && (
-                                            <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-bold text-gray-300">
-                                                {group.season.central_question && <span className="rounded-full border border-gray-800 bg-[#15171C] px-3 py-1">{group.season.central_question}</span>}
-                                                {group.season.audience && <span className="rounded-full border border-gray-800 bg-[#15171C] px-3 py-1">Para {group.season.audience}</span>}
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="mb-6 pl-4 border-l-4 border-gray-700">
-                                        <h2 className="text-xl font-bold text-gray-300">Publicaciones Sueltas</h2>
-                                    </div>
-                                )}
-
-                                {/* Lista de Capítulos */}
-                                <div className="space-y-6">
-                                    {group.episodes.map((episode: any, epIdx: number) => {
-                                        // Gratis = lo que dice la DB. Antes el primer post se marcaba
-                                        // "legible" solo en esta pantalla y el lector chocaba con el
-                                        // paywall al abrirlo (la regla del 1er capítulo gratis se
-                                        // aplica al PUBLICAR, en episodes/actions.ts).
-                                        const isFree = !episode.is_subscription_only && !episode.ppv_price
-                                        const canRead = isFree || isSubscribed || isOwnProfile || ppvUnlocked.has(episode.id)
-                                        const chapterNumber = group.season ? `Capítulo ${epIdx + 1}` : null
-
-                                        return (
-                                            <div key={episode.id} className="bg-[#15171C] border border-gray-800 rounded-2xl overflow-hidden shadow-md">
-                                                {/* Post Header */}
-                                                <div className="p-4 flex items-center justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-800 shrink-0">
-                                                            {profile.avatar_url ? (
-                                                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center font-bold text-xs bg-[#2A2418] text-[#D8BA63]">{initial}</div>
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-bold text-white text-sm hover:underline cursor-pointer">{profile.full_name || profile.username}</p>
-                                                            <p className="text-xs text-gray-500">
-                                                                {new Date(episode.created_at).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} a las {new Date(episode.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit'})}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="shrink-0 flex items-center gap-2">
-                                                        {chapterNumber && (
-                                                            <span className="text-xs font-medium text-gray-400 bg-gray-800 px-2 py-1 rounded-md">
-                                                                {chapterNumber}
-                                                            </span>
-                                                        )}
-                                                        {!canRead && (
-                                                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C9A84C]/10 border border-[#C9A84C]/20 text-xs font-bold text-[#D8BA63]">
-                                                                <Lock size={12} /> Exclusivo
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Post Content — clickeable: abre el episodio (o su paywall) */}
-                                                <div className="px-4 pb-3">
-                                                    <Link href={`/${profile.username}/${episode.id}`} className="group block">
-                                                        <h3 className="font-bold text-gray-100 text-base mb-1 transition group-hover:text-[#D8BA63]">{episode.title}</h3>
-                                                        <p className="text-sm text-gray-400 mb-4 whitespace-pre-wrap leading-relaxed line-clamp-3">
-                                                            {episode.preview_text || "Mira este post..."}
-                                                        </p>
-                                                    </Link>
-                                                </div>
-
-                                                {/* Big Media Area */}
-                                                {(episode.cover_image_url || !canRead) && (
-                                                    <div className="relative w-full bg-[#0A0B0E] border-y border-gray-800 min-h-[250px] flex items-center justify-center overflow-hidden">
-                                                        {episode.cover_image_url && (
-                                                            canRead ? (
-                                                                <Link href={`/${profile.username}/${episode.id}`} className="block w-full">
-                                                                    <img
-                                                                        src={episode.cover_image_url}
-                                                                        alt="Contenido"
-                                                                        className="w-full h-auto max-h-[600px] object-contain transition hover:opacity-90"
-                                                                    />
-                                                                </Link>
-                                                            ) : (
-                                                                <img
-                                                                    src={episode.cover_image_url}
-                                                                    alt="Contenido"
-                                                                    className="w-full h-auto max-h-[600px] object-contain blur-2xl opacity-40 scale-110"
-                                                                />
-                                                            )
-                                                        )}
-                                                        
-                                                        {!canRead && (
-                                                            <div className="absolute inset-0 flex items-center justify-center flex-col bg-black/40 p-6 text-center">
-                                                                <Lock className="w-10 h-10 text-gray-400 mb-3" />
-                                                                <p className="text-white font-bold text-lg mb-2">Contenido Exclusivo</p>
-                                                                <p className="text-sm text-gray-400 mb-4">Suscríbete a {profile.username} para desbloquear este post y más.</p>
-                                                                <Link href={`/api/checkout?type=subscription&creatorId=${profile.id}`}>
-                                                                    <Button className="bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold shadow-lg shadow-[#C9A84C]/20">
-                                                                        Suscribirse por ${subscriptionPrice}/mes
-                                                                    </Button>
-                                                                </Link>
-                                                                {!episode.is_subscription_only && episode.ppv_price && (
-                                                                    <Link href={`/api/checkout?type=ppv&episodeId=${episode.id}`} className="mt-2">
-                                                                        <Button variant="outline" className="border-gray-600 bg-transparent text-gray-300 hover:bg-white/10 text-xs font-semibold">
-                                                                            o desbloquear solo este por ${episode.ppv_price}
-                                                                        </Button>
-                                                                    </Link>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {/* Action Bar — like real, share funcional, kebab para dueño */}
-                                                <EpisodeFeedActions
-                                                    episodeId={episode.id}
-                                                    episodeUrl={`/${profile.username}/${episode.id}`}
-                                                    episodeTitle={episode.title}
-                                                    isOwner={isOwnProfile}
-                                                    isAuthenticated={!!user}
-                                                    initialLiked={!!likedByMe[episode.id]}
-                                                    initialLikeCount={likeCountByEp[episode.id] || 0}
-                                                    creatorUsername={profile.username}
-                                                />
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
+            <main className="mx-auto max-w-5xl px-4 py-9 pb-24 sm:px-6">
+                <ProfileContentTabs
+                    entries={entries}
+                    works={works}
+                    saved={saved}
+                    username={profile.username}
+                    authorName={authorName}
+                    avatarUrl={profile.avatar_url}
+                    isOwner={isOwnProfile}
+                    isAuthenticated={!!user}
+                    likedByEpisode={likedByEpisode}
+                    likeCountByEpisode={likeCountByEpisode}
+                />
             </main>
-        </ThemeProvider>
+        </div>
     )
 }
 
-
-
-
+function TrustItem({ icon: Icon, label }: { icon: typeof ShieldCheck; label: string }) {
+    return <div className="flex items-center gap-2 text-xs font-bold text-[#655C4F]"><Icon size={14} className="text-[var(--brand-accent,#A63D2D)]" /> {label}</div>
+}

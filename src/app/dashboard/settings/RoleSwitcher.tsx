@@ -28,17 +28,17 @@ export function RoleSwitcher({ currentRole }: { currentRole: 'reader' | 'creator
     }
 
     return (
-        <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-6">
+        <div className="border border-[#171512]/10 bg-[#FFFCF5] p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#C9A84C]/10 text-[#C9A84C]">
                         {toCreator ? <PenLine size={18} /> : <BookOpen size={18} />}
                     </div>
                     <div>
-                        <h3 className="font-bold text-white">
+                        <h3 className="font-serif font-black text-[#171512]">
                             {toCreator ? '¿Quieres escribir?' : 'Modo lector'}
                         </h3>
-                        <p className="mt-1 max-w-md text-sm leading-6 text-gray-400">
+                        <p className="mt-1 max-w-md text-sm leading-6 text-[#746A5C]">
                             {toCreator
                                 ? 'Activa el modo escritor para publicar capítulos, definir tu precio de suscripción y recibir apoyo de tus lectores.'
                                 : 'Si cambias a modo lector, las herramientas de escritor se ocultan. Tus capítulos, precio y marca quedan guardados — vuelve cuando quieras.'}

@@ -170,14 +170,14 @@ export function IdentityForm({ initial }: IdentityFormProps) {
     }
 
     return (
-        <div className="rounded-2xl bg-[#15171C] border border-gray-800 p-6 space-y-8">
-            <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
+        <div className="space-y-8 border border-[#171512]/10 bg-[#FFFCF5] p-6">
+            <div className="flex items-center gap-3 border-b border-[#171512]/10 pb-4">
                 <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
                     <Sparkles size={18} className="text-[#D8BA63]" />
                 </div>
                 <div>
-                    <h2 className="font-bold text-lg text-white">Tu identidad</h2>
-                    <p className="text-sm text-gray-500">Información pública en tu perfil. Ayuda a los lectores a conectar contigo.</p>
+                    <h2 className="font-serif text-lg font-black text-[#171512]">Tu identidad</h2>
+                    <p className="text-sm text-[#746A5C]">Información pública que ayuda a los lectores a conectar contigo.</p>
                 </div>
             </div>
 
@@ -187,7 +187,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     <ImageIcon size={12} /> Banner del perfil
                 </label>
                 {coverPreview ? (
-                    <div className="relative w-full h-40 rounded-xl overflow-hidden border border-gray-800 group">
+                    <div className="group relative h-40 w-full overflow-hidden border border-[#171512]/12">
                         <img src={coverPreview} alt="" className="w-full h-full object-cover" />
                         <button
                             type="button"
@@ -198,7 +198,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                         </button>
                     </div>
                 ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-[#C9A84C]/50 cursor-pointer transition">
+                    <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center border-2 border-dashed border-[#171512]/20 bg-[#EEE5D5] transition hover:border-[#A63D2D]/40">
                         <Upload size={22} className="text-gray-500 mb-1.5" />
                         <span className="text-sm font-semibold text-gray-400">Haz clic para subir banner</span>
                         <span className="text-xs text-gray-600 mt-0.5">Recomendado: 1600×400</span>
@@ -216,11 +216,11 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     <select
                         value={country}
                         onChange={e => setCountry(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white focus:border-[#C9A84C]/50 focus:ring-1 focus:ring-[#C9A84C] focus:outline-none text-sm"
+                        className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-4 py-3 text-sm text-[#171512] focus:border-[#A63D2D]/50 focus:outline-none focus:ring-1 focus:ring-[#A63D2D]"
                     >
-                        <option value="" className="bg-[#15171C]">Seleccionar país</option>
+                        <option value="">Seleccionar país</option>
                         {COUNTRIES.map(c => (
-                            <option key={c.code} value={c.code} className="bg-[#15171C]">
+                            <option key={c.code} value={c.code}>
                                 {c.flag} {c.name}
                             </option>
                         ))}
@@ -236,7 +236,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                         onChange={e => setPronouns(e.target.value.slice(0, 30))}
                         placeholder="ella/she"
                         list="pronoun-presets"
-                        className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:ring-1 focus:ring-[#C9A84C] focus:outline-none text-sm"
+                        className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-4 py-3 text-sm text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D]/50 focus:outline-none focus:ring-1 focus:ring-[#A63D2D]"
                     />
                     <datalist id="pronoun-presets">
                         {PRONOUN_PRESETS.map(p => <option key={p} value={p} />)}
@@ -260,7 +260,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                                 className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${
                                     active
                                         ? 'bg-[#C9A84C]/10 text-[#D8BA63] border-[#C9A84C]/30'
-                                        : 'bg-[#0A0B0E] text-gray-400 border-gray-800 hover:border-gray-700'
+                                        : 'bg-[#F8F4EA] text-[#746A5C] border-[#171512]/12 hover:border-[#A63D2D]/30'
                                 }`}
                             >
                                 {active && <Check size={12} className="inline mr-1.5" />}
@@ -291,8 +291,8 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                                     active
                                         ? 'bg-[#C9A84C]/10 text-[#D8BA63] border-[#C9A84C]/30'
                                         : disabled
-                                            ? 'bg-[#0A0B0E] text-gray-700 border-gray-900 cursor-not-allowed'
-                                            : 'bg-[#0A0B0E] text-gray-400 border-gray-800 hover:border-gray-700'
+                                            ? 'cursor-not-allowed border-[#171512]/8 bg-[#EEE5D5] text-[#9A9082]'
+                                            : 'border-[#171512]/12 bg-[#F8F4EA] text-[#746A5C] hover:border-[#A63D2D]/30'
                                 }`}
                             >
                                 {t.label}
@@ -309,7 +309,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     <Tag size={12} /> Intereses
                     <span className="normal-case font-medium text-gray-600 text-[10px]">· máx 10, libre</span>
                 </label>
-                <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-[#0A0B0E] border border-gray-800 min-h-[52px] focus-within:border-[#C9A84C]/50">
+                <div className="flex min-h-[52px] flex-wrap items-center gap-2 border border-[#171512]/15 bg-[#F8F4EA] p-3 focus-within:border-[#A63D2D]/50">
                     {interests.map(i => (
                         <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#C9A84C]/10 text-[#D8BA63] text-xs font-semibold border border-[#C9A84C]/20">
                             {i}
@@ -327,7 +327,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                                 if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addInterest() }
                             }}
                             placeholder={interests.length === 0 ? 'ej. fotografía, jazz, migración...' : '+ agregar'}
-                            className="flex-1 min-w-[140px] bg-transparent text-white placeholder-gray-600 outline-none text-sm"
+                            className="min-w-[140px] flex-1 bg-transparent text-sm text-[#171512] outline-none placeholder:text-[#9A9082]"
                         />
                     )}
                 </div>
@@ -347,12 +347,12 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                             value={website}
                             onChange={e => setWebsite(e.target.value)}
                             placeholder="https://tuweb.com"
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:ring-1 focus:ring-[#C9A84C] focus:outline-none text-sm"
+                            className="flex-1 border border-[#171512]/15 bg-[#F8F4EA] px-4 py-2.5 text-sm text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D]/50 focus:outline-none focus:ring-1 focus:ring-[#A63D2D]"
                         />
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-10 shrink-0 text-center text-xs font-bold text-pink-400">IG</div>
-                        <div className="flex-1 flex items-center rounded-xl bg-[#0A0B0E] border border-gray-800 focus-within:border-[#C9A84C]/50">
+                        <div className="flex flex-1 items-center border border-[#171512]/15 bg-[#F8F4EA] focus-within:border-[#A63D2D]/50">
                             <span className="px-3 text-gray-600 text-sm">@</span>
                             <input
                                 type="text"
@@ -365,7 +365,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-10 shrink-0 text-center text-xs font-bold text-gray-400">𝕏</div>
-                        <div className="flex-1 flex items-center rounded-xl bg-[#0A0B0E] border border-gray-800 focus-within:border-[#C9A84C]/50">
+                        <div className="flex flex-1 items-center border border-[#171512]/15 bg-[#F8F4EA] focus-within:border-[#A63D2D]/50">
                             <span className="px-3 text-gray-600 text-sm">@</span>
                             <input
                                 type="text"
@@ -387,7 +387,7 @@ export function IdentityForm({ initial }: IdentityFormProps) {
             )}
 
             {/* Save */}
-            <div className="pt-4 border-t border-gray-800 flex items-center gap-3">
+            <div className="flex items-center gap-3 border-t border-[#171512]/10 pt-4">
                 <button
                     onClick={handleSave}
                     disabled={isPending}

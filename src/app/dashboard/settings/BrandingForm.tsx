@@ -93,15 +93,15 @@ export function BrandingForm({ initial }: BrandingFormProps) {
     }
 
     return (
-        <div className="rounded-2xl bg-[#15171C] border border-gray-800 p-6 space-y-8">
+        <div className="space-y-8 border border-[#171512]/10 bg-[#FFFCF5] p-6">
 
-            <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
+            <div className="flex items-center gap-3 border-b border-[#171512]/10 pb-4">
                 <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
                     <Sparkles size={18} className="text-[#D8BA63]" />
                 </div>
                 <div>
-                    <h2 className="font-bold text-lg text-white">Tu marca personal</h2>
-                    <p className="text-sm text-gray-500">Personaliza cómo se ve tu perfil y tus historias. Todos tus lectores lo verán así.</p>
+                    <h2 className="font-serif text-lg font-black text-[#171512]">Tu marca personal</h2>
+                    <p className="text-sm text-[#746A5C]">Personaliza tu perfil sin romper la legibilidad editorial de Pergamo.</p>
                 </div>
             </div>
 
@@ -149,7 +149,7 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                             className={`text-left p-5 rounded-xl border-2 transition-all ${
                                 font === f.code
                                     ? 'border-[#C9A84C] bg-[#C9A84C]/5 shadow-lg shadow-[#C9A84C]/10'
-                                    : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
+                                    : 'border-[#171512]/12 bg-[#F8F4EA] hover:border-[#A63D2D]/30'
                             }`}
                         >
                             <div className="flex items-center justify-between mb-3">
@@ -184,7 +184,7 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                             className={`text-left p-4 rounded-xl border-2 transition-all ${
                                 cardStyle === s.code
                                     ? 'border-[#C9A84C] bg-[#C9A84C]/5'
-                                    : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'
+                                    : 'border-[#171512]/12 bg-[#F8F4EA] hover:border-[#A63D2D]/30'
                             }`}
                         >
                             <div className="flex items-center justify-between mb-1">
@@ -208,13 +208,13 @@ export function BrandingForm({ initial }: BrandingFormProps) {
                     value={tagline}
                     onChange={e => setTagline(e.target.value.slice(0, 80))}
                     placeholder="ej. Contando mi vida, un capítulo a la vez"
-                    className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:ring-1 focus:ring-[#C9A84C] focus:outline-none text-sm"
+                    className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-4 py-3 text-sm text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D]/50 focus:outline-none focus:ring-1 focus:ring-[#A63D2D]"
                 />
                 <p className="text-[10px] text-gray-600 mt-1">{tagline.length}/80</p>
             </div>
 
             {/* Save */}
-            <div className="pt-4 border-t border-gray-800 flex items-center gap-3">
+            <div className="flex items-center gap-3 border-t border-[#171512]/10 pt-4">
                 <button
                     onClick={handleSave}
                     disabled={isPending}
@@ -231,4 +231,3 @@ export function BrandingForm({ initial }: BrandingFormProps) {
         </div>
     )
 }
-

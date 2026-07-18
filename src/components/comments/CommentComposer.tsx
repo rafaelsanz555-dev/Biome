@@ -87,19 +87,19 @@ export function CommentComposer({
     const placeholderText = placeholder || (parentId ? t('placeholder_reply') : t('placeholder_root'))
 
     return (
-        <div className="rounded-xl border border-gray-800 bg-[#0F1114] focus-within:border-[#C9A84C]/40 transition">
+        <div className="border border-[#171512]/12 bg-[#FFFCF5] transition focus-within:border-[#A63D2D]/40">
             <textarea
                 ref={ref}
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder={placeholderText}
-                className="w-full bg-transparent px-4 py-3 text-sm text-gray-200 placeholder-gray-600 resize-none outline-none leading-relaxed"
+                className="w-full resize-none bg-transparent px-4 py-3 text-sm leading-relaxed text-[#2F2A24] outline-none placeholder:text-[#9A9082]"
                 style={{ fontFamily: 'Georgia, serif', minHeight: 70 }}
                 rows={2}
                 maxLength={MAX + 200}
             />
-            <div className="flex items-center justify-between px-4 py-2 border-t border-gray-800/60">
-                <span className={`text-[11px] ${overLimit ? 'text-red-400 font-bold' : 'text-gray-600'}`}>
+            <div className="flex items-center justify-between border-t border-[#171512]/10 px-4 py-2">
+                <span className={`text-[11px] ${overLimit ? 'font-bold text-red-600' : 'text-[#8A8174]'}`}>
                     {overLimit ? t('over_limit', { count: -remaining }) : t('remaining', { count: remaining })}
                 </span>
                 <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export function CommentComposer({
                             type="button"
                             onClick={onCancel}
                             disabled={busy}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition"
+                            className="px-3 py-1.5 text-xs font-semibold text-[#746A5C] transition hover:bg-[#F0E8D9] hover:text-[#171512]"
                         >
                             {tCommon('cancel')}
                         </button>
@@ -117,7 +117,7 @@ export function CommentComposer({
                         type="button"
                         onClick={handleSubmit}
                         disabled={busy || body.trim().length < 1 || overLimit}
-                        className="px-4 py-1.5 rounded-lg bg-[#C9A84C] hover:bg-[#C9A84C] disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
+                        className="flex items-center gap-1.5 bg-[#171512] px-4 py-1.5 text-xs font-bold text-white transition hover:bg-[#A63D2D] disabled:bg-[#D8D0C2] disabled:text-[#8A8174]"
                     >
                         {busy ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
                         {editingId ? t('submit_save') : (parentId ? t('submit_reply') : t('submit_root'))}

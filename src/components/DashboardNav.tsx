@@ -3,114 +3,78 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import {
-    Home,
-    Compass,
-    BookOpen,
-    TrendingUp,
-    Users,
-    Star,
-    Clock,
-    FileText,
-    Settings,
-    BarChart3,
-    ExternalLink,
-    UserCircle,
-} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { BarChart3, BookOpen, Bookmark, Compass, FileText, Home, Settings, Star, UserCircle, Users } from 'lucide-react'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
+import { TrendingUp } from 'lucide-react'
 
 interface DashboardNavProps {
     isCreator: boolean
     username?: string | null
+    compact?: boolean
 }
 
-export function DashboardNav({ isCreator, username }: DashboardNavProps) {
+interface NavItem {
+    href: string
+    label: string
+    icon: LucideIcon
+    exact?: boolean
+}
+
+export function DashboardNav({ isCreator, username, compact = false }: DashboardNavProps) {
     const pathname = usePathname()
     const t = useTranslations('dashboard')
 
-    // Main links — role-specific
-    const mainLinks = isCreator
+    const mainLinks: NavItem[] = isCreator
         ? [
-            { href: '/dashboard', label: t('nav_home'), icon: Home, exact: true },
-            { href: '/dashboard/discovery', label: t('nav_discovery'), icon: Compass },
-            { href: '/dashboard/episodes', label: t('nav_stories'), icon: BookOpen },
-            { href: '/dashboard/billing', label: t('nav_monetization'), icon: TrendingUp },
-            { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
-            { href: '/dashboard/audience', label: t('nav_audience'), icon: Users },
+            { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
+            { href: '/dashboard/episodes/new', label: 'Publicar', icon: FileText },
+            { href: '/dashboard/episodes', label: 'Mis publicaciones', icon: BookOpen },
+            { href: '/discover', label: 'Descubrir', icon: Compass },
+            { href: '/dashboard/analytics', label: 'Estadísticas', icon: BarChart3 },
+            { href: '/dashboard/audience', label: 'Audiencia', icon: Users },
+            ...(MONETIZATION_ENABLED ? [{ href: '/dashboard/billing', label: t('nav_monetization'), icon: TrendingUp }] : []),
         ]
         : [
-            { href: '/dashboard', label: t('nav_home'), icon: Home, exact: true },
-            { href: '/dashboard/discovery', label: t('nav_discovery'), icon: Compass },
+            { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
+            { href: '/discover', label: 'Descubrir', icon: Compass },
+            { href: '/dashboard/subscriptions', label: 'Siguiendo', icon: Star },
+            { href: '/dashboard/history', label: 'Guardados', icon: Bookmark },
         ]
 
-    // Library section — role-specific
-    const libraryLinks = isCreator
-        ? [
-            { href: '/dashboard/subscriptions', label: t('nav_subscriptions'), icon: Star },
-            { href: '/dashboard/history', label: t('nav_history'), icon: Clock },
-            { href: '/dashboard/drafts', label: t('nav_drafts'), icon: FileText },
-            { href: '/dashboard/settings', label: t('nav_settings'), icon: Settings },
-        ]
-        : [
-            { href: '/dashboard/subscriptions', label: t('nav_subscriptions'), icon: Star },
-            { href: '/dashboard/history', label: t('nav_history'), icon: Clock },
-            { href: '/dashboard/settings', label: t('nav_settings'), icon: Settings },
-        ]
-
-    const renderLink = (link: any) => {
-        const Icon = link.icon
-        const isActive = link.exact
-            ? pathname === link.href
-            : pathname === link.href || pathname.startsWith(link.href + '/')
-
+    if (compact) {
         return (
-            <Link
-                key={link.href}
-                href={link.href}
-                title={link.label}
-                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    isActive
-                        ? 'bg-white/5 border-l-4 border-[#C9A84C] text-white'
-                        : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
-                }`}
-            >
-                <Icon size={20} className="w-5" />
-                <span className="font-medium text-sm">{link.label}</span>
+            <nav className="grid grid-cols-4 gap-1">
+                {mainLinks.slice(0, 4).map((link) => {
+                    const Icon = link.icon
+                    const active = link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`)
+                    return <Link key={link.href} href={link.href} className={`flex min-w-0 flex-col items-center gap-1 py-1 text-[9px] font-bold ${active ? 'text-[#A63D2D]' : 'text-[#746A5C]'}`}><Icon size={17} /><span className="max-w-full truncate">{link.label}</span></Link>
+                })}
+            </nav>
+        )
+    }
+
+    const secondary: NavItem[] = [
+        { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
+        ...(username ? [{ href: `/${username}`, label: 'Perfil público', icon: UserCircle }] : []),
+    ]
+
+    const render = (link: NavItem) => {
+        const Icon = link.icon
+        const active = link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`)
+        return (
+            <Link key={link.href} href={link.href} className={`relative flex items-center gap-3 px-4 py-3 text-sm font-bold transition ${active ? 'bg-[#171512] text-white' : 'text-[#746A5C] hover:bg-[#171512]/5 hover:text-[#171512]'}`}>
+                {active && <span className="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 bg-[#A63D2D]" />}
+                <Icon size={18} /> {link.label}
             </Link>
         )
     }
 
     return (
-        <nav className="flex-1 w-full px-3 space-y-1 mt-4">
-            {mainLinks.map(renderLink)}
-
-            <div className="pt-6 pb-2 px-3 text-[10px] uppercase font-bold text-gray-600 tracking-wider">
-                {t('nav_library')}
-            </div>
-
-            {libraryLinks.map(renderLink)}
-
-            {/* Botón "Ver mi perfil" — destacado, abre en nueva pestaña */}
-            {username && (
-                <div className="pt-6 px-1">
-                    <Link
-                        href={`/${username}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-2 p-3 rounded-xl bg-gradient-to-br from-[#C9A84C]/15 to-[#8A6A1C]/10 border border-[#C9A84C]/20 text-white hover:from-[#C9A84C]/25 hover:to-[#8A6A1C]/15 transition group"
-                    >
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-lg bg-[#C9A84C]/20 flex items-center justify-center shrink-0">
-                                <UserCircle size={16} className="text-[#C9A84C]" />
-                            </div>
-                            <div className="min-w-0">
-                                <p className="text-xs font-bold leading-tight">Ver mi perfil</p>
-                                <p className="text-[10px] text-gray-400 truncate">Pergamo/{username}</p>
-                            </div>
-                        </div>
-                        <ExternalLink size={12} className="text-gray-500 group-hover:text-[#C9A84C] transition shrink-0" />
-                    </Link>
-                </div>
-            )}
+        <nav className="mt-4 px-3">
+            <div className="space-y-1">{mainLinks.map(render)}</div>
+            <p className="mb-2 mt-7 px-4 text-[9px] font-black uppercase tracking-[0.18em] text-[#9A9082]">Cuenta</p>
+            <div className="space-y-1">{secondary.map(render)}</div>
         </nav>
     )
 }

@@ -8,10 +8,10 @@ import Placeholder from '@tiptap/extension-placeholder'
 import CharacterCount from '@tiptap/extension-character-count'
 import { PullQuote } from './PullQuote'
 import { isSafeUserUrl } from '@/lib/content-security'
-import { useEffect, useImperativeHandle, forwardRef, useRef } from 'react'
+import { useImperativeHandle, forwardRef } from 'react'
 import {
     Bold, Italic, Heading2, Heading3, Quote, Minus, List, ListOrdered,
-    Link2, Image as ImageIcon, Quote as QuoteIcon, Eye
+    Link2, Image as ImageIcon, Quote as QuoteIcon
 } from 'lucide-react'
 
 export interface RichEditorHandle {
@@ -38,6 +38,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                 heading: { levels: [2, 3] },
                 codeBlock: false,
                 code: false,
+                link: false,
             }),
             Image.configure({ inline: false, HTMLAttributes: { class: 'bio-editor-img' } }),
             Link.configure({ openOnClick: false, HTMLAttributes: { class: 'bio-editor-link' } }),
@@ -48,7 +49,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
         content: initialContent || undefined,
         editorProps: {
             attributes: {
-                class: 'bio-editor-content prose prose-invert max-w-none focus:outline-none min-h-[400px]',
+                class: 'bio-editor-content prose max-w-none focus:outline-none min-h-[400px]',
             },
         },
         onUpdate: ({ editor }) => {
@@ -82,7 +83,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
     if (!editor) return null
 
     const btn = (active: boolean) =>
-        `p-2 rounded-lg transition text-sm ${active ? 'bg-[#C9A84C]/15 text-[#D8BA63]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`
+        `p-2 transition text-sm ${active ? 'bg-[#A63D2D]/8 text-[#A63D2D]' : 'text-[#746A5C] hover:bg-[#171512]/5 hover:text-[#171512]'}`
 
     function addImage() {
         const url = window.prompt('URL de la imagen:')
@@ -96,28 +97,28 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
     return (
         <div className="rich-editor-wrap">
             {/* Top toolbar */}
-            <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 p-2 rounded-t-xl bg-[#0F1114] border border-b-0 border-gray-800">
+            <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 border border-b-0 border-[#171512]/12 bg-[#EEE5D5] p-2">
                 <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))} title="Negrita (Ctrl+B)">
                     <Bold size={16} />
                 </button>
                 <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive('italic'))} title="Cursiva (Ctrl+I)">
                     <Italic size={16} />
                 </button>
-                <div className="w-px h-5 bg-gray-800 mx-1"></div>
+                <div className="mx-1 h-5 w-px bg-[#171512]/12"></div>
                 <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive('heading', { level: 2 }))} title="Título">
                     <Heading2 size={16} />
                 </button>
                 <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive('heading', { level: 3 }))} title="Subtítulo">
                     <Heading3 size={16} />
                 </button>
-                <div className="w-px h-5 bg-gray-800 mx-1"></div>
+                <div className="mx-1 h-5 w-px bg-[#171512]/12"></div>
                 <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive('bulletList'))} title="Lista">
                     <List size={16} />
                 </button>
                 <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive('orderedList'))} title="Lista numerada">
                     <ListOrdered size={16} />
                 </button>
-                <div className="w-px h-5 bg-gray-800 mx-1"></div>
+                <div className="mx-1 h-5 w-px bg-[#171512]/12"></div>
                 <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btn(editor.isActive('blockquote'))} title="Cita">
                     <Quote size={16} />
                 </button>
@@ -132,7 +133,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                 <button type="button" onClick={() => editor.chain().focus().setHorizontalRule().run()} className={btn(false)} title="Divisor">
                     <Minus size={16} />
                 </button>
-                <div className="w-px h-5 bg-gray-800 mx-1"></div>
+                <div className="mx-1 h-5 w-px bg-[#171512]/12"></div>
                 <button type="button" onClick={addImage} className={btn(false)} title="Imagen">
                     <ImageIcon size={16} />
                 </button>
@@ -141,15 +142,15 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                 </button>
 
                 {/* Live stats */}
-                <div className="ml-auto flex items-center gap-3 pr-2 text-[11px] text-gray-500 font-medium">
+                <div className="ml-auto flex items-center gap-3 pr-2 text-[11px] font-medium text-[#8A8174]">
                     <span>{editor.storage.characterCount.words()} palabras</span>
-                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                    <span className="h-1 w-1 rounded-full bg-[#171512]/25"></span>
                     <span>{Math.max(1, Math.round(editor.storage.characterCount.words() / 220))} min lectura</span>
                 </div>
             </div>
 
             {/* Editor body */}
-            <div className="rounded-b-xl bg-[#0A0B0E] border border-gray-800 p-6">
+            <div className="border border-[#171512]/12 bg-[#FFFCF5] p-6">
                 <EditorContent editor={editor} />
             </div>
 
@@ -158,32 +159,32 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     font-family: Georgia, "Playfair Display", serif;
                     font-size: 18px;
                     line-height: 1.85;
-                    color: #E5E7EB;
+                    color: #2F2A24;
                     margin-bottom: 1.1em;
                 }
                 .bio-editor-content h2 {
                     font-family: Georgia, "Playfair Display", serif;
                     font-size: 28px;
                     font-weight: 800;
-                    color: #fff;
+                    color: #171512;
                     margin-top: 1.5em;
                     margin-bottom: 0.5em;
-                    letter-spacing: -0.02em;
+                    letter-spacing: 0;
                 }
                 .bio-editor-content h3 {
                     font-family: Georgia, "Playfair Display", serif;
                     font-size: 22px;
                     font-weight: 700;
-                    color: #fff;
+                    color: #171512;
                     margin-top: 1.3em;
                     margin-bottom: 0.5em;
-                    letter-spacing: -0.01em;
+                    letter-spacing: 0;
                 }
                 .bio-editor-content blockquote {
-                    border-left: 3px solid #2563EB;
+                    border-left: 3px solid #A63D2D;
                     padding-left: 20px;
                     margin: 1.3em 0;
-                    color: #D1D5DB;
+                    color: #574F45;
                     font-style: italic;
                 }
                 .bio-editor-content blockquote.bio-pullquote,
@@ -196,9 +197,8 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     font-style: italic;
                     padding: 1.5em 1em;
                     margin: 2em 0;
-                    color: #fff;
-                    background: linear-gradient(180deg, rgba(201, 168, 76,0.06), transparent);
-                    border-radius: 16px;
+                    color: #171512;
+                    background: rgba(212, 185, 99, 0.09);
                     position: relative;
                 }
                 .bio-editor-content blockquote.bio-pullquote::before,
@@ -210,7 +210,7 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                     transform: translateX(-50%) translateY(-30%);
                     font-size: 80px;
                     font-family: Georgia, serif;
-                    color: rgba(201, 168, 76,0.3);
+                    color: rgba(166, 61, 45, 0.28);
                     line-height: 1;
                 }
                 .bio-editor-content hr {
@@ -220,31 +220,31 @@ export const RichEditor = forwardRef<RichEditorHandle, RichEditorProps>(function
                 }
                 .bio-editor-content hr::before {
                     content: '⸻';
-                    color: #4B5563;
+                    color: #8A8174;
                     font-size: 20px;
                 }
                 .bio-editor-content ul, .bio-editor-content ol {
                     padding-left: 24px;
                     margin-bottom: 1em;
-                    color: #E5E7EB;
+                    color: #2F2A24;
                 }
                 .bio-editor-content ul li, .bio-editor-content ol li {
                     margin-bottom: 0.4em;
                     line-height: 1.7;
                 }
                 .bio-editor-content a, .bio-editor-content .bio-editor-link {
-                    color: #60A5FA;
+                    color: #A63D2D;
                     text-decoration: underline;
                     text-underline-offset: 3px;
                 }
                 .bio-editor-content img, .bio-editor-content .bio-editor-img {
-                    border-radius: 12px;
+                    border-radius: 2px;
                     margin: 1.5em auto;
                     max-width: 100%;
                 }
                 .bio-editor-content p.is-editor-empty:first-child::before {
                     content: attr(data-placeholder);
-                    color: #4B5563;
+                    color: #9A9082;
                     pointer-events: none;
                     float: left;
                     height: 0;

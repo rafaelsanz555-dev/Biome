@@ -12,29 +12,29 @@ export function EpisodeRecap({ previousTitle, recap }: Props) {
     const [open, setOpen] = useState(false)
 
     return (
-        <div className="mb-8 rounded-xl border border-gray-800 bg-[#0F1114] overflow-hidden">
+        <div className="mb-8 overflow-hidden border border-[#171512]/10 bg-[#FFFCF5]">
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition"
+                className="flex w-full items-center justify-between p-4 text-left transition hover:bg-[#F0E8D9]"
             >
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                        <History className="text-violet-400" size={14} />
+                    <div className="flex h-8 w-8 items-center justify-center bg-[#A63D2D]/8">
+                        <History className="text-[#A63D2D]" size={14} />
                     </div>
                     <div>
-                        <p className="text-[10px] uppercase tracking-wider font-bold text-violet-400">Anteriormente</p>
-                        <p className="text-sm font-semibold text-white">{previousTitle}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-[#A63D2D]">Anteriormente</p>
+                        <p className="text-sm font-semibold text-[#171512]">{previousTitle}</p>
                     </div>
                 </div>
-                <ChevronDown size={16} className={`text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+                <ChevronDown size={16} className={`text-[#746A5C] transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
             {open && (
-                <div className="px-4 pb-4 pt-2 border-t border-gray-800">
-                    <p className="text-sm text-gray-300 leading-relaxed italic" style={{ fontFamily: 'Georgia, serif' }}>
+                <div className="border-t border-[#171512]/10 px-4 pb-4 pt-2">
+                    <p className="font-serif text-sm italic leading-relaxed text-[#4B443A]">
                         {recap}
                     </p>
-                    <p className="text-[10px] text-gray-600 mt-3 italic">
+                    <p className="mt-3 text-[10px] italic text-[#8A8174]">
                         ⚡ Resumen generado con IA — solo para ayudarte a recordar
                     </p>
                 </div>

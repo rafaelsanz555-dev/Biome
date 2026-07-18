@@ -52,17 +52,17 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
     }
 
     return (
-        <div className="rounded-2xl bg-[#15171C] border border-gray-800 p-6 space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-gray-800">
+        <div className="space-y-6 border border-[#171512]/10 bg-[#FFFCF5] p-6">
+            <div className="flex items-center gap-3 border-b border-[#171512]/10 pb-4">
                 <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
                     <Wand2 size={18} className="text-[#D8BA63]" />
                 </div>
                 <div className="flex-1">
-                    <h2 className="font-bold text-lg text-white flex items-center gap-2">
+                    <h2 className="flex items-center gap-2 font-serif text-lg font-black text-[#171512]">
                         Themes
                         <span className="text-[10px] bg-[#C9A84C]/15 text-[#E2C96E] px-2 py-0.5 rounded-full font-bold">NUEVO</span>
                     </h2>
-                    <p className="text-sm text-gray-500">El theme cambia color, tipografía Y fondo. Los animados se mueven sutilmente mientras tu lector lee.</p>
+                    <p className="text-sm text-[#746A5C]">El tema cambia la atmósfera del perfil; la biblioteca y la lectura conservan siempre su legibilidad.</p>
                 </div>
                 {saved && <span className="text-sm text-[#D8BA63] font-bold flex items-center gap-1.5"><Check size={14} /> Aplicado</span>}
             </div>
@@ -107,7 +107,7 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
             <button
                 type="button"
                 onClick={() => setShowCustomDialog(true)}
-                className="w-full p-4 rounded-xl border-2 border-dashed border-gray-700 hover:border-[#C9A84C]/50 text-gray-400 hover:text-[#D8BA63] transition-all flex items-center justify-center gap-2 text-sm font-bold"
+                className="flex w-full items-center justify-center gap-2 border border-dashed border-[#171512]/20 p-4 text-sm font-bold text-[#746A5C] transition-all hover:border-[#A63D2D]/50 hover:text-[#A63D2D]"
             >
                 <Upload size={16} />
                 Sube tu propio fondo (Akatsuki, foto, lo que quieras)
@@ -123,7 +123,7 @@ export function ThemeSelector({ initialThemeId, initialAccent, initialFont, them
                 />
             )}
 
-            <p className="text-[11px] text-gray-600 italic pt-2 border-t border-gray-800">
+            <p className="border-t border-[#171512]/10 pt-2 text-[11px] italic text-[#8A8174]">
                 💡 Los themes solo aplican a tu perfil y a tus episodios. El feed global de Pergamo mantiene su estilo neutral para que las historias se diferencien por su voz, no solo por su look.
             </p>
         </div>
@@ -336,24 +336,24 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
         (mode === 'url' && urlValid === 'ok')
 
     return (
-        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-            <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0F1114] border border-gray-800 rounded-2xl" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-5 border-b border-gray-800">
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <Palette size={18} className="text-[#D8BA63]" />
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#171512]/70 p-4 backdrop-blur-sm" onClick={onClose}>
+            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-[#171512]/12 bg-[#FFFCF5] shadow-2xl" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between border-b border-[#171512]/10 p-5">
+                    <h3 className="flex items-center gap-2 font-serif text-xl font-black text-[#171512]">
+                        <Palette size={18} className="text-[#A63D2D]" />
                         Theme personalizado
                     </h3>
-                    <button onClick={onClose} className="text-gray-500 hover:text-white"><X size={18} /></button>
+                    <button onClick={onClose} className="text-[#8A8174] hover:text-[#A63D2D]"><X size={18} /></button>
                 </div>
 
                 <div className="p-5 space-y-5">
                     {/* Mode tabs */}
-                    <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[#0A0B0E] border border-gray-800">
+                    <div className="grid grid-cols-2 gap-2 border border-[#171512]/10 bg-[#F8F4EA] p-1">
                         <button
                             type="button"
                             onClick={() => { setMode('upload'); setError(null) }}
                             className={`px-4 py-2.5 rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 ${
-                                mode === 'upload' ? 'bg-[#C9A84C]/15 text-[#E2C96E]' : 'text-gray-500 hover:text-white'
+                                mode === 'upload' ? 'bg-[#A63D2D]/8 text-[#A63D2D]' : 'text-[#746A5C] hover:text-[#171512]'
                             }`}
                         >
                             <Upload size={14} /> Desde mi compu
@@ -362,7 +362,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             type="button"
                             onClick={() => { setMode('url'); setError(null) }}
                             className={`px-4 py-2.5 rounded-lg text-sm font-bold transition flex items-center justify-center gap-2 ${
-                                mode === 'url' ? 'bg-[#C9A84C]/15 text-[#E2C96E]' : 'text-gray-500 hover:text-white'
+                                mode === 'url' ? 'bg-[#A63D2D]/8 text-[#A63D2D]' : 'text-[#746A5C] hover:text-[#171512]'
                             }`}
                         >
                             <Link2Icon size={14} /> Pegar URL de internet
@@ -375,7 +375,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
                                 Imagen (máx 5MB · jpg, png, webp)
                             </label>
-                            <label className="block aspect-video rounded-xl border-2 border-dashed border-gray-700 hover:border-[#C9A84C]/50 cursor-pointer overflow-hidden bg-[#0A0B0E]">
+                            <label className="block aspect-video cursor-pointer overflow-hidden border-2 border-dashed border-[#171512]/20 bg-[#EEE5D5] hover:border-[#A63D2D]/40">
                                 {filePreview ? (
                                     <div className="relative w-full h-full">
                                         <img src={filePreview} alt="" className="w-full h-full object-cover" />
@@ -410,7 +410,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                                     value={urlInput}
                                     onChange={e => { setUrlInput(e.target.value); setUrlValid('idle'); setUrlPreview(null) }}
                                     placeholder="https://i.pinimg.com/originals/..."
-                                    className="flex-1 px-4 py-2.5 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm font-mono focus:border-[#C9A84C]/50 focus:outline-none"
+                                    className="flex-1 border border-[#171512]/15 bg-[#F8F4EA] px-4 py-2.5 font-mono text-sm text-[#171512] focus:border-[#A63D2D]/50 focus:outline-none"
                                 />
                                 <button
                                     type="button"
@@ -424,7 +424,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             {urlValid === 'ok' && urlPreview && (
                                 <div>
                                     <p className="text-[11px] text-[#D8BA63] mb-2 flex items-center gap-1.5"><Check size={12} /> Imagen cargada correctamente</p>
-                                    <div className="aspect-video rounded-xl overflow-hidden bg-[#0A0B0E] border border-gray-800">
+                                    <div className="aspect-video overflow-hidden border border-[#171512]/12 bg-[#EEE5D5]">
                                         <img src={urlPreview} alt="" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
@@ -444,7 +444,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             type="text"
                             value={name}
                             onChange={e => setName(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm focus:border-[#C9A84C]/50 focus:outline-none"
+                            className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-4 py-2.5 text-sm text-[#171512] focus:border-[#A63D2D]/50 focus:outline-none"
                         />
                     </div>
 
@@ -467,7 +467,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             <select
                                 value={font}
                                 onChange={e => setFont(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm"
+                                className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-3 py-2 text-sm text-[#171512]"
                             >
                                 <option value="playfair">Playfair Display</option>
                                 <option value="crimson">Crimson Pro</option>
@@ -480,7 +480,7 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                             <select
                                 value={overlay}
                                 onChange={e => setOverlay(e.target.value as any)}
-                                className="w-full px-3 py-2 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white text-sm"
+                                className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-3 py-2 text-sm text-[#171512]"
                             >
                                 <option value="dark">Oscuro (legible)</option>
                                 <option value="medium">Medio</option>
@@ -492,11 +492,11 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
                     {error && <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20 text-xs text-red-400">{error}</div>}
 
                     <div className="flex gap-2 pt-2">
-                        <button onClick={onClose} disabled={uploading} className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-semibold transition">Cancelar</button>
+                        <button onClick={onClose} disabled={uploading} className="flex-1 border border-[#171512]/12 px-4 py-2.5 text-sm font-semibold text-[#574F45] transition hover:bg-[#F8F4EA]">Cancelar</button>
                         <button
                             onClick={handleSubmit}
                             disabled={!canSubmit || uploading}
-                            className="flex-1 px-4 py-2.5 rounded-lg bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] text-sm font-bold transition disabled:opacity-50"
+                            className="flex-1 rounded-full bg-[#A63D2D] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#873023] disabled:opacity-50"
                         >
                             {uploading ? 'Creando...' : 'Crear theme'}
                         </button>
@@ -506,4 +506,3 @@ function CustomThemeDialog({ onClose, onCreated }: { onClose: () => void; onCrea
         </div>
     )
 }
-

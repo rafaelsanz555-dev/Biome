@@ -4,7 +4,7 @@ export default function ContentPolicyPage() {
     return (
         <>
             <h1>Política de Contenido</h1>
-            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
+            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.2-beta · Última edición: julio 2026</p>
 
             <p>Pergamo es una plataforma para narrativa personal auténtica. Esta política define qué contenido se permite, qué no se permite, cómo se modera y cómo se apelan las decisiones.</p>
 

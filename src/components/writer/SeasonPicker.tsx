@@ -1,250 +1,209 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, Plus, Loader2, BookOpen, FileText, MessageSquare, Check } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { BookOpen, Check, ChevronDown, FileText, Loader2, NotebookPen, Plus, ScrollText } from 'lucide-react'
 
-type Format = 'series' | 'thread'
+type SeasonFormat = 'series' | 'thread'
+type StoryType = 'life_story' | 'fiction'
 
 interface Season {
     id: string
     title: string
-    format?: Format | null
+    format?: SeasonFormat | null
+    story_type?: StoryType | null
 }
 
 interface Props {
-    name: string                      // input hidden name (FormData)
+    name: string
+    contentTypeName?: string
     initialSeasons: Season[]
-    initialValue?: string | null      // pre-selected season id
+    initialValue?: string | null
     inputClassName?: string
 }
 
-/**
- * SeasonPicker — dropdown custom con 3 formatos:
- *
- *   1. Capítulo independiente (default, sin agrupar)
- *   2. Historia → arco narrativo, capítulos densos. Como un libro.
- *   3. Historia en hilo → cronología tipo Twitter, posts cortos.
- *
- * Series existentes listadas con icono según su format. Crear inline
- * sin abrir otra pestaña, con placeholder y label apropiados según el tipo.
- */
-export function SeasonPicker({ name, initialSeasons, initialValue, inputClassName }: Props) {
+type NewWorkKind = 'life_story' | 'fiction' | 'thread'
+
+function workLabel(season: Season) {
+    if (season.format === 'thread') return 'Diario serial'
+    return season.story_type === 'fiction' ? 'Novela' : 'Historia'
+}
+
+function WorkIcon({ season, size = 14 }: { season: Season; size?: number }) {
+    if (season.format === 'thread') return <NotebookPen size={size} />
+    if (season.story_type === 'fiction') return <ScrollText size={size} />
+    return <BookOpen size={size} />
+}
+
+export function SeasonPicker({
+    name,
+    contentTypeName = 'content_type',
+    initialSeasons,
+    initialValue,
+    inputClassName,
+}: Props) {
     const [seasons, setSeasons] = useState<Season[]>(initialSeasons)
-    const [selectedId, setSelectedId] = useState<string>(initialValue || '')
+    const [selectedId, setSelectedId] = useState(initialValue || '')
     const [open, setOpen] = useState(false)
-    const [creatingFormat, setCreatingFormat] = useState<Format | null>(null)
+    const [creating, setCreating] = useState<NewWorkKind | null>(null)
     const [newTitle, setNewTitle] = useState('')
     const [busy, setBusy] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const ref = useRef<HTMLDivElement>(null)
+    const rootRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
-        function onClick(e: MouseEvent) {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
+        function close(event: MouseEvent) {
+            if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
                 setOpen(false)
-                setCreatingFormat(null)
+                setCreating(null)
                 setError(null)
             }
         }
-        document.addEventListener('mousedown', onClick)
-        return () => document.removeEventListener('mousedown', onClick)
+        document.addEventListener('mousedown', close)
+        return () => document.removeEventListener('mousedown', close)
     }, [])
 
     useEffect(() => {
-        if (creatingFormat && inputRef.current) inputRef.current.focus()
-    }, [creatingFormat])
+        if (creating) inputRef.current?.focus()
+    }, [creating])
 
-    const selected = seasons.find((s) => s.id === selectedId) || null
-    const selectedIcon = selected?.format === 'thread' ? MessageSquare : BookOpen
+    const selected = seasons.find((season) => season.id === selectedId) || null
 
-    function pick(id: string) {
-        setSelectedId(id)
-        setOpen(false)
-        setCreatingFormat(null)
-        setError(null)
-    }
-
-    async function handleCreate() {
-        if (!creatingFormat) return
+    async function createWork() {
         const title = newTitle.trim()
-        if (title.length < 1) {
-            setError('El nombre no puede estar vacío.')
-            return
-        }
+        if (!creating || !title) return
         if (title.length > 120) {
-            setError('Máximo 120 caracteres.')
+            setError('El nombre puede tener hasta 120 caracteres.')
             return
         }
+
+        const format: SeasonFormat = creating === 'thread' ? 'thread' : 'series'
+        const storyType: StoryType = creating === 'fiction' ? 'fiction' : 'life_story'
         setBusy(true)
         setError(null)
         try {
-            const res = await fetch('/api/seasons', {
+            const response = await fetch('/api/seasons', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, format: creatingFormat }),
+                body: JSON.stringify({ title, format, story_type: storyType }),
             })
-            if (!res.ok) {
-                const j = await res.json().catch(() => null)
-                setError(j?.error === 'invalid_title' ? 'Título inválido.' : 'Error creando.')
+            const result = await response.json().catch(() => null)
+            if (!response.ok || !result?.season) {
+                setError(result?.error || 'No pudimos crear la obra.')
                 return
             }
-            const j = await res.json()
-            if (j?.season) {
-                setSeasons((prev) => [...prev, j.season])
-                setSelectedId(j.season.id)
-            }
+            const created = { ...result.season, format, story_type: storyType } as Season
+            setSeasons((current) => [created, ...current])
+            setSelectedId(created.id)
             setNewTitle('')
-            setCreatingFormat(null)
+            setCreating(null)
             setOpen(false)
         } finally {
             setBusy(false)
         }
     }
 
-    const SelectedIcon = selected ? selectedIcon : FileText
-    const selectedLabel = selected ? selected.title : 'Capítulo independiente'
-
-    const placeholderForCreate = creatingFormat === 'thread'
-        ? 'Ej: "Diario de mudanza a Barcelona"'
-        : 'Ej: "Mi divorcio en 8 capítulos"'
-
-    const helperForCreate = creatingFormat === 'thread'
-        ? 'Hilo cronológico de posts cortos conectados.'
-        : 'Arco narrativo en capítulos densos.'
-
     return (
-        <div ref={ref} className="relative">
+        <div ref={rootRef} className="relative">
             <input type="hidden" name={name} value={selectedId} />
+            <input type="hidden" name={contentTypeName} value={selectedId ? 'chapter' : 'entry'} />
 
-            {/* Trigger */}
             <button
                 type="button"
-                onClick={() => setOpen((o) => !o)}
-                className={`${inputClassName} px-3 py-2.5 text-sm flex items-center justify-between text-left`}
+                onClick={() => setOpen((value) => !value)}
+                className={`${inputClassName || ''} flex items-center justify-between px-3 py-2.5 text-left text-sm`}
                 aria-haspopup="listbox"
                 aria-expanded={open}
             >
-                <span className="flex items-center gap-2 min-w-0">
-                    <SelectedIcon size={14} className={selected ? 'text-[#D8BA63] shrink-0' : 'text-gray-500 shrink-0'} />
-                    <span className={`truncate ${!selected ? 'text-gray-300' : ''}`}>{selectedLabel}</span>
-                    {selected?.format === 'thread' && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#D8BA63]/70 shrink-0">· Hilo</span>
-                    )}
+                <span className="flex min-w-0 items-center gap-2">
+                    {selected ? <WorkIcon season={selected} /> : <FileText size={14} />}
+                    <span className="truncate">{selected ? selected.title : 'Entrada independiente'}</span>
+                    <span className="shrink-0 text-[9px] font-black uppercase tracking-[0.12em] opacity-50">
+                        {selected ? workLabel(selected) : 'Feed'}
+                    </span>
                 </span>
-                <ChevronDown size={14} className={`text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+                <ChevronDown size={14} className={`shrink-0 transition ${open ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Dropdown */}
             {open && (
-                <div className="absolute left-0 right-0 mt-1.5 bg-[#0F1114] border border-gray-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    {/* Independiente */}
+                <div className="absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-xl border border-[#171512]/15 bg-[#FFFCF5] text-[#171512] shadow-2xl">
                     <button
                         type="button"
-                        onClick={() => pick('')}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left transition ${
-                            !selectedId ? 'bg-[#C9A84C]/10 text-[#E2C96E]' : 'text-gray-200 hover:bg-white/5'
-                        }`}
+                        onClick={() => { setSelectedId(''); setOpen(false) }}
+                        className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition hover:bg-[#F1E8D7] ${!selectedId ? 'bg-[#EFE4CF]' : ''}`}
                     >
-                        <FileText size={14} className="text-gray-500 shrink-0" />
-                        <span className="flex-1">Capítulo independiente</span>
-                        {!selectedId && <Check size={14} className="text-[#D8BA63]" />}
+                        <FileText size={15} className="text-[#A63D2D]" />
+                        <span className="flex-1">
+                            <strong className="block">Entrada independiente</strong>
+                            <span className="text-[11px] text-[#776E61]">Un post de hoy; no necesita portada ni capítulos.</span>
+                        </span>
+                        {!selectedId && <Check size={15} />}
                     </button>
 
-                    {/* Series existentes */}
                     {seasons.length > 0 && (
-                        <>
-                            <div className="border-t border-gray-800/60" />
-                            <div className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-600">
-                                Tus historias
-                            </div>
-                            {seasons.map((s) => {
-                                const Icon = s.format === 'thread' ? MessageSquare : BookOpen
-                                const formatLabel = s.format === 'thread' ? 'Hilo' : 'Historia'
-                                return (
-                                    <button
-                                        key={s.id}
-                                        type="button"
-                                        onClick={() => pick(s.id)}
-                                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left transition ${
-                                            selectedId === s.id ? 'bg-[#C9A84C]/10 text-[#E2C96E]' : 'text-gray-200 hover:bg-white/5'
-                                        }`}
-                                    >
-                                        <Icon size={14} className="text-[#D8BA63] shrink-0" />
-                                        <span className="flex-1 truncate">{s.title}</span>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600 shrink-0">{formatLabel}</span>
-                                        {selectedId === s.id && <Check size={14} className="text-[#D8BA63]" />}
-                                    </button>
-                                )
-                            })}
-                        </>
+                        <div className="border-t border-[#171512]/10 py-2">
+                            <p className="px-4 pb-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#8A8174]">Agregar a una obra</p>
+                            {seasons.map((season) => (
+                                <button
+                                    key={season.id}
+                                    type="button"
+                                    onClick={() => { setSelectedId(season.id); setOpen(false) }}
+                                    className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-[#F1E8D7] ${selectedId === season.id ? 'bg-[#EFE4CF]' : ''}`}
+                                >
+                                    <span className="text-[#A63D2D]"><WorkIcon season={season} /></span>
+                                    <span className="min-w-0 flex-1 truncate font-bold">{season.title}</span>
+                                    <span className="text-[9px] font-black uppercase tracking-[0.12em] text-[#8A8174]">{workLabel(season)}</span>
+                                    {selectedId === season.id && <Check size={14} />}
+                                </button>
+                            ))}
+                        </div>
                     )}
 
-                    {/* Crear nuevo — inline */}
-                    <div className="border-t border-gray-800/60">
-                        {creatingFormat ? (
-                            <div className="p-3 space-y-2 bg-[#0A0B0E]">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#D8BA63] flex items-center gap-1.5">
-                                    {creatingFormat === 'thread' ? <MessageSquare size={11} /> : <BookOpen size={11} />}
-                                    {creatingFormat === 'thread' ? 'Nueva historia en hilo' : 'Nueva historia'}
-                                </p>
-                                <p className="text-[11px] text-gray-500 leading-relaxed">{helperForCreate}</p>
+                    <div className="border-t border-[#171512]/10 p-3">
+                        {!creating ? (
+                            <div className="grid grid-cols-3 gap-2">
+                                {[
+                                    ['life_story', 'Historia', BookOpen],
+                                    ['fiction', 'Novela', ScrollText],
+                                    ['thread', 'Diario', NotebookPen],
+                                ].map(([value, label, Icon]) => (
+                                    <button
+                                        key={String(value)}
+                                        type="button"
+                                        onClick={() => setCreating(value as NewWorkKind)}
+                                        className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-lg border border-[#171512]/10 text-[10px] font-black uppercase tracking-[0.1em] text-[#5F574B] hover:border-[#A63D2D]/45 hover:text-[#A63D2D]"
+                                    >
+                                        <Icon size={15} />
+                                        <span>{String(label)}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-[0.14em] text-[#A63D2D]">
+                                    Nueva {creating === 'fiction' ? 'novela' : creating === 'thread' ? 'diario serial' : 'historia'}
+                                </label>
                                 <input
                                     ref={inputRef}
-                                    type="text"
                                     value={newTitle}
-                                    onChange={(e) => { setNewTitle(e.target.value); setError(null) }}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') { e.preventDefault(); handleCreate() }
-                                        if (e.key === 'Escape') { setCreatingFormat(null); setNewTitle(''); setError(null) }
-                                    }}
-                                    placeholder={placeholderForCreate}
                                     maxLength={120}
-                                    disabled={busy}
-                                    className="w-full bg-[#15171C] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#C9A84C]/50"
+                                    onChange={(event) => { setNewTitle(event.target.value); setError(null) }}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') { event.preventDefault(); createWork() }
+                                        if (event.key === 'Escape') setCreating(null)
+                                    }}
+                                    placeholder="Nombre de la obra"
+                                    className="h-10 w-full rounded-lg border border-[#171512]/15 bg-white px-3 text-sm outline-none focus:border-[#A63D2D]"
                                 />
-                                {error && <p className="text-[11px] text-red-400">{error}</p>}
-                                <div className="flex items-center justify-end gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => { setCreatingFormat(null); setNewTitle(''); setError(null) }}
-                                        disabled={busy}
-                                        className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition"
-                                    >
-                                        Cancelar
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleCreate}
-                                        disabled={busy || newTitle.trim().length < 1}
-                                        className="px-3 py-1.5 rounded-lg bg-[#C9A84C] hover:bg-[#C9A84C] disabled:bg-gray-800 disabled:text-gray-600 text-white text-xs font-bold flex items-center gap-1.5 transition"
-                                    >
+                                {error && <p className="text-[11px] text-red-700">{error}</p>}
+                                <div className="flex justify-end gap-2">
+                                    <button type="button" onClick={() => setCreating(null)} className="h-8 px-3 text-xs font-bold text-[#776E61]">Cancelar</button>
+                                    <button type="button" disabled={busy || !newTitle.trim()} onClick={createWork} className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#171512] px-3 text-xs font-black text-white disabled:opacity-40">
                                         {busy ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
-                                        Crear
+                                        Crear y seleccionar
                                     </button>
                                 </div>
                             </div>
-                        ) : (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={() => setCreatingFormat('series')}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left text-[#D8BA63] hover:bg-[#C9A84C]/5 transition"
-                                >
-                                    <BookOpen size={14} className="shrink-0" />
-                                    <span className="flex-1">Crear nueva historia</span>
-                                    <Plus size={12} className="shrink-0 text-gray-600" />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setCreatingFormat('thread')}
-                                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-left text-[#D8BA63] hover:bg-[#C9A84C]/5 transition border-t border-gray-800/40"
-                                >
-                                    <MessageSquare size={14} className="shrink-0" />
-                                    <span className="flex-1">Crear historia en hilo</span>
-                                    <Plus size={12} className="shrink-0 text-gray-600" />
-                                </button>
-                            </>
                         )}
                     </div>
                 </div>

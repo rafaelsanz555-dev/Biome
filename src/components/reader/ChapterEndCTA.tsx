@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight, Gift, HeartHandshake, Sparkles } from 'lucide-react'
 import { FollowButton } from '@/components/FollowButton'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 interface ChapterEndCTAProps {
     creatorId: string
@@ -36,7 +37,7 @@ export function ChapterEndCTA({
                         Ayuda a que {creatorName} siga escribiendo esta historia.
                     </h2>
                     <p className="mt-4 max-w-xl text-sm leading-7 text-[#FAF7F0]/68">
-                        Seguir es gratis. Suscribirte, regalar o compartir le dice al escritor que este capitulo encontro a alguien real.
+                        Seguir es gratis. {MONETIZATION_ENABLED ? 'Suscribirte, regalar o compartir' : 'Comentar, reaccionar o compartir'} le dice al escritor que este capitulo encontro a alguien real.
                     </p>
 
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -62,7 +63,7 @@ export function ChapterEndCTA({
                             />
                         )}
 
-                        {!isOwnProfile && (
+                        {MONETIZATION_ENABLED && !isOwnProfile && (
                             <Link href={`/api/checkout?type=subscription&creatorId=${creatorIdForSub}`} className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#FAF7F0]/18 px-6 text-sm font-black text-[#FAF7F0] transition hover:border-[#C9A84C] hover:text-[#C9A84C]">
                                 <HeartHandshake size={16} />
                                 ${subscriptionPrice}/mes
@@ -76,13 +77,17 @@ export function ChapterEndCTA({
                         <div>
                             <Sparkles className="text-[#C9A84C]" size={24} />
                             <p className="mt-4 text-sm font-bold leading-7 text-[#FAF7F0]/74">
-                                Si este capitulo se quedo contigo, deja una senal. Un follow, un regalo o una lectura mas cambia el proximo capitulo.
+                                Si este capitulo se quedo contigo, deja una senal. {MONETIZATION_ENABLED ? 'Un follow, un regalo o una lectura mas' : 'Un follow, un comentario o una lectura mas'} cambia el proximo capitulo.
                             </p>
                         </div>
-                        {!isOwnProfile && (
+                        {MONETIZATION_ENABLED && !isOwnProfile ? (
                             <a href="#gift-panel" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#FAF7F0] px-6 text-sm font-black text-[#0D0D0D] transition hover:bg-white">
                                 <Gift size={16} />
                                 Enviar regalo
+                            </a>
+                        ) : (
+                            <a href="#comments" className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#FAF7F0] px-6 text-sm font-black text-[#0D0D0D] transition hover:bg-white">
+                                Dejar un comentario
                             </a>
                         )}
                     </div>

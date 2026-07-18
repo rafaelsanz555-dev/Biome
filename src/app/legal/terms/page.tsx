@@ -4,7 +4,7 @@ export default function TermsPage() {
     return (
         <>
             <h1>Términos de Servicio</h1>
-            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
+            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.2-beta · Última edición: julio 2026</p>
 
             <h2>1. Aceptación de los términos</h2>
             <p>Al acceder, registrarse o usar Pergamo ("la Plataforma"), aceptas estos Términos de Servicio en su totalidad. Si no estás de acuerdo, no uses Pergamo.</p>
@@ -118,7 +118,7 @@ export default function TermsPage() {
             </ul>
 
             <h2>14. Contacto</h2>
-            <p>Para cualquier duda legal: <strong>legal@Pergamo</strong> (pendiente de configurar)</p>
+            <p>Para cualquier duda legal, utiliza el canal de soporte disponible dentro de Pergamo.</p>
 
             <hr style={{ margin: '3em 0', border: 0, borderTop: '1px solid #1f2937' }} />
             <p className="text-xs text-gray-600 italic"><strong>NOTAS DEL AUTOR PARA EL ATTORNEY:</strong></p>

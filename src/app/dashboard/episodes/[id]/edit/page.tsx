@@ -69,13 +69,14 @@ export default async function EditEpisodePage({ params }: Props) {
 
     return (
         <div className="space-y-6 p-6 md:p-8">
-            <Link href="/dashboard/episodes" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition">
+            <Link href="/dashboard/episodes" className="inline-flex items-center gap-2 text-sm font-bold text-[#746A5C] transition hover:text-[#A63D2D]">
                 <ArrowLeft size={14} /> Volver a mis historias
             </Link>
 
             <div>
-                <h1 className="text-2xl font-bold text-white mb-1">Editar episodio</h1>
-                <p className="text-sm text-gray-500">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">Mesa de edición</p>
+                <h1 className="mt-2 font-serif text-4xl font-black text-[#171512]">Editar publicación</h1>
+                <p className="mt-2 text-sm text-[#746A5C]">
                     Cambia título, descripción, portada, monetización o estado de publicación.
                 </p>
             </div>

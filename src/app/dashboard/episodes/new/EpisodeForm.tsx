@@ -17,6 +17,8 @@ import { WritingCoach } from '@/components/writer/WritingCoach'
 import { AIAssistant } from '@/components/writer/AIAssistant'
 import { SeasonPicker } from '@/components/writer/SeasonPicker'
 import { LivePreview } from '@/app/dashboard/settings/LivePreview'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
+import { AGE_RATINGS, CONTENT_WARNING_OPTIONS } from '@/lib/editorial'
 
 interface EpisodeFormProps {
     seasons: any[]
@@ -27,7 +29,8 @@ interface EpisodeFormProps {
 export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }: EpisodeFormProps) {
     const [isPending, setIsPending] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
-    const [monetization, setMonetization] = useState<'free' | 'subscription' | 'ppv'>('subscription')
+    // MVP: sin monetización todo capítulo nace gratis
+    const [monetization, setMonetization] = useState<'free' | 'subscription' | 'ppv'>(MONETIZATION_ENABLED ? 'subscription' : 'free')
     const [coverFile, setCoverFile] = useState<File | null>(null)
     const [coverPreview, setCoverPreview] = useState<string | null>(null)
     const [postImages, setPostImages] = useState<File[]>([])
@@ -37,6 +40,9 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
     const [showPreview, setShowPreview] = useState(false)
     const [titleValue, setTitleValue] = useState('')
     const [previewTextValue, setPreviewTextValue] = useState('')
+    const [selectedWarnings, setSelectedWarnings] = useState<string[]>([])
+    const [rightsConfirmed, setRightsConfirmed] = useState(false)
+    const [acceptPublishTerms, setAcceptPublishTerms] = useState(false)
     const [editorState, setEditorState] = useState<{ json: any; text: string; wordCount: number; readingTimeMin: number }>({ json: null, text: '', wordCount: 0, readingTimeMin: 1 })
 
     const MAX_IMAGE_MB = 5
@@ -119,11 +125,22 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                 return
             }
         }
+        if (publishing && !rightsConfirmed) {
+            setErrorMsg('Confirma que tienes los derechos para publicar este contenido.')
+            setIsPending(false)
+            return
+        }
+        if (publishing && !acceptPublishTerms) {
+            setErrorMsg('Acepta la Política de Contenido y los Términos para Creadores antes de publicar.')
+            setIsPending(false)
+            return
+        }
 
         formData.set('full_text', editorText)
         formData.set('content_json', JSON.stringify(editorJson))
         formData.set('word_count', String(wordCount))
         formData.set('reading_time_min', String(readingTime))
+        formData.set('content_warnings', JSON.stringify(selectedWarnings))
 
         if (coverFile) {
             const ext = coverFile.name.split('.').pop()
@@ -173,7 +190,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
         }
     }
 
-    const inputCls = "w-full rounded-xl border border-gray-800 bg-[#15171C] text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:ring-1 focus:ring-[#C9A84C] focus:outline-none transition"
+    const inputCls = "w-full border border-[#171512]/15 bg-[#FFFCF5] text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D]/55 focus:ring-1 focus:ring-[#A63D2D] focus:outline-none transition"
 
     return (
         <form action={handleSubmit} className="space-y-6">
@@ -181,12 +198,12 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
 
                 {/* ── Main Content ── */}
                 <div className="lg:col-span-2 space-y-5">
-                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] overflow-hidden">
+                    <div className="overflow-hidden border border-[#171512]/12 bg-[#F8F4EA]">
                         <div className="p-6 space-y-6">
 
                             {/* Title */}
                             <div className="space-y-2">
-                                <label htmlFor="title" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                <label htmlFor="title" className="block text-xs font-bold uppercase tracking-wider text-[#746A5C]">
                                     Título del episodio
                                 </label>
                                 <input
@@ -202,14 +219,14 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
 
                             {/* Cover */}
                             <div className="space-y-2">
-                                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-[#746A5C]">
                                     Imagen de portada <span className="normal-case font-medium text-gray-600 ml-1">· opcional</span>
                                 </label>
                                 <p className="text-[11px] text-gray-500 leading-relaxed">
                                     Recomendado: <span className="text-gray-300 font-mono">1200×630px</span> (proporción 16:9). Otras medidas serán recortadas al centro.
                                 </p>
                                 {coverPreview ? (
-                                    <div className="relative w-full h-52 rounded-xl overflow-hidden border border-gray-800">
+                                    <div className="relative h-52 w-full overflow-hidden border border-[#171512]/12">
                                         <img src={coverPreview} alt="" className="w-full h-full object-cover" />
                                         <button
                                             type="button"
@@ -222,7 +239,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                 ) : (
                                     <label
                                         htmlFor="cover_image"
-                                        className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-[#C9A84C]/50 hover:bg-[#101217] cursor-pointer transition group"
+                                        className="group flex h-32 w-full cursor-pointer flex-col items-center justify-center border-2 border-dashed border-[#171512]/20 bg-[#EEE5D5] transition hover:border-[#A63D2D]/40 hover:bg-[#E8DECC]"
                                     >
                                         <ImagePlus size={24} className="text-gray-500 group-hover:text-[#C9A84C] transition mb-1.5" />
                                         <span className="text-sm font-semibold text-gray-400 group-hover:text-white transition">Haz clic para agregar portada</span>
@@ -234,7 +251,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
 
                             {/* Preview */}
                             <div className="space-y-2">
-                                <label htmlFor="preview_text" className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                <label htmlFor="preview_text" className="block text-xs font-bold uppercase tracking-wider text-[#746A5C]">
                                     Adelanto gratis <span className="normal-case font-medium text-[#C9A84C] ml-1">· visible para todos</span>
                                 </label>
                                 <textarea
@@ -244,14 +261,14 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                     value={previewTextValue}
                                     onChange={(e) => setPreviewTextValue(e.target.value)}
                                     className={`${inputCls} px-4 py-3 text-base resize-none`}
-                                    placeholder="El gancho. Algo que los enganche para que paguen por seguir leyendo..."
+                                    placeholder="El gancho: una frase que haga que el lector quiera seguir contigo..."
                                 />
                             </div>
 
                             {/* Full text — Rich Editor */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-[#746A5C]">
                                         Tu historia
                                     </label>
                                     <div className="flex items-center gap-2">
@@ -274,7 +291,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                             </div>
 
                             {/* Chapter Soundtrack */}
-                            <div className="space-y-2 border-t border-gray-800 pt-5">
+                            <div className="space-y-2 border-t border-[#171512]/10 pt-5">
                                 <label htmlFor="soundtrack_url" className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400">
                                     <Music size={12} className="text-[#C9A84C]" />
                                     Banda sonora <span className="normal-case font-medium text-[#C9A84C] ml-1">· nuevo en Pergamo</span>
@@ -299,7 +316,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                             </div>
 
                             {/* Post images */}
-                            <div className="space-y-3 border-t border-gray-800 pt-5">
+                            <div className="space-y-3 border-t border-[#171512]/10 pt-5">
                                 <div className="flex items-center justify-between">
                                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
                                         Fotos del post <span className="normal-case font-medium text-gray-600 ml-1">· hasta 10</span>
@@ -327,7 +344,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                 {postImagePreviews.length > 0 ? (
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                                         {postImagePreviews.map((src, i) => (
-                                            <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-gray-800 group">
+                                            <div key={i} className="group relative aspect-square overflow-hidden border border-[#171512]/12">
                                                 <img src={src} alt="" className="w-full h-full object-cover" />
                                                 <button
                                                     type="button"
@@ -342,7 +359,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                             <button
                                                 type="button"
                                                 onClick={() => postImagesRef.current?.click()}
-                                                className="aspect-square rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-[#C9A84C]/50 flex items-center justify-center text-gray-500 hover:text-[#C9A84C] transition"
+                                                className="flex aspect-square items-center justify-center border-2 border-dashed border-[#171512]/20 bg-[#EEE5D5] text-[#8A8174] transition hover:border-[#A63D2D]/40 hover:text-[#A63D2D]"
                                             >
                                                 <ImagePlus size={20} />
                                             </button>
@@ -352,7 +369,7 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                     <button
                                         type="button"
                                         onClick={() => postImagesRef.current?.click()}
-                                        className="w-full h-24 rounded-xl border-2 border-dashed border-gray-700 bg-[#0A0B0E] hover:border-[#C9A84C]/50 flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:text-[#C9A84C] transition"
+                                        className="flex h-24 w-full flex-col items-center justify-center gap-1.5 border-2 border-dashed border-[#171512]/20 bg-[#EEE5D5] text-[#8A8174] transition hover:border-[#A63D2D]/40 hover:text-[#A63D2D]"
                                     >
                                         <ImagePlus size={20} />
                                         <span className="text-xs font-semibold">Agregar fotos</span>
@@ -365,12 +382,12 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
 
                 {/* ── Sidebar ── */}
                 <div className="space-y-4">
-                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-5 sticky top-4 space-y-5">
+                    <div className="sticky top-4 space-y-5 border border-[#171512]/12 bg-[#EEE5D5] p-5">
 
                         {/* Season — picker custom con creación inline (sin abrir otra pestaña) */}
                         <div className="space-y-2">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
-                                Serie / Temporada
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#746A5C]">
+                                ¿Qué estás publicando?
                             </label>
                             <SeasonPicker
                                 name="season_id"
@@ -379,42 +396,41 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                 inputClassName={inputCls}
                             />
                             <p className="text-[11px] text-gray-500 leading-relaxed">
-                                <strong className="text-gray-300">Independiente</strong>: una historia que termina ahí.{' '}
-                                <strong className="text-gray-300">Historia</strong>: arco narrativo en capítulos densos.{' '}
-                                <strong className="text-gray-300">Hilo</strong>: cronología corta tipo Twitter.
+                                Una <strong className="text-[#171512]">entrada</strong> vive sola en el feed. Un <strong className="text-[#171512]">capítulo</strong> siempre pertenece a una historia, novela o diario serial.
                             </p>
                         </div>
 
-                        {/* Monetization */}
-                        <div className="space-y-2 border-t border-gray-800 pt-5">
+                        {/* Monetization — oculto en el MVP (todo se publica gratis) */}
+                        {MONETIZATION_ENABLED && (
+                        <div className="space-y-2 border-t border-[#171512]/10 pt-5">
                             <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
                                 Acceso y precio
                             </label>
 
-                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'free' ? 'border-[#C9A84C]/60 bg-[#C9A84C]/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                            <label className={`flex cursor-pointer items-start gap-3 border p-3.5 transition ${monetization === 'free' ? 'border-[#A63D2D]/50 bg-[#A63D2D]/5' : 'border-[#171512]/12 bg-[#FFFCF5] hover:border-[#171512]/30'}`}>
                                 <input type="radio" name="monetization" value="free" checked={monetization === 'free'} onChange={() => setMonetization('free')} className="mt-0.5 accent-[#C9A84C]" />
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2 font-bold text-sm text-white">
+                                    <div className="flex items-center gap-2 text-sm font-bold text-[#171512]">
                                         <Eye size={13} /> Gratis para todos
                                     </div>
                                     <p className="text-xs text-gray-500 mt-0.5">Cualquiera puede leer</p>
                                 </div>
                             </label>
 
-                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'subscription' ? 'border-[#C9A84C]/60 bg-[#C9A84C]/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                            <label className={`flex cursor-pointer items-start gap-3 border p-3.5 transition ${monetization === 'subscription' ? 'border-[#A63D2D]/50 bg-[#A63D2D]/5' : 'border-[#171512]/12 bg-[#FFFCF5] hover:border-[#171512]/30'}`}>
                                 <input type="radio" name="monetization" value="subscription" checked={monetization === 'subscription'} onChange={() => setMonetization('subscription')} className="mt-0.5 accent-[#C9A84C]" />
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2 font-bold text-sm text-white">
+                                    <div className="flex items-center gap-2 text-sm font-bold text-[#171512]">
                                         <Lock size={13} /> Solo suscriptores
                                     </div>
                                     <p className="text-xs text-gray-500 mt-0.5">Debe estar suscrito para leer</p>
                                 </div>
                             </label>
 
-                            <label className={`flex items-start gap-3 cursor-pointer rounded-xl border-2 p-3.5 transition ${monetization === 'ppv' ? 'border-[#C9A84C]/60 bg-[#C9A84C]/5' : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700'}`}>
+                            <label className={`flex cursor-pointer items-start gap-3 border p-3.5 transition ${monetization === 'ppv' ? 'border-[#A63D2D]/50 bg-[#A63D2D]/5' : 'border-[#171512]/12 bg-[#FFFCF5] hover:border-[#171512]/30'}`}>
                                 <input type="radio" name="monetization" value="ppv" checked={monetization === 'ppv'} onChange={() => setMonetization('ppv')} className="mt-0.5 accent-[#C9A84C]" />
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2 font-bold text-sm text-white">
+                                    <div className="flex items-center gap-2 text-sm font-bold text-[#171512]">
                                         <DollarSign size={13} /> Pago único
                                     </div>
                                     <p className="text-xs text-gray-500 mt-0.5">Desbloqueo por un precio</p>
@@ -435,6 +451,53 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                                 </div>
                             </label>
                         </div>
+                        )}
+
+                        <div className="space-y-4 border-t border-[#171512]/10 pt-5">
+                            <div>
+                                <label htmlFor="age_rating" className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                                    Clasificación por edad
+                                </label>
+                                <select id="age_rating" name="age_rating" defaultValue="all" className={`${inputCls} px-3 py-2.5 text-sm`}>
+                                    {AGE_RATINGS.map((rating) => (
+                                        <option key={rating} value={rating}>{rating === 'all' ? 'Para todos' : `${rating} años`}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <fieldset>
+                                <legend className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Avisos de contenido</legend>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {CONTENT_WARNING_OPTIONS.map((warning) => {
+                                        const checked = selectedWarnings.includes(warning.value)
+                                        return (
+                                            <label key={warning.value} className={`flex items-center gap-2 border px-2.5 py-2 text-[11px] font-semibold transition ${checked ? 'border-[#A63D2D]/35 bg-[#A63D2D]/6 text-[#A63D2D]' : 'border-[#171512]/12 text-[#746A5C]'}`}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checked}
+                                                    onChange={() => setSelectedWarnings((current) => checked ? current.filter((item) => item !== warning.value) : [...current, warning.value])}
+                                                    className="accent-[#C9A84C]"
+                                                />
+                                                {warning.label}
+                                            </label>
+                                        )
+                                    })}
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div className="space-y-3 border-t border-[#171512]/10 pt-5">
+                            <p className="text-xs font-bold uppercase tracking-wider text-[#746A5C]">Antes de publicar</p>
+                            <label className="flex items-start gap-2.5 text-xs leading-5 text-[#574F45]">
+                                <input type="checkbox" name="rights_confirmed" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} className="mt-1 accent-[#C9A84C]" />
+                                <span>Confirmo que este contenido es mío o que tengo autorización para publicarlo.</span>
+                            </label>
+                            <label className="flex items-start gap-2.5 text-xs leading-5 text-[#574F45]">
+                                <input type="checkbox" name="accept_publish_terms" checked={acceptPublishTerms} onChange={(event) => setAcceptPublishTerms(event.target.checked)} className="mt-1 accent-[#C9A84C]" />
+                                <span>Acepto la <a href="/legal/content-policy" target="_blank" className="font-bold text-[#A63D2D] hover:underline">Política de Contenido</a> y los <a href="/legal/creator-terms" target="_blank" className="font-bold text-[#A63D2D] hover:underline">Términos para Creadores</a> vigentes.</span>
+                            </label>
+                            <p className="text-[10px] leading-4 text-gray-600">Solo se exige al publicar. Puedes guardar un borrador sin aceptar todavía.</p>
+                        </div>
 
                         {/* Error */}
                         {errorMsg && (
@@ -444,27 +507,27 @@ export default function EpisodeForm({ seasons, previewInitial, defaultSeasonId }
                         )}
 
                         {/* Submit — publicar o guardar borrador */}
-                        <div className="border-t border-gray-800 pt-4 space-y-2">
+                        <div className="space-y-2 border-t border-[#171512]/10 pt-4">
                             <button
                                 type="submit"
                                 name="intent"
                                 value="publish"
                                 disabled={isPending}
-                                className="w-full font-bold h-12 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] transition-all shadow-lg shadow-[#C9A84C]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#A63D2D] font-bold text-white transition hover:bg-[#873023] disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {isPending ? (
                                     <>
                                         <span className="w-4 h-4 border-2 rounded-full animate-spin border-white/30 border-t-white" />
                                         Guardando...
                                     </>
-                                ) : 'Publicar episodio →'}
+                                ) : 'Publicar →'}
                             </button>
                             <button
                                 type="submit"
                                 name="intent"
                                 value="draft"
                                 disabled={isPending}
-                                className="w-full font-bold h-11 rounded-xl border border-gray-700 bg-transparent text-gray-300 hover:border-[#C9A84C]/50 hover:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="h-11 w-full rounded-full border border-[#171512]/20 bg-transparent font-bold text-[#574F45] transition hover:border-[#A63D2D]/50 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 Guardar borrador
                             </button>
@@ -523,5 +586,3 @@ function renderPreviewHtml(json: any): string {
         return ''
     }
 }
-
-

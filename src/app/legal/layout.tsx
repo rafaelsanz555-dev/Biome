@@ -2,19 +2,25 @@ import Link from 'next/link'
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="min-h-screen bg-[#0A0B0E] text-gray-200">
-            <div className="max-w-3xl mx-auto px-6 py-12">
-                <div className="mb-6 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                    <p className="text-xs uppercase tracking-wider font-bold text-amber-400 mb-1">⚠ BORRADOR — Pendiente de revisión legal</p>
-                    <p className="text-xs text-gray-400">Estos documentos son borradores estructurados que serán revisados y aprobados por un attorney antes de tener fuerza legal. Mientras tanto, son referencias informativas, no contratos vinculantes.</p>
+        <div className="min-h-screen bg-[#F8F4EA] text-[#171512]">
+            <header className="border-b border-[#171512]/10 bg-[#FFFCF5]">
+                <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
+                    <Link href="/" className="font-serif text-2xl font-black">Pergamo</Link>
+                    <span className="text-[10px] font-black uppercase tracking-[0.16em] text-[#A63D2D]">Centro legal</span>
                 </div>
-                <nav className="flex flex-wrap gap-6 text-sm mb-10 border-b border-gray-800 pb-4">
-                    <Link href="/legal/terms" className="text-gray-400 hover:text-white">Términos</Link>
-                    <Link href="/legal/privacy" className="text-gray-400 hover:text-white">Privacidad</Link>
-                    <Link href="/legal/content-policy" className="text-gray-400 hover:text-white">Política de contenido</Link>
-                    <Link href="/legal/creator-terms" className="text-gray-400 hover:text-white">Creator Terms</Link>
+            </header>
+            <div className="mx-auto max-w-4xl px-6 py-10">
+                <div className="mb-8 border-l-4 border-[#A63D2D] bg-[#EEE5D5] p-5">
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#A63D2D]">Versión 0.2-beta · revisión profesional pendiente</p>
+                    <p className="mt-2 text-sm leading-6 text-[#655C4F]">Estos textos ya están conectados al registro y la publicación para pruebas cerradas. Antes del lanzamiento comercial deben ser revisados y aprobados por el abogado de Pergamo.</p>
+                </div>
+                <nav className="mb-10 flex flex-wrap gap-x-6 gap-y-3 border-b border-[#171512]/12 pb-5 text-sm font-black">
+                    <Link href="/legal/terms" className="hover:text-[#A63D2D]">Términos</Link>
+                    <Link href="/legal/privacy" className="hover:text-[#A63D2D]">Privacidad</Link>
+                    <Link href="/legal/content-policy" className="hover:text-[#A63D2D]">Contenido</Link>
+                    <Link href="/legal/creator-terms" className="hover:text-[#A63D2D]">Autores</Link>
                 </nav>
-                <article className="prose prose-invert max-w-none" style={{ fontFamily: 'Georgia, serif' }}>
+                <article className="prose max-w-none prose-headings:font-serif prose-headings:text-[#171512] prose-p:text-[#4F473E] prose-li:text-[#4F473E] prose-a:text-[#A63D2D] prose-strong:text-[#171512]">
                     {children}
                 </article>
             </div>

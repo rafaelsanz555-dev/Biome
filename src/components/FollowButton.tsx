@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Bell, Check, AlertCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface FollowButtonProps {
     targetType: 'creator' | 'story'
@@ -13,6 +14,7 @@ interface FollowButtonProps {
 }
 
 export function FollowButton({ targetType, targetId, initialFollowing, isAuthenticated, className }: FollowButtonProps) {
+    const t = useTranslations('profile')
     const router = useRouter()
     const [following, setFollowing] = useState(initialFollowing)
     const [busy, setBusy] = useState(false)
@@ -58,11 +60,11 @@ export function FollowButton({ targetType, targetId, initialFollowing, isAuthent
             className={className || 'inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-gray-700 bg-[#1A1C23] px-5 text-sm font-bold text-gray-200 transition hover:bg-gray-800 disabled:opacity-60'}
         >
             {failed ? (
-                <><AlertCircle size={15} className="text-red-400" /> Error, reintenta</>
+                <><AlertCircle size={15} className="text-red-400" /> {t('follow_retry')}</>
             ) : (
                 <>
                     {following ? <Check size={15} /> : <Bell size={15} />}
-                    {following ? 'Siguiendo' : targetType === 'story' ? 'Seguir historia' : 'Seguir gratis'}
+                    {following ? t('following') : targetType === 'story' ? t('follow_story') : t('follow_free')}
                 </>
             )}
         </button>

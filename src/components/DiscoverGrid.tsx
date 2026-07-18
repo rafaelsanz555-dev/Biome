@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, PenLine } from 'lucide-react'
 import { CreatorCard } from '@/components/CreatorCard'
+import { useTranslations } from 'next-intl'
 
 interface Creator {
     id: string
@@ -32,13 +33,13 @@ interface DiscoverGridProps {
 }
 
 const FILTERS = [
-    { label: 'Todos', key: 'all', keywords: [] },
-    { label: 'Migracion', key: 'migration', keywords: ['migra', 'emigr', 'pais', 'frontera', 'venezuel', 'extranjero'] },
-    { label: 'Supervivencia', key: 'survival', keywords: ['surviv', 'cancer', 'trauma', 'recover', 'sobreviv', 'enferm'] },
-    { label: 'Amor y perdida', key: 'love', keywords: ['love', 'loss', 'duelo', 'amor', 'divorci', 'relationship'] },
-    { label: 'Negocios', key: 'business', keywords: ['business', 'startup', 'negocio', 'empren', 'empresa', 'founder'] },
-    { label: 'Maternidad', key: 'motherhood', keywords: ['mother', 'mama', 'madre', 'hijo', 'familia', 'baby'] },
-    { label: 'Nuevo comienzo', key: 'starting', keywords: ['start over', 'restart', 'nuevo comienzo', 'nueva vida', 'reinvent'] },
+    { labelKey: 'filter_all', key: 'all', keywords: [] },
+    { labelKey: 'filter_migration', key: 'migration', keywords: ['migra', 'emigr', 'pais', 'frontera', 'venezuel', 'extranjero'] },
+    { labelKey: 'filter_survival', key: 'survival', keywords: ['surviv', 'cancer', 'trauma', 'recover', 'sobreviv', 'enferm'] },
+    { labelKey: 'filter_love', key: 'love', keywords: ['love', 'loss', 'duelo', 'amor', 'divorci', 'relationship'] },
+    { labelKey: 'filter_business', key: 'business', keywords: ['business', 'startup', 'negocio', 'empren', 'empresa', 'founder'] },
+    { labelKey: 'filter_motherhood', key: 'motherhood', keywords: ['mother', 'mama', 'madre', 'hijo', 'familia', 'baby'] },
+    { labelKey: 'filter_starting', key: 'starting', keywords: ['start over', 'restart', 'nuevo comienzo', 'nueva vida', 'reinvent'] },
 ]
 
 function matchesFilter(creator: Creator, filterKey: string): boolean {
@@ -59,6 +60,7 @@ function matchesFilter(creator: Creator, filterKey: string): boolean {
 }
 
 export function DiscoverGrid({ creators }: DiscoverGridProps) {
+    const t = useTranslations('editorial_discover')
     const [active, setActive] = useState('all')
     const filtered = creators.filter((creator) => matchesFilter(creator, active))
 
@@ -68,15 +70,15 @@ export function DiscoverGrid({ creators }: DiscoverGridProps) {
                 <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#C9A84C]/15 text-[#8A6A1C]">
                     <PenLine size={22} />
                 </div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8A6A1C]">Founding storytellers</p>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#8A6A1C]">{t('founding')}</p>
                 <h2 className="mx-auto mt-3 max-w-2xl font-serif text-3xl font-black text-[#0D0D0D] md:text-4xl">
-                    Los primeros escritores estan construyendo sus historias.
+                    {t('empty_title')}
                 </h2>
                 <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#0D0D0D]/62">
-                    Discovery se llena con perfiles reales: escritor, promesa de historia, primer capitulo gratis y precio mensual.
+                    {t('empty_text')}
                 </p>
                 <Link href="/login?mode=registro" className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0D0D0D] px-6 text-sm font-black text-[#FAF7F0] transition hover:bg-[#2A2418]">
-                    Unirme como escritor
+                    {t('join_writer')}
                     <ArrowRight size={16} />
                 </Link>
             </div>
@@ -99,7 +101,7 @@ export function DiscoverGrid({ creators }: DiscoverGridProps) {
                                     : 'border-[#0D0D0D]/12 bg-white/60 text-[#0D0D0D]/58 hover:border-[#C9A84C]/60 hover:text-[#0D0D0D]'
                             }`}
                         >
-                            {filter.label}
+                            {t(filter.labelKey)}
                         </button>
                     )
                 })}
@@ -107,7 +109,7 @@ export function DiscoverGrid({ creators }: DiscoverGridProps) {
 
             {active !== 'all' && (
                 <p className="mt-4 text-center text-xs font-bold text-[#0D0D0D]/45">
-                    {filtered.length === 0 ? 'Todavia no hay escritores en esta categoria.' : `${filtered.length} escritor${filtered.length === 1 ? '' : 'es'} encontrado${filtered.length === 1 ? '' : 's'}.`}
+                    {filtered.length === 0 ? t('none_in_category') : t('writers_found', { count: filtered.length })}
                 </p>
             )}
 
@@ -119,9 +121,9 @@ export function DiscoverGrid({ creators }: DiscoverGridProps) {
                 </div>
             ) : (
                 <div className="mt-9 rounded-3xl border border-dashed border-[#0D0D0D]/12 bg-white/70 p-10 text-center">
-                    <p className="font-serif text-2xl font-black text-[#0D0D0D]">Ese estante aun esta vacio.</p>
+                    <p className="font-serif text-2xl font-black text-[#0D0D0D]">{t('shelf_empty')}</p>
                     <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#0D0D0D]/58">
-                        Cuando un escritor use esas palabras en su bio, tagline o temas, aparecera aqui automaticamente.
+                        {t('shelf_empty_text')}
                     </p>
                 </div>
             )}

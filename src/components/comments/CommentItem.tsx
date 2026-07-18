@@ -164,10 +164,10 @@ function CommentRow({
     }
 
     return (
-        <div className={`${isReply ? 'pl-6 border-l-2 border-gray-800/60' : ''}`}>
-            <div className={`rounded-xl ${comment.is_pinned ? 'border border-[#C9A84C]/30 bg-[#C9A84C]/[0.03]' : 'border border-gray-800/60 bg-[#0F1114]'} p-4 ${comment.is_hidden ? 'opacity-50' : ''}`}>
+        <div className={`${isReply ? 'border-l-2 border-[#171512]/10 pl-6' : ''}`}>
+            <div className={`${comment.is_pinned ? 'border border-[#C9A84C]/40 bg-[#C9A84C]/8' : 'border border-[#171512]/10 bg-[#FFFCF5]'} p-4 ${comment.is_hidden ? 'opacity-50' : ''}`}>
                 {comment.is_pinned && (
-                    <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#D8BA63] mb-2">
+                    <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#8B6E1B]">
                         <Pin size={10} /> {t('pinned_label')}
                     </p>
                 )}
@@ -181,9 +181,9 @@ function CommentRow({
                     {/* Avatar */}
                     <Link href={`/${handle}`} className="shrink-0">
                         {author?.avatar_url ? (
-                            <img src={author.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover border border-gray-700" />
+                            <img src={author.avatar_url} alt="" className="h-9 w-9 rounded-full border border-[#171512]/12 object-cover" />
                         ) : (
-                            <div className="w-9 h-9 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#171512]/12 bg-[#EEE5D5] text-sm font-bold text-[#5F574B]">
                                 {initial}
                             </div>
                         )}
@@ -191,13 +191,13 @@ function CommentRow({
 
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                            <Link href={`/${handle}`} className="text-sm font-bold text-white hover:text-[#D8BA63] transition">
+                            <Link href={`/${handle}`} className="text-sm font-bold text-[#171512] transition hover:text-[#A63D2D]">
                                 {displayName}
                             </Link>
-                            <span className="text-[11px] text-gray-600">@{handle}</span>
-                            <span className="text-[11px] text-gray-600">·</span>
-                            <span className="text-[11px] text-gray-500">{timeAgo(comment.created_at)}</span>
-                            {comment.edited_at && <span className="text-[11px] text-gray-600 italic">· {t('edited')}</span>}
+                            <span className="text-[11px] text-[#8A8174]">@{handle}</span>
+                            <span className="text-[11px] text-[#9A9082]">·</span>
+                            <span className="text-[11px] text-[#746A5C]">{timeAgo(comment.created_at)}</span>
+                            {comment.edited_at && <span className="text-[11px] italic text-[#8A8174]">· {t('edited')}</span>}
                         </div>
 
                         {/* Body or editing */}
@@ -213,7 +213,7 @@ function CommentRow({
                                 />
                             </div>
                         ) : (
-                            <p className="mt-1.5 text-[15px] text-gray-200 whitespace-pre-wrap leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                            <p className="mt-1.5 whitespace-pre-wrap font-serif text-[15px] leading-relaxed text-[#2F2A24]">
                                 {comment.body}
                             </p>
                         )}
@@ -227,8 +227,8 @@ function CommentRow({
                                     disabled={voting}
                                     className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition ${
                                         myVote === 1
-                                            ? 'bg-[#C9A84C]/15 text-[#D8BA63]'
-                                            : 'text-gray-500 hover:bg-white/5 hover:text-[#D8BA63]'
+                                            ? 'bg-[#C9A84C]/18 text-[#8B6E1B]'
+                                            : 'text-[#746A5C] hover:bg-[#F0E8D9] hover:text-[#8B6E1B]'
                                     }`}
                                     aria-pressed={myVote === 1}
                                     title={t('vote_up')}
@@ -243,7 +243,7 @@ function CommentRow({
                                     className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition ${
                                         myVote === -1
                                             ? 'bg-red-500/10 text-red-400'
-                                            : 'text-gray-500 hover:bg-white/5 hover:text-red-400'
+                                            : 'text-[#746A5C] hover:bg-[#F0E8D9] hover:text-red-600'
                                     }`}
                                     aria-pressed={myVote === -1}
                                     title={t('vote_down')}
@@ -255,7 +255,7 @@ function CommentRow({
                                 {!isReply && currentUserId && (
                                     <button
                                         onClick={() => setReplying((r) => !r)}
-                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-gray-500 hover:bg-white/5 hover:text-white transition"
+                                        className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-[#746A5C] transition hover:bg-[#F0E8D9] hover:text-[#171512]"
                                     >
                                         <Reply size={13} /> {t('reply')}
                                     </button>
@@ -267,17 +267,17 @@ function CommentRow({
                                         <button
                                             onClick={() => setMenuOpen((o) => !o)}
                                             disabled={busy}
-                                            className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/5 transition"
+                                            className="flex h-7 w-7 items-center justify-center text-[#746A5C] transition hover:bg-[#F0E8D9] hover:text-[#171512]"
                                             aria-haspopup="menu"
                                         >
                                             {busy ? <Loader2 size={13} className="animate-spin" /> : <MoreHorizontal size={13} />}
                                         </button>
                                         {menuOpen && (
-                                            <div role="menu" className="absolute right-0 top-full mt-1 w-44 bg-[#0F1114] border border-gray-800 rounded-xl shadow-2xl overflow-hidden z-30">
+                                            <div role="menu" className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden border border-[#171512]/12 bg-[#FFFCF5] shadow-xl">
                                                 {canEdit && (
                                                     <button
                                                         onClick={() => { setMenuOpen(false); setEditing(true) }}
-                                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-200 hover:bg-white/5 transition text-left"
+                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-[#2F2A24] transition hover:bg-[#F0E8D9]"
                                                     >
                                                         <Edit3 size={12} /> {t('edit')}
                                                     </button>
@@ -285,7 +285,7 @@ function CommentRow({
                                                 {canModerate && !isReply && (
                                                     <button
                                                         onClick={() => { setMenuOpen(false); togglePinned() }}
-                                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-200 hover:bg-white/5 transition text-left"
+                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-[#2F2A24] transition hover:bg-[#F0E8D9]"
                                                     >
                                                         <Pin size={12} /> {comment.is_pinned ? t('unpin') : t('pin')}
                                                     </button>
@@ -293,7 +293,7 @@ function CommentRow({
                                                 {canModerate && (
                                                     <button
                                                         onClick={() => { setMenuOpen(false); toggleHidden() }}
-                                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-200 hover:bg-white/5 transition text-left"
+                                                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-[#2F2A24] transition hover:bg-[#F0E8D9]"
                                                     >
                                                         <EyeOff size={12} /> {comment.is_hidden ? t('unhide') : t('hide')}
                                                     </button>

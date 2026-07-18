@@ -125,7 +125,7 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="fixed left-6 bottom-6 z-50 flex items-center gap-2 px-4 py-3 rounded-full bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-400 text-sm font-bold shadow-xl backdrop-blur transition"
+                className="fixed bottom-20 left-3 z-50 flex items-center gap-2 rounded-full border border-[#274C43]/25 bg-[#FFFCF5]/95 px-3 py-2.5 text-sm font-bold text-[#274C43] shadow-xl backdrop-blur transition hover:bg-[#EEE5D5] md:bottom-6 md:left-6 md:px-4 md:py-3"
                 title="Asistente IA"
             >
                 <Sparkles size={16} />
@@ -135,14 +135,14 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
     }
 
     return (
-        <div className="fixed left-6 bottom-6 z-50 w-96 max-h-[80vh] rounded-2xl border border-violet-500/30 bg-[#0F1114]/95 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-800">
+        <div className="fixed bottom-20 left-3 z-50 flex max-h-[68vh] w-[calc(100vw-1.5rem)] max-w-96 flex-col overflow-hidden border border-[#274C43]/25 bg-[#FFFCF5]/98 shadow-2xl backdrop-blur-xl md:bottom-6 md:left-6 md:max-h-[80vh]">
+            <div className="flex items-center justify-between border-b border-[#171512]/10 p-4">
                 <div className="flex items-center gap-2">
                     <Sparkles className="text-violet-400" size={16} />
-                    <h3 className="text-sm font-bold text-white">Copiloto IA</h3>
+                    <h3 className="text-sm font-bold text-[#171512]">Copiloto IA</h3>
                     <span className="text-[10px] bg-violet-500/15 text-violet-300 px-2 py-0.5 rounded-full">Beta</span>
                 </div>
-                <button onClick={() => { setOpen(false); reset() }} className="text-gray-500 hover:text-white">
+                <button onClick={() => { setOpen(false); reset() }} className="text-[#8A8174] hover:text-[#A63D2D]">
                     <X size={16} />
                 </button>
             </div>
@@ -154,36 +154,36 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
 
                 {mode === 'menu' && (
                     <div className="space-y-2">
-                        <p className="text-xs text-gray-400 mb-3 leading-relaxed">
-                            La IA es tu copiloto. <strong className="text-white">No reemplaza tu voz</strong> — solo te ayuda a pulir lo que ya escribiste.
+                        <p className="mb-3 text-xs leading-relaxed text-[#746A5C]">
+                            La IA es tu copiloto. <strong className="text-[#171512]">No reemplaza tu voz</strong> — solo te ayuda a pulir lo que ya escribiste.
                         </p>
                         <button
                             onClick={handleImprove}
-                            className="w-full flex items-start gap-3 p-3 rounded-lg border border-gray-800 hover:border-violet-500/30 hover:bg-violet-500/5 text-left transition"
+                            className="flex w-full items-start gap-3 border border-[#171512]/10 bg-[#F8F4EA] p-3 text-left transition hover:border-[#274C43]/30"
                         >
                             <Wand2 className="text-violet-400 shrink-0 mt-0.5" size={16} />
                             <div>
-                                <p className="text-sm font-semibold text-white">Mejorar redacción</p>
+                                <p className="text-sm font-semibold text-[#171512]">Mejorar redacción</p>
                                 <p className="text-[11px] text-gray-500 mt-0.5">Pule claridad, ritmo y gramática manteniendo tu voz.</p>
                             </div>
                         </button>
                         <button
                             onClick={handleTitles}
-                            className="w-full flex items-start gap-3 p-3 rounded-lg border border-gray-800 hover:border-violet-500/30 hover:bg-violet-500/5 text-left transition"
+                            className="flex w-full items-start gap-3 border border-[#171512]/10 bg-[#F8F4EA] p-3 text-left transition hover:border-[#274C43]/30"
                         >
                             <Type className="text-violet-400 shrink-0 mt-0.5" size={16} />
                             <div>
-                                <p className="text-sm font-semibold text-white">Sugerir títulos</p>
+                                <p className="text-sm font-semibold text-[#171512]">Sugerir títulos</p>
                                 <p className="text-[11px] text-gray-500 mt-0.5">5 alternativas basadas en tu texto.</p>
                             </div>
                         </button>
                         <button
                             onClick={handleTranslate}
-                            className="w-full flex items-start gap-3 p-3 rounded-lg border border-gray-800 hover:border-violet-500/30 hover:bg-violet-500/5 text-left transition"
+                            className="flex w-full items-start gap-3 border border-[#171512]/10 bg-[#F8F4EA] p-3 text-left transition hover:border-[#274C43]/30"
                         >
                             <Globe className="text-violet-400 shrink-0 mt-0.5" size={16} />
                             <div>
-                                <p className="text-sm font-semibold text-white">Traducir al Inglés</p>
+                                <p className="text-sm font-semibold text-[#171512]">Traducir al Inglés</p>
                                 <p className="text-[11px] text-gray-500 mt-0.5">Llega a una audiencia global sin perder tu voz.</p>
                             </div>
                         </button>
@@ -270,7 +270,7 @@ export function AIAssistant({ getText, onChooseTitle }: Props) {
                 )}
             </div>
 
-            <div className="p-3 border-t border-gray-800 text-[10px] text-gray-600 italic">
+            <div className="border-t border-[#171512]/10 p-3 text-[10px] italic text-[#8A8174]">
                 Powered by Claude. Tu voz, tu historia — la IA solo te apoya.
             </div>
         </div>

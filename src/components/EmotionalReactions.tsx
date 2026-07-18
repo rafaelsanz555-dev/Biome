@@ -19,7 +19,7 @@ interface EmotionalReactionsProps {
     totalReaders: number
 }
 
-export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction, totalReaders }: EmotionalReactionsProps) {
+export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction }: EmotionalReactionsProps) {
     const t = useTranslations('reader')
     const [counts, setCounts] = useState<Record<string, number>>(initialCounts)
     const [myReaction, setMyReaction] = useState<string | null>(initialMyReaction)
@@ -65,14 +65,14 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
     const totalReactions = Object.values(counts).reduce((a, b) => a + b, 0)
 
     return (
-        <div className="my-10 rounded-2xl border border-gray-800 bg-[#15171C] p-6">
+        <div className="my-10 border border-[#171512]/10 bg-[#FFFCF5] p-6">
             <div className="mb-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#D8BA63] mb-1">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-[#A63D2D]">
                     ✦ Huella emocional
                 </p>
-                <h3 className="font-bold text-white text-lg">{t('emotional_title')}</h3>
+                <h3 className="font-serif text-lg font-bold text-[#171512]">{t('emotional_title')}</h3>
                 {totalReactions > 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="mt-1 text-xs text-[#746A5C]">
                         {totalReactions === 1
                             ? t('emotional_subtitle_one', { count: totalReactions })
                             : t('emotional_subtitle_other', { count: totalReactions })}
@@ -94,22 +94,22 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
                             disabled={loading}
                             className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all overflow-hidden ${
                                 isSelected
-                                    ? 'border-[#C9A84C] bg-[#C9A84C]/10 scale-105 shadow-lg shadow-[#C9A84C]/10'
-                                    : 'border-gray-800 bg-[#0A0B0E] hover:border-gray-700 hover:bg-[#101217]'
+                                    ? 'border-[#A63D2D] bg-[#A63D2D]/8 scale-105 shadow-sm'
+                                    : 'border-[#171512]/10 bg-[#F8F4EA] hover:border-[#A63D2D]/30 hover:bg-[#F0E8D9]'
                             } ${loading ? 'opacity-60 cursor-wait' : ''}`}
                         >
                             {/* Progress bar */}
                             {pct > 0 && (
                                 <div
-                                    className={`absolute bottom-0 left-0 h-1 transition-all ${isSelected ? 'bg-[#C9A84C]' : 'bg-[#C9A84C]/30'}`}
+                                    className={`absolute bottom-0 left-0 h-1 transition-all ${isSelected ? 'bg-[#A63D2D]' : 'bg-[#C9A84C]/50'}`}
                                     style={{ width: `${pct}%` }}
                                 />
                             )}
                             <span className="text-2xl drop-shadow-md">{emoji}</span>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-[#D8BA63]' : 'text-gray-500'}`}>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-[#A63D2D]' : 'text-[#746A5C]'}`}>
                                 {label}
                             </span>
-                            <span className={`text-xs font-bold ${isSelected ? 'text-white' : 'text-gray-600'}`}>
+                            <span className={`text-xs font-bold ${isSelected ? 'text-[#171512]' : 'text-[#8A8174]'}`}>
                                 {count > 0 ? count : ''}
                             </span>
                         </button>
@@ -118,7 +118,7 @@ export function EmotionalReactions({ episodeId, initialCounts, initialMyReaction
             </div>
 
             {myReaction && (
-                <p className="text-xs text-gray-500 mt-4 text-center">
+                <p className="mt-4 text-center text-xs text-[#746A5C]">
                     {t('reacted_with')} <span className="text-lg">{myReaction}</span> · {t('click_to_remove')}
                 </p>
             )}

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import Stripe from 'stripe'
 import { z } from 'zod'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 /**
  * Cancela una suscripción al final del período actual.
@@ -11,6 +12,7 @@ import { z } from 'zod'
  * No reembolsa el pago en curso.
  */
 export async function cancelSubscription(entitlementId: string) {
+    if (!MONETIZATION_ENABLED) return { error: 'La monetizacion todavia no esta habilitada' }
     const parsed = z.string().uuid().safeParse(entitlementId)
     if (!parsed.success) return { error: 'Suscripcion invalida' }
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { parseJsonBody } from '@/lib/validation'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 const followSchema = z.discriminatedUnion('targetType', [
     z.object({ targetType: z.literal('creator'), targetId: z.string().uuid() }),
@@ -45,5 +46,29 @@ export async function POST(req: Request) {
         .insert({ follower_id: user.id, [targetColumn]: targetId })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    try {
+        const admin = createAdminClient()
+        const [{ data: actor }, targetCreator] = await Promise.all([
+            admin.from('profiles').select('username, full_name').eq('id', user.id).maybeSingle(),
+            targetType === 'creator'
+                ? Promise.resolve(targetId)
+                : admin.from('seasons').select('creator_id').eq('id', targetId).maybeSingle().then(({ data }) => data?.creator_id || null),
+        ])
+        if (targetCreator && targetCreator !== user.id) {
+            const actorName = actor?.full_name || actor?.username || 'Alguien'
+            await admin.from('notifications').insert({
+                user_id: targetCreator,
+                actor_id: user.id,
+                type: targetType === 'creator' ? 'new_follower' : 'story_follower',
+                reference_id: targetId,
+                message: targetType === 'creator'
+                    ? `${actorName} empezó a seguirte.`
+                    : `${actorName} empezó a seguir una de tus obras.`,
+            })
+        }
+    } catch (notificationError) {
+        console.error('[follow notification]', notificationError)
+    }
     return NextResponse.json({ ok: true, following: true })
 }

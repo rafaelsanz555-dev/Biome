@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Trash2, ImagePlus, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { LivePreview } from '@/app/dashboard/settings/LivePreview'
 import { RichEditor, RichEditorHandle } from '@/components/editor/RichEditor'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
+import { AGE_RATINGS, CONTENT_WARNING_OPTIONS } from '@/lib/editorial'
 
 // full_text plano (legacy sin content_json) → documento TipTap
 function plainTextToDoc(text: string) {
@@ -44,6 +46,10 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
         episode.is_subscription_only ? 'subscription' : episode.ppv_price ? 'ppv' : 'free'
     )
     const [ppvPrice, setPpvPrice] = useState(episode.ppv_price?.toString() || '2.99')
+    const [ageRating, setAgeRating] = useState(episode.age_rating || 'all')
+    const [selectedWarnings, setSelectedWarnings] = useState<string[]>(episode.content_warnings || [])
+    const [rightsConfirmed, setRightsConfirmed] = useState(false)
+    const [acceptPublishTerms, setAcceptPublishTerms] = useState(false)
 
     function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
         const f = e.target.files?.[0]
@@ -98,6 +104,11 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                 setError(`Para mantenerlo publicado necesitas al menos 30 palabras (llevas ${wordCount}). Despublícalo si quieres guardarlo corto.`)
                 return
             }
+            const firstPublication = !episode.is_published && isPublished
+            if (firstPublication && (!rightsConfirmed || !acceptPublishTerms)) {
+                setError('Para publicar, confirma tus derechos y acepta las políticas vigentes.')
+                return
+            }
 
             const formData = new FormData()
             formData.append('title', title)
@@ -112,6 +123,10 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
             formData.append('soundtrack_title', episode.soundtrack_title || '')
             formData.append('is_published', String(isPublished))
             formData.append('monetization', monetization)
+            formData.append('age_rating', ageRating)
+            formData.append('content_warnings', JSON.stringify(selectedWarnings))
+            if (rightsConfirmed) formData.append('rights_confirmed', 'on')
+            if (acceptPublishTerms) formData.append('accept_publish_terms', 'on')
             if (monetization === 'ppv') formData.append('ppv_price', ppvPrice)
 
             const result = await updateEpisode(episode.id, formData)
@@ -146,43 +161,43 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
         <>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-6 space-y-5">
+                    <div className="space-y-5 border border-[#171512]/10 bg-[#FFFCF5] p-6">
                     {/* Título */}
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Título</label>
+                        <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#574F45]">Título</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             required
-                            className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:outline-none"
+                            className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-4 py-3 text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D]/50 focus:outline-none"
                         />
                     </div>
 
                     {/* Preview */}
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                        <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#574F45]">
                             Vista previa <span className="text-gray-600 normal-case">— el gancho que ven en el feed</span>
                         </label>
                         <textarea
                             value={previewText}
                             onChange={(e) => setPreviewText(e.target.value.slice(0, 240))}
                             rows={3}
-                            className="w-full px-4 py-3 rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder-gray-600 focus:border-[#C9A84C]/50 focus:outline-none"
+                            className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-4 py-3 text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D]/50 focus:outline-none"
                         />
                         <p className="text-[10px] text-gray-600 mt-1">{previewText.length}/240</p>
                     </div>
 
                     {/* Cuerpo del episodio — editable */}
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Tu historia</label>
+                        <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#574F45]">Tu historia</label>
                         <RichEditor ref={editorRef} initialContent={initialDoc} />
                     </div>
 
                     {/* Cover image */}
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Portada</label>
-                        <label className="block aspect-video rounded-xl border-2 border-dashed border-gray-700 hover:border-[#C9A84C]/50 cursor-pointer overflow-hidden bg-[#0A0B0E]">
+                        <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-[#574F45]">Portada</label>
+                        <label className="block aspect-video cursor-pointer overflow-hidden border-2 border-dashed border-[#171512]/20 bg-[#EEE5D5] hover:border-[#A63D2D]/45">
                             {coverUrl ? (
                                 <div className="relative w-full h-full group">
                                     <img src={coverUrl} alt="" className="w-full h-full object-cover" />
@@ -201,9 +216,10 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     </div>
                 </div>
 
-                {/* Monetización */}
-                <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-6 space-y-4">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400">Monetización</h3>
+                {/* Monetización — oculta en el MVP; conserva el valor existente del episodio */}
+                {MONETIZATION_ENABLED && (
+                <div className="space-y-4 border border-[#171512]/10 bg-[#FFFCF5] p-6">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#574F45]">Monetización</h3>
                     <div className="grid grid-cols-3 gap-2">
                         {(['free', 'subscription', 'ppv'] as const).map((m) => (
                             <button
@@ -213,7 +229,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                                 className={`p-3 rounded-lg border text-sm font-bold transition ${
                                     monetization === m
                                         ? 'border-[#C9A84C]/50 bg-[#C9A84C]/10 text-[#D8BA63]'
-                                        : 'border-gray-800 text-gray-400 hover:border-gray-700'
+                                        : 'border-[#171512]/12 text-[#746A5C] hover:border-[#A63D2D]/30'
                                 }`}
                             >
                                 {m === 'free' && 'Gratis'}
@@ -232,14 +248,36 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                                 max="999.99"
                                 value={ppvPrice}
                                 onChange={(e) => setPpvPrice(e.target.value)}
-                                className="w-32 px-3 py-2 rounded-lg bg-[#0A0B0E] border border-gray-800 text-white"
+                                className="w-32 border border-[#171512]/15 bg-[#F8F4EA] px-3 py-2 text-[#171512]"
                             />
                         </div>
                     )}
                 </div>
+                )}
+
+                <div className="space-y-4 border border-[#171512]/10 bg-[#FFFCF5] p-6">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#574F45]">Clasificación editorial</h3>
+                    <div>
+                        <label className="mb-1.5 block text-[11px] font-bold text-gray-500">Edad recomendada</label>
+                        <select value={ageRating} onChange={(event) => setAgeRating(event.target.value)} className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-3 py-2.5 text-sm text-[#171512] outline-none focus:border-[#A63D2D]/50">
+                            {AGE_RATINGS.map((rating) => <option key={rating} value={rating}>{rating === 'all' ? 'Para todos' : `${rating} años`}</option>)}
+                        </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        {CONTENT_WARNING_OPTIONS.map((warning) => {
+                            const checked = selectedWarnings.includes(warning.value)
+                            return (
+                                <label key={warning.value} className={`flex items-center gap-2 border px-2.5 py-2 text-[11px] font-semibold ${checked ? 'border-[#A63D2D]/35 bg-[#A63D2D]/6 text-[#A63D2D]' : 'border-[#171512]/12 text-[#746A5C]'}`}>
+                                    <input type="checkbox" checked={checked} onChange={() => setSelectedWarnings((current) => checked ? current.filter((item) => item !== warning.value) : [...current, warning.value])} />
+                                    {warning.label}
+                                </label>
+                            )
+                        })}
+                    </div>
+                </div>
 
                 {/* Estado de publicación */}
-                <div className="rounded-2xl border border-gray-800 bg-[#15171C] p-6">
+                <div className="border border-[#171512]/10 bg-[#FFFCF5] p-6">
                     <button
                         type="button"
                         onClick={() => setIsPublished(!isPublished)}
@@ -248,7 +286,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                         <div className="flex items-center gap-3">
                             {isPublished ? <Eye className="text-[#D8BA63]" size={18} /> : <EyeOff className="text-gray-500" size={18} />}
                             <div>
-                                <p className="text-sm font-bold text-white">
+                                <p className="text-sm font-bold text-[#171512]">
                                     {isPublished ? 'Publicado' : 'Borrador'}
                                 </p>
                                 <p className="text-[11px] text-gray-500">
@@ -261,6 +299,20 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                         </div>
                     </button>
                 </div>
+
+                {!episode.is_published && isPublished && (
+                    <div className="rounded-2xl border border-[#C9A84C]/25 bg-[#C9A84C]/5 p-5 space-y-3">
+                        <p className="text-xs font-bold uppercase tracking-wider text-[#D8BA63]">Consentimiento de publicación</p>
+                        <label className="flex items-start gap-2.5 text-xs leading-5 text-gray-400">
+                            <input type="checkbox" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} className="mt-1 accent-[#C9A84C]" />
+                            Confirmo que el contenido es mío o tengo autorización para publicarlo.
+                        </label>
+                        <label className="flex items-start gap-2.5 text-xs leading-5 text-gray-400">
+                            <input type="checkbox" checked={acceptPublishTerms} onChange={(event) => setAcceptPublishTerms(event.target.checked)} className="mt-1 accent-[#C9A84C]" />
+                            <span>Acepto la <a href="/legal/content-policy" target="_blank" className="font-bold text-[#D8BA63]">Política de Contenido</a> y los <a href="/legal/creator-terms" target="_blank" className="font-bold text-[#D8BA63]">Términos para Creadores</a>.</span>
+                        </label>
+                    </div>
+                )}
 
                 {/* Errors */}
                 {error && (
@@ -280,7 +332,7 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="flex-1 px-5 py-3 rounded-xl bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#A63D2D] px-5 py-3 font-bold text-white transition hover:bg-[#873023] disabled:opacity-50"
                     >
                         {isPending && <Loader2 size={14} className="animate-spin" />}
                         {isPending ? 'Guardando...' : 'Guardar cambios'}
@@ -307,14 +359,14 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
 
             {/* Delete confirm modal */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(false)}>
-                    <div className="w-full max-w-md bg-[#0F1114] border border-red-500/30 rounded-2xl p-6" onClick={(e) => e.stopPropagation()}>
-                        <h3 className="text-lg font-bold text-white mb-2">¿Borrar este episodio?</h3>
-                        <p className="text-sm text-gray-400 mb-5">
-                            Esta acción es <strong className="text-red-400">irreversible</strong>. El episodio "<strong className="text-white">{title}</strong>" desaparecerá del perfil y de cualquier suscripción activa.
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#171512]/70 p-4 backdrop-blur-sm" onClick={() => setShowDeleteConfirm(false)}>
+                    <div className="w-full max-w-md border border-red-500/25 bg-[#FFFCF5] p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="mb-2 font-serif text-xl font-black text-[#171512]">¿Borrar este episodio?</h3>
+                        <p className="mb-5 text-sm text-[#746A5C]">
+                            Esta acción es <strong className="text-red-600">irreversible</strong>. El episodio "<strong className="text-[#171512]">{title}</strong>" desaparecerá del perfil y de cualquier suscripción activa.
                         </p>
                         <div className="flex gap-2">
-                            <button onClick={() => setShowDeleteConfirm(false)} disabled={isPending} className="flex-1 px-4 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-bold transition">
+                            <button onClick={() => setShowDeleteConfirm(false)} disabled={isPending} className="flex-1 border border-[#171512]/12 px-4 py-2.5 text-sm font-bold text-[#574F45] transition hover:bg-[#F8F4EA]">
                                 Cancelar
                             </button>
                             <button onClick={handleDelete} disabled={isPending} className="flex-1 px-4 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-bold transition disabled:opacity-50">
@@ -327,5 +379,3 @@ export function EditEpisodeForm({ episode, previewInitial }: EditEpisodeFormProp
         </>
     )
 }
-
-

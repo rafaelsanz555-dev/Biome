@@ -43,31 +43,31 @@ export function ChapterSoundtrack({ url, title }: ChapterSoundtrackProps) {
     if (kind === 'none') return null
 
     return (
-        <div className="my-8 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#15171C] to-[#0F1114] overflow-hidden">
+        <div className="my-8 overflow-hidden border border-[#171512]/10 bg-[#FFFCF5]">
             <button
                 onClick={() => setExpanded(!expanded)}
-                className="w-full flex items-center justify-between p-4 hover:bg-white/[0.03] transition group"
+                className="group flex w-full items-center justify-between p-4 transition hover:bg-[#F0E8D9]"
             >
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C9A84C] to-[#8A6A1C] flex items-center justify-center shadow-lg shadow-[#C9A84C]/20">
+                    <div className="flex h-10 w-10 items-center justify-center bg-[#274C43]">
                         <Music size={16} className="text-white" />
                     </div>
                     <div className="text-left">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#D8BA63] mb-0.5">
+                        <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-[#A63D2D]">
                             Banda sonora del capítulo
                         </p>
-                        <p className="text-sm font-bold text-white truncate max-w-[260px] sm:max-w-md">
+                        <p className="max-w-[260px] truncate text-sm font-bold text-[#171512] sm:max-w-md">
                             {title || 'Escucha mientras lees'}
                         </p>
                     </div>
                 </div>
-                <div className="text-gray-500 group-hover:text-[#D8BA63] transition">
+                <div className="text-[#746A5C] transition group-hover:text-[#A63D2D]">
                     {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </div>
             </button>
 
             {expanded && (
-                <div className="border-t border-gray-800 p-3">
+                <div className="border-t border-[#171512]/10 p-3">
                     {kind === 'spotify' ? (
                         <iframe
                             src={embedUrl}

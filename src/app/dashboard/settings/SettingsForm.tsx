@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Camera, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 export default function SettingsForm({ profile, creatorInfo }: { profile: any, creatorInfo: any }) {
     const [isPending, setIsPending] = useState(false)
@@ -69,8 +70,8 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
         <form action={handleSubmit} className="space-y-6">
             
             {/* Foto de Perfil */}
-            <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-6 shadow-md transition-all hover:border-gray-700">
-                <h3 className="text-lg font-bold text-white mb-4">Foto de Perfil</h3>
+            <div className="border border-[#171512]/10 bg-[#FFFCF5] p-6 transition-all hover:border-[#A63D2D]/25">
+                <h3 className="mb-4 font-serif text-lg font-black text-[#171512]">Foto de perfil</h3>
                 <div className="flex items-center gap-6">
                     <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gray-700 bg-gray-900 shrink-0">
                         {previewUrl ? (
@@ -101,29 +102,29 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
             </div>
 
             {/* Información Personal */}
-            <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-6 shadow-md transition-all hover:border-gray-700">
-                <h3 className="text-lg font-bold text-white mb-4">Información del Perfil</h3>
+            <div className="border border-[#171512]/10 bg-[#FFFCF5] p-6 transition-all hover:border-[#A63D2D]/25">
+                <h3 className="mb-4 font-serif text-lg font-black text-[#171512]">Información del perfil</h3>
                 
                 <div className="space-y-5">
                     <div className="space-y-2 relative">
-                        <Label htmlFor="full_name" className="text-sm font-bold text-gray-400">Nombre Público</Label>
+                        <Label htmlFor="full_name" className="text-sm font-bold text-[#574F45]">Nombre público</Label>
                         <Input
                             id="full_name"
                             name="full_name"
                             defaultValue={profile?.full_name || ''}
                             placeholder="Tu Nombre o Seudónimo"
-                            className="bg-[#0A0B0E] border-gray-800 text-white focus-visible:ring-[#C9A84C] h-12"
+                            className="h-12 border-[#171512]/15 bg-[#F8F4EA] text-[#171512] focus-visible:ring-[#A63D2D]"
                         />
                     </div>
 
                     <div className="space-y-2 relative">
-                        <Label htmlFor="bio" className="text-sm font-bold text-gray-400">Biografía</Label>
+                        <Label htmlFor="bio" className="text-sm font-bold text-[#574F45]">Biografía</Label>
                         <textarea
                             id="bio"
                             name="bio"
                             rows={4}
                             defaultValue={profile?.bio || ''}
-                            className="w-full rounded-xl bg-[#0A0B0E] border border-gray-800 text-white placeholder:text-gray-600 outline-none focus-visible:ring-1 focus-visible:ring-[#C9A84C] p-4 resize-none transition-all"
+                            className="w-full resize-none border border-[#171512]/15 bg-[#F8F4EA] p-4 text-[#171512] outline-none transition-all placeholder:text-[#9A9082] focus-visible:ring-1 focus-visible:ring-[#A63D2D]"
                             placeholder="Cuéntale a tus fans sobre ti..."
                         />
                         <p className="text-xs text-gray-600 text-right">Visible en tu perfil público.</p>
@@ -131,8 +132,8 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                 </div>
             </div>
 
-            {/* Monetización */}
-            <div className="bg-[#15171C] border border-gray-800 rounded-2xl p-6 shadow-md transition-all hover:border-gray-700">
+            {/* Hidden until Stripe Connect is production-ready. */}
+            {MONETIZATION_ENABLED && <div className="border border-[#171512]/10 bg-[#FFFCF5] p-6 transition-all hover:border-[#A63D2D]/25">
                 <h3 className="text-lg font-bold text-white mb-4">Monetización</h3>
                 
                 <div className="space-y-3">
@@ -147,14 +148,14 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                             min="2"
                             max="999"
                             defaultValue={creatorInfo?.subscription_price || "4.99"}
-                            className="pl-8 bg-[#0A0B0E] border-gray-800 text-white font-bold h-12 focus-visible:ring-[#C9A84C]"
+                            className="h-12 border-[#171512]/15 bg-[#F8F4EA] pl-8 font-bold text-[#171512] focus-visible:ring-[#A63D2D]"
                         />
                     </div>
                     <p className="text-xs text-gray-500 mt-2">
                         Mínimo $2/mes. El nuevo precio aplica para suscriptores nuevos; los actuales conservan el suyo.
                     </p>
                 </div>
-            </div>
+            </div>}
 
             {/* Alertas */}
             {errorMsg && (
@@ -174,7 +175,7 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
                 <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-[#C9A84C] hover:bg-[#D8BA63] text-[#0D0D0D] font-bold h-12 px-8 rounded-xl shadow-lg shadow-[#C9A84C]/20 transition-all flex items-center gap-2"
+                    className="flex h-12 items-center gap-2 rounded-full bg-[#A63D2D] px-8 font-bold text-white transition hover:bg-[#873023]"
                 >
                     <Save size={18} />
                     {isPending ? 'Guardando...' : 'Guardar Cambios'}
@@ -183,5 +184,3 @@ export default function SettingsForm({ profile, creatorInfo }: { profile: any, c
         </form>
     )
 }
-
-

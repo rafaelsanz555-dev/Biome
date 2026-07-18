@@ -55,29 +55,29 @@ export function TrustSettingsForm({ initial }: Props) {
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-                <h2 className="text-lg font-bold text-white mb-1">Confianza y continuidad</h2>
-                <p className="text-sm text-gray-400 mb-6">
+                <h2 className="mb-1 font-serif text-lg font-black text-[#171512]">Confianza y continuidad</h2>
+                <p className="mb-6 text-sm text-[#746A5C]">
                     Estas señales aparecen en tu perfil y en el paywall. Le dan al lector la información que necesita para decidir suscribirse con confianza.
                 </p>
             </div>
 
             {/* Why I write */}
             <div>
-                <label className="block text-sm font-semibold text-white mb-2">¿Por qué cuentas tu historia?</label>
+                <label className="mb-2 block text-sm font-semibold text-[#171512]">¿Por qué cuentas tu historia?</label>
                 <p className="text-xs text-gray-500 mb-3">280 caracteres. Aparece destacado en tu bio. Tu manifesto.</p>
                 <textarea
                     value={whyIWrite}
                     onChange={(e) => setWhyIWrite(e.target.value.slice(0, 280))}
                     placeholder="Escribo porque..."
                     rows={3}
-                    className="w-full bg-[#0A0B0E] border border-gray-800 rounded-lg p-3 text-sm text-white placeholder:text-gray-600 focus:border-gray-600 focus:outline-none"
+                    className="w-full border border-[#171512]/15 bg-[#F8F4EA] p-3 text-sm text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D] focus:outline-none"
                 />
                 <p className="text-[10px] text-gray-600 mt-1">{whyIWrite.length}/280</p>
             </div>
 
             {/* Series status */}
             <div>
-                <label className="block text-sm font-semibold text-white mb-2">Estado de tu historia</label>
+                <label className="mb-2 block text-sm font-semibold text-[#171512]">Estado de tu historia</label>
                 <p className="text-xs text-gray-500 mb-3">Sé honesto. Los lectores confían en escritores transparentes.</p>
                 <div className="grid sm:grid-cols-2 gap-2">
                     {STATUSES.map((s) => {
@@ -88,11 +88,11 @@ export function TrustSettingsForm({ initial }: Props) {
                                 key={s.value}
                                 type="button"
                                 onClick={() => setStatus(s.value)}
-                                className={`text-left p-3 rounded-lg border transition ${active ? `border-${s.color}-500/50 bg-${s.color}-500/5` : 'border-gray-800 hover:border-gray-700'}`}
+                                className={`border p-3 text-left transition ${active ? `border-${s.color}-500/50 bg-${s.color}-500/5` : 'border-[#171512]/12 hover:border-[#A63D2D]/30'}`}
                             >
                                 <div className="flex items-center gap-2 mb-1">
                                     <Icon size={14} className={active ? `text-${s.color}-400` : 'text-gray-500'} />
-                                    <span className="text-sm font-semibold text-white">{s.label}</span>
+                                    <span className="text-sm font-semibold text-[#171512]">{s.label}</span>
                                 </div>
                                 <p className="text-xs text-gray-500">{s.desc}</p>
                             </button>
@@ -103,7 +103,7 @@ export function TrustSettingsForm({ initial }: Props) {
 
             {/* Posting frequency */}
             <div>
-                <label className="block text-sm font-semibold text-white mb-2">¿Con qué frecuencia publicas?</label>
+                <label className="mb-2 block text-sm font-semibold text-[#171512]">¿Con qué frecuencia publicas?</label>
                 <p className="text-xs text-gray-500 mb-3">Solo promételo si vas a cumplirlo. Mejor "irregular" honesto que "semanal" abandonado.</p>
                 <div className="grid sm:grid-cols-2 gap-2 mb-4">
                     {FREQUENCIES.map((f) => (
@@ -111,9 +111,9 @@ export function TrustSettingsForm({ initial }: Props) {
                             key={f.value}
                             type="button"
                             onClick={() => setFrequency(f.value)}
-                            className={`text-left p-3 rounded-lg border transition ${frequency === f.value ? 'border-[#C9A84C]/50 bg-[#C9A84C]/5' : 'border-gray-800 hover:border-gray-700'}`}
+                            className={`border p-3 text-left transition ${frequency === f.value ? 'border-[#A63D2D]/35 bg-[#A63D2D]/5' : 'border-[#171512]/12 hover:border-[#A63D2D]/30'}`}
                         >
-                            <span className="text-sm font-semibold text-white">{f.label}</span>
+                            <span className="text-sm font-semibold text-[#171512]">{f.label}</span>
                         </button>
                     ))}
                 </div>
@@ -123,12 +123,12 @@ export function TrustSettingsForm({ initial }: Props) {
                         value={promise}
                         onChange={(e) => setPromise(e.target.value.slice(0, 60))}
                         placeholder='ej: "Cada domingo a las 7pm"'
-                        className="w-full bg-[#0A0B0E] border border-gray-800 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:border-gray-600 focus:outline-none"
+                        className="w-full border border-[#171512]/15 bg-[#F8F4EA] px-3 py-2 text-sm text-[#171512] placeholder:text-[#9A9082] focus:border-[#A63D2D] focus:outline-none"
                     />
                 )}
             </div>
 
-            <div className="flex items-center gap-3 pt-4 border-t border-gray-800">
+            <div className="flex items-center gap-3 border-t border-[#171512]/10 pt-4">
                 <button
                     type="submit"
                     disabled={saving}

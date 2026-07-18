@@ -4,6 +4,7 @@ import { getStripe } from '@/lib/stripe'
 import { z } from 'zod'
 import { parseJsonBody } from '@/lib/validation'
 import { PLATFORM_FEE_PCT } from '@/lib/fees'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 const giftSchema = z.object({
     recipientId: z.string().uuid(),
@@ -13,6 +14,9 @@ const giftSchema = z.object({
 })
 
 export async function POST(req: Request) {
+    if (!MONETIZATION_ENABLED) {
+        return NextResponse.json({ error: 'Los regalos todavia no estan habilitados.' }, { status: 503 })
+    }
     try {
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()

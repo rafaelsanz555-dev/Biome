@@ -17,11 +17,21 @@ export default async function NewEpisodePage({ searchParams }: { searchParams: P
 
     if (profile?.role !== 'creator') redirect('/dashboard')
 
-    const { data: seasons } = await supabase
+    let { data: seasons, error: seasonsError } = await supabase
         .from('seasons')
-        .select('id, title, format')
+        .select('id, title, format, story_type')
         .eq('creator_id', user?.id)
         .order('created_at', { ascending: false })
+
+    if (seasonsError && /story_type|schema cache/i.test(seasonsError.message)) {
+        const fallback = await supabase
+            .from('seasons')
+            .select('id, title, format')
+            .eq('creator_id', user?.id)
+            .order('created_at', { ascending: false })
+        seasons = (fallback.data || []).map((item) => ({ ...item, story_type: 'life_story' }))
+        seasonsError = fallback.error
+    }
 
     // Solo pre-seleccionamos la serie si de verdad pertenece a este escritor
     const defaultSeasonId = season && (seasons || []).some((s) => s.id === season) ? season : ''
@@ -47,17 +57,16 @@ export default async function NewEpisodePage({ searchParams }: { searchParams: P
     }
 
     return (
-        <div className="space-y-6 p-6 md:p-8">
+        <div className="mx-auto max-w-6xl space-y-6 p-5 pb-24 md:p-8">
             <div>
-                <Link href="/dashboard/episodes" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-[#D8BA63] mb-4 transition">
+                <Link href="/dashboard/episodes" className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#746A5C] transition hover:text-[#A63D2D]">
                     <ChevronLeft size={14} /> Volver a mis publicaciones
                 </Link>
-                <h1 className="text-3xl font-bold text-white mb-1">Nuevo Episodio</h1>
-                <p className="text-sm text-gray-500">Escribe, elige el acceso y publica cuando estés listo.</p>
+                <h1 className="mb-1 font-serif text-4xl font-black text-[#171512]">Nueva publicación</h1>
+                <p className="text-sm text-[#746A5C]">Primero define si es una entrada independiente o un capítulo de una obra. Luego escribe y clasifica el contenido.</p>
             </div>
 
             <EpisodeForm seasons={seasons || []} previewInitial={previewInitial} defaultSeasonId={defaultSeasonId} />
         </div>
     )
 }
-

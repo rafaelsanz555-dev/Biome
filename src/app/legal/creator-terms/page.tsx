@@ -4,7 +4,7 @@ export default function CreatorTermsPage() {
     return (
         <>
             <h1>Creator Terms</h1>
-            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.1 · Última edición: abril 2026</p>
+            <p className="text-sm text-gray-500"><strong>BORRADOR — Pendiente de revisión legal</strong> · Versión: 0.2-beta · Última edición: julio 2026</p>
 
             <p>Estos Creator Terms aplican adicionalmente a los <a href="/legal/terms">Términos de Servicio</a> generales si tienes cuenta de tipo "Creator / Storyteller" en Pergamo.</p>
 

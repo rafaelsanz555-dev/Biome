@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Heart, MessageCircle, Gift, Share2 } from 'lucide-react'
 import { EpisodeKebab } from '@/components/EpisodeKebab'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 interface Props {
     episodeId: string
@@ -21,6 +22,7 @@ interface Props {
     commentScrollTarget?: string
     /** Para el kebab spectator: silenciar a @username */
     creatorUsername?: string | null
+    variant?: 'dark' | 'editorial'
 }
 
 /**
@@ -48,6 +50,7 @@ export function EpisodeFeedActions({
     hideGift = false,
     commentScrollTarget,
     creatorUsername,
+    variant = 'dark',
 }: Props) {
     const router = useRouter()
     const t = useTranslations('reader')
@@ -101,14 +104,14 @@ export function EpisodeFeedActions({
     }
 
     return (
-        <div className="px-4 py-3 bg-[#15171C] flex items-center gap-5">
+        <div className={`flex items-center gap-5 px-4 py-3 ${variant === 'editorial' ? 'border-t border-[#171512]/10 bg-[#FFFCF5] text-[#5F574B]' : 'bg-[#15171C]'}`}>
             {/* Like — el dueño no puede darse like a sí mismo */}
             {!isOwner && (
                 <button
                     onClick={toggleLike}
                     disabled={likeBusy}
                     className={`flex items-center gap-2 font-medium text-sm transition-colors disabled:opacity-50 ${
-                        liked ? 'text-red-500 hover:text-red-400' : 'text-gray-500 hover:text-white'
+                        liked ? 'text-red-600 hover:text-red-500' : variant === 'editorial' ? 'text-[#746A5C] hover:text-[#A63D2D]' : 'text-gray-500 hover:text-white'
                     }`}
                     aria-pressed={liked}
                     title={t('action_like')}
@@ -129,7 +132,7 @@ export function EpisodeFeedActions({
             {commentScrollTarget ? (
                 <a
                     href={commentScrollTarget}
-                    className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
+                    className={`flex items-center gap-2 font-medium text-sm transition-colors ${variant === 'editorial' ? 'text-[#746A5C] hover:text-[#A63D2D]' : 'text-gray-500 hover:text-white'}`}
                     title={t('action_comment')}
                 >
                     <MessageCircle size={18} />
@@ -138,7 +141,7 @@ export function EpisodeFeedActions({
             ) : (
                 <Link
                     href={`${episodeUrl}#comments`}
-                    className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
+                    className={`flex items-center gap-2 font-medium text-sm transition-colors ${variant === 'editorial' ? 'text-[#746A5C] hover:text-[#A63D2D]' : 'text-gray-500 hover:text-white'}`}
                     title={t('action_comment')}
                 >
                     <MessageCircle size={18} />
@@ -149,7 +152,7 @@ export function EpisodeFeedActions({
             {/* Share — disponible para todos */}
             <button
                 onClick={handleShare}
-                className="flex items-center gap-2 text-gray-500 hover:text-white font-medium text-sm transition-colors"
+                className={`flex items-center gap-2 font-medium text-sm transition-colors ${variant === 'editorial' ? 'text-[#746A5C] hover:text-[#A63D2D]' : 'text-gray-500 hover:text-white'}`}
                 title={t('action_share')}
             >
                 <Share2 size={18} />
@@ -157,8 +160,8 @@ export function EpisodeFeedActions({
             </button>
 
             <div className="ml-auto flex items-center gap-2">
-                {/* Gift — solo para espectadores (no podés regalarte a vos mismo) */}
-                {!hideGift && !isOwner && (
+                {/* Gift — solo para espectadores, y solo con monetización activa */}
+                {MONETIZATION_ENABLED && !hideGift && !isOwner && (
                     <Link
                         href={episodeUrl}
                         className="flex items-center gap-2 text-[#C9A84C] hover:text-[#D8BA63] font-medium text-sm transition-colors"
@@ -182,5 +185,4 @@ export function EpisodeFeedActions({
         </div>
     )
 }
-
 

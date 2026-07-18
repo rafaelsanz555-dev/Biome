@@ -29,26 +29,26 @@ export default async function NotificationsPage() {
     }
 
     return (
-        <div className="space-y-6 max-w-2xl mx-auto">
+        <div className="mx-auto max-w-3xl space-y-6">
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-[#C9A84C]/10 rounded-xl">
-                    <Bell className="text-[#C9A84C] h-6 w-6" />
+                <div className="bg-[#A63D2D]/8 p-2">
+                    <Bell className="h-6 w-6 text-[#A63D2D]" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-white mb-1">Notificaciones</h1>
-                    <p className="text-sm text-gray-400">Mantente al tanto de la actividad en tu perfil.</p>
+                    <h1 className="mb-1 font-serif text-4xl font-black text-[#171512]">Notificaciones</h1>
+                    <p className="text-sm text-[#746A5C]">Nuevos capítulos, seguidores y actividad de tu comunidad.</p>
                 </div>
             </div>
 
-            <div className="bg-[#15171C] border border-gray-800 rounded-2xl overflow-hidden shadow-md">
+            <div className="overflow-hidden border border-[#171512]/10 bg-[#FFFCF5]">
                 {!notifications || notifications.length === 0 ? (
                     <div className="p-10 text-center">
-                        <Bell className="h-10 w-10 text-gray-700 mx-auto mb-3" />
-                        <p className="text-gray-400 font-medium">Aún no tienes notificaciones</p>
-                        <p className="text-sm text-gray-600 mt-1">Aquí verás tus nuevos suscriptores y regalos.</p>
+                        <Bell className="mx-auto mb-3 h-10 w-10 text-[#A63D2D]/40" />
+                        <p className="font-serif text-xl font-black text-[#171512]">Aún no tienes notificaciones</p>
+                        <p className="mt-1 text-sm text-[#746A5C]">Aquí verás nuevas publicaciones y actividad de tu comunidad.</p>
                     </div>
                 ) : (
-                    <div className="divide-y divide-gray-800/80">
+                    <div className="divide-y divide-[#171512]/8">
                         {notifications.map((notif: any) => {
                             const isGift = notif.type === 'gift'
                             const isSub = notif.type === 'subscription'
@@ -65,31 +65,31 @@ export default async function NotificationsPage() {
                                 : null
 
                             return (
-                                <div key={notif.id} className={`p-4 flex gap-4 transition-colors hover:bg-[#1A1C23] ${!notif.is_read ? 'bg-[#C9A84C]/5' : ''}`}>
+                                <div key={notif.id} className={`flex gap-4 p-4 transition-colors hover:bg-[#F8F4EA] ${!notif.is_read ? 'bg-[#D4B963]/8' : ''}`}>
                                     <div className="relative shrink-0">
                                         {actorAvatar ? (
-                                            <img src={actorAvatar} alt={actorName} className="w-12 h-12 rounded-full object-cover border border-gray-700" />
+                                            <img src={actorAvatar} alt={actorName} className="h-12 w-12 rounded-full border border-[#171512]/12 object-cover" />
                                         ) : (
-                                            <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 font-bold border border-gray-700">
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#171512]/12 bg-[#EEE5D5] font-bold text-[#574F45]">
                                                 {actorName.charAt(0).toUpperCase()}
                                             </div>
                                         )}
-                                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center ${iconBg} border-2 border-[#15171C]`}>
+                                        <div className={`absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full ${iconBg} border-2 border-[#FFFCF5]`}>
                                             <Icon size={10} className={iconColor} />
                                         </div>
                                     </div>
                                     
                                     <div className="flex-1">
-                                        <p className="text-sm text-gray-300">
-                                            <Link href={`/${actorName}`} className="font-bold text-white hover:underline">@{actorName}</Link>
+                                        <p className="text-sm text-[#746A5C]">
+                                            <Link href={`/${actorName}`} className="font-bold text-[#171512] hover:text-[#A63D2D]">@{actorName}</Link>
                                             {' '}{!notif.is_read && <span className="inline-block w-2 h-2 rounded-full bg-[#C9A84C] ml-1"></span>}
                                         </p>
                                         {episodeHref ? (
-                                            <Link href={episodeHref} className="block text-base text-gray-100 mt-0.5 hover:text-[#D8BA63] transition">
+                                            <Link href={episodeHref} className="mt-0.5 block text-base text-[#171512] transition hover:text-[#A63D2D]">
                                                 {notif.message} <span className="text-xs font-bold text-[#C9A84C]">Leer →</span>
                                             </Link>
                                         ) : (
-                                            <p className="text-base text-gray-100 mt-0.5">{notif.message}</p>
+                                            <p className="mt-0.5 text-base text-[#171512]">{notif.message}</p>
                                         )}
                                         <p className="text-xs text-gray-600 mt-2 font-medium">
                                             {new Date(notif.created_at).toLocaleDateString('es-ES', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -104,4 +104,3 @@ export default async function NotificationsPage() {
         </div>
     )
 }
-

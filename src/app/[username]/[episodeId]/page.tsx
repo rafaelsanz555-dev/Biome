@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/Navbar'
-import { Lock, ChevronLeft, Heart, MessageCircle, Gift, Play, Share2, ArrowRight, Sparkles } from 'lucide-react'
+import { Lock, ChevronLeft, Gift, ArrowRight, Sparkles } from 'lucide-react'
 import { GiftPanel } from '@/components/GiftPanel'
 import { ReadingProgress } from '@/components/ReadingProgress'
 import { TextHighlightShare } from '@/components/TextHighlightShare'
@@ -11,17 +11,16 @@ import { ChapterSoundtrack } from '@/components/ChapterSoundtrack'
 import { EmotionalReactions } from '@/components/EmotionalReactions'
 import { LiveReaderCount } from '@/components/LiveReaderCount'
 import { ReaderRenderer } from '@/components/editor/ReaderRenderer'
-import { CreatorBrandProvider, extractBranding } from '@/components/CreatorBrandProvider'
 import { ThemeProvider, extractTheme } from '@/components/theme/ThemeProvider'
 import ReadTracker from '@/components/ReadTracker'
 import BookmarkTracker from '@/components/reader/BookmarkTracker'
 import { ReportButton } from '@/components/ReportButton'
-import { NextEpisode } from '@/components/reader/NextEpisode'
 import { EpisodeRecap } from '@/components/reader/EpisodeRecap'
 import { HonestPaywall } from '@/components/reader/HonestPaywall'
 import { EpisodeFeedActions } from '@/components/EpisodeFeedActions'
 import { CommentSection } from '@/components/comments/CommentSection'
 import { ChapterEndCTA } from '@/components/reader/ChapterEndCTA'
+import { MONETIZATION_ENABLED } from '@/lib/flags'
 
 interface EpisodePageProps {
     params: Promise<{
@@ -86,6 +85,12 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
     const user = currentUser
     let hasAccess = false
+
+    // MVP: monetización apagada — todo capítulo publicado se lee completo.
+    // (Los drafts de terceros ya devolvieron 404 arriba.)
+    if (!MONETIZATION_ENABLED) {
+        hasAccess = true
+    }
 
     // Episodio gratis (sin suscripción ni PPV): legible por cualquiera.
     // Antes solo el PRIMER capítulo gratis era accesible — los demás episodios
@@ -201,50 +206,49 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
         if (user && r.user_id === user.id) myReaction = r.emoji
     })
 
-    const branding = extractBranding(creatorProfile.creators)
-    const { theme, fallback } = extractTheme(creatorProfile.creators)
+    const { fallback } = extractTheme(creatorProfile.creators)
 
     return (
-        <ThemeProvider theme={theme} fallbackBranding={fallback} className="min-h-screen pb-24 text-gray-100">
+        <ThemeProvider fallbackBranding={fallback} className="min-h-screen bg-[#F8F4EA] pb-24 text-[#171512]">
             {hasAccess && <ReadTracker episodeId={episode.id} />}
             {hasAccess && !!user && <BookmarkTracker episodeId={episode.id} enabled={hasAccess} />}
             {hasAccess && <ReadingProgress />}
             <Navbar />
 
             {/* Sticky Back Header */}
-            <div className="sticky top-16 z-40 bg-[#0A0B0E]/90 backdrop-blur-md border-b border-gray-800">
+            <div className="sticky top-16 z-40 border-b border-[#171512]/10 bg-[#F8F4EA]/92 backdrop-blur-md">
                 <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
                     <Link
                         href={`/${username}`}
                         className="flex items-center gap-3 group"
                     >
-                        <div className="bg-[#15171C] border border-gray-800 p-1.5 rounded-full group-hover:border-[#C9A84C]/30 transition">
-                            <ChevronLeft size={16} className="text-gray-400 group-hover:text-[#C9A84C]" />
+                        <div className="rounded-full border border-[#171512]/12 bg-[#FFFCF5] p-1.5 transition group-hover:border-[#A63D2D]/30">
+                            <ChevronLeft size={16} className="text-[#746A5C] transition group-hover:text-[#A63D2D]" />
                         </div>
-                        <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-gray-700">
+                        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full border border-[#171512]/12">
                             {creatorProfile.avatar_url ? (
                                 <img src={creatorProfile.avatar_url} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center font-bold text-sm bg-[#2A2418]/40 text-[#D8BA63]">
+                                <div className="flex h-full w-full items-center justify-center bg-[#274C43]/10 text-sm font-bold text-[#274C43]">
                                     {initial}
                                 </div>
                             )}
                         </div>
                         <div>
-                            <p className="font-bold text-sm text-white leading-none">
+                            <p className="text-sm font-bold leading-none text-[#171512]">
                                 {creatorProfile.full_name || creatorProfile.username}
                             </p>
-                            <p className="text-[11px] text-gray-500 mt-0.5">@{creatorProfile.username}</p>
+                            <p className="mt-0.5 text-[11px] text-[#746A5C]">@{creatorProfile.username}</p>
                         </div>
                     </Link>
                     <div className="flex items-center gap-2">
                         {seasonTitle && (
-                            <div className="text-[10px] font-bold text-[#D8BA63] bg-[#C9A84C]/10 px-2.5 py-1 rounded-full border border-[#C9A84C]/20 uppercase tracking-wider">
+                            <div className="border border-[#A63D2D]/18 bg-[#A63D2D]/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#A63D2D]">
                                 {seasonTitle}
                             </div>
                         )}
                         {!episode.is_subscription_only && !episode.ppv_price && (
-                            <div className="text-[10px] font-bold text-yellow-400 bg-yellow-500/10 px-2.5 py-1 rounded-full border border-yellow-500/20 uppercase tracking-wider">
+                            <div className="border border-[#274C43]/18 bg-[#274C43]/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#274C43]">
                                 Gratis
                             </div>
                         )}
@@ -260,30 +264,30 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 </div>
 
                 {/* Meta */}
-                <div className="flex items-center gap-3 text-sm text-gray-500 mb-5 font-medium flex-wrap">
+                <div className="mb-5 flex flex-wrap items-center gap-3 text-sm font-medium text-[#746A5C]">
                     <span>
                         {new Date(episode.created_at).toLocaleDateString('es-ES', {
                             month: 'long', day: 'numeric', year: 'numeric',
                         })}
                     </span>
-                    <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                    <span className="h-1 w-1 rounded-full bg-[#171512]/25"></span>
                     <span>{readMin} min de lectura</span>
                     {words > 0 && (
                         <>
-                            <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+                            <span className="h-1 w-1 rounded-full bg-[#171512]/25"></span>
                             <span>{words.toLocaleString('es-ES')} palabras</span>
                         </>
                     )}
                 </div>
 
                 {/* Title */}
-                <h1 className="font-bold text-3xl md:text-5xl text-white leading-[1.1] tracking-tight mb-8">
+                <h1 className="mb-8 font-serif text-3xl font-black leading-[1.1] text-[#171512] md:text-5xl">
                     {episode.title}
                 </h1>
 
                 {/* Cover */}
                 {(episode.cover_image_url || !hasAccess) && (
-                    <div className={`mb-10 w-full rounded-2xl overflow-hidden relative border border-gray-800 bg-[#15171C] flex items-center justify-center ${episode.cover_image_url ? '' : 'aspect-[16/9]'}`}>
+                    <div className={`relative mb-10 flex w-full items-center justify-center overflow-hidden border border-[#171512]/10 bg-[#EEE5D5] ${episode.cover_image_url ? '' : 'aspect-[16/9]'}`}>
                         {episode.cover_image_url ? (
                             <img
                                 src={episode.cover_image_url}
@@ -291,13 +295,13 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 className={`w-full h-auto max-h-[70vh] object-contain transition-all ${!hasAccess ? 'blur-2xl opacity-40 scale-110' : ''}`}
                             />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-[#2A2418]/30 via-[#15171C] to-[#0A0B0E]"></div>
+                            <div className="h-full w-full bg-[#E7DDCC]"></div>
                         )}
 
                         {!hasAccess && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/50 backdrop-blur-sm">
-                                <div className="w-16 h-16 rounded-2xl bg-[#C9A84C]/10 border border-[#C9A84C]/30 flex items-center justify-center mb-5">
-                                    <Lock className="w-7 h-7 text-[#D8BA63]" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#171512]/72 p-6 text-center backdrop-blur-sm">
+                                <div className="mb-5 flex h-16 w-16 items-center justify-center border border-[#D8BA63]/30 bg-[#C9A84C]/12">
+                                    <Lock className="h-7 w-7 text-[#E5CA79]" />
                                 </div>
                                 <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Contenido exclusivo</h2>
                                 <p className="text-gray-300 text-sm mb-6 max-w-sm leading-relaxed">
@@ -313,7 +317,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                     <div className="mt-5 text-center">
                                         <span className="text-gray-500 text-[10px] uppercase tracking-widest block mb-2">O solo este episodio</span>
                                         <form action={`/api/checkout?type=ppv&episodeId=${episode.id}`} method="POST">
-                                            <Button type="submit" variant="outline" className="border-gray-700 bg-[#15171C] text-gray-300 hover:text-white hover:bg-gray-800 font-bold h-10 px-6 rounded-xl">
+                                            <Button type="submit" variant="outline" className="h-10 border-white/20 bg-white/8 px-6 font-bold text-white hover:bg-white/14 hover:text-white">
                                                 Desbloquear por ${episode.ppv_price}
                                             </Button>
                                         </form>
@@ -326,33 +330,33 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
 
                 {/* Free preview (if there's one) */}
                 {episode.preview_text && (
-                    <div className="text-gray-400 text-xl leading-relaxed mb-8 font-medium italic border-l-4 border-[#C9A84C] pl-6 py-2">
+                    <div className="mb-8 border-l-4 border-[#A63D2D] py-2 pl-6 font-serif text-xl font-medium italic leading-relaxed text-[#5F574B]">
                         {episode.preview_text}
                     </div>
                 )}
 
                 {/* Recap del anterior */}
-                {hasAccess && prevEp?.auto_recap && (
-                    <EpisodeRecap previousTitle={prevEp.title} recap={prevEp.auto_recap} />
+                {hasAccess && prevEp && (prevEp.auto_recap || prevEp.preview_text) && (
+                    <EpisodeRecap previousTitle={prevEp.title} recap={prevEp.auto_recap || prevEp.preview_text || ''} />
                 )}
 
                 {/* Full text — immersive reading */}
                 {hasAccess && fullText && (
-                    <article className="prose prose-invert max-w-none bio-reading-experience">
+                    <article className="prose max-w-none bio-reading-experience prose-headings:text-[#171512] prose-p:text-[#2F2A24] prose-strong:text-[#171512]">
                         {/* 🎵 Chapter Soundtrack */}
                         {episode.soundtrack_url && (
                             <ChapterSoundtrack url={episode.soundtrack_url} title={episode.soundtrack_title} />
                         )}
 
                         {contentJson ? (
-                            <div className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] selection:bg-[#C9A84C]/40 selection:text-white" style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}>
+                            <div className="bio-reader-immersive text-xl leading-[1.95] text-[#2F2A24] selection:bg-[#A63D2D]/20 md:text-[22px]" style={{ fontFamily: 'var(--brand-font, Georgia, serif)' }}>
                                 <ReaderRenderer content={contentJson} />
                             </div>
                         ) : (
                             <div
                                 data-reader-content
-                                className="bio-reader-immersive text-gray-100 text-xl md:text-[22px] leading-[1.95] whitespace-pre-wrap selection:bg-[#C9A84C]/40 selection:text-white"
-                                style={{ fontFamily: 'var(--brand-font, Georgia, serif)', letterSpacing: '-0.005em' }}
+                                className="bio-reader-immersive whitespace-pre-wrap text-xl leading-[1.95] text-[#2F2A24] selection:bg-[#A63D2D]/20 md:text-[22px]"
+                                style={{ fontFamily: 'var(--brand-font, Georgia, serif)' }}
                             >
                                 {fullText}
                             </div>
@@ -363,7 +367,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         {Array.isArray(episode.images) && episode.images.length > 0 && (
                             <div className="not-prose mt-10 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {episode.images.map((url: string, i: number) => (
-                                    <div key={i} className="relative rounded-xl overflow-hidden border border-white/5 bg-black/20">
+                                    <div key={i} className="relative overflow-hidden border border-[#171512]/10 bg-[#EEE5D5]">
                                         <img
                                             src={url}
                                             alt={`Imagen ${i + 1} del capítulo`}
@@ -389,7 +393,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 {!hasAccess && teaser && (
                     <div className="relative mb-2">
                         <div
-                            className="text-gray-300 text-lg md:text-xl leading-[1.9] whitespace-pre-wrap relative"
+                            className="relative whitespace-pre-wrap text-lg leading-[1.9] text-[#4B443A] md:text-xl"
                             style={{
                                 fontFamily: 'Georgia, "Playfair Display", serif',
                                 maxHeight: '320px',
@@ -399,7 +403,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                             {teaser}…
                             <div
                                 className="absolute bottom-0 left-0 right-0 h-56 pointer-events-none"
-                                style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(10,11,14,0.7) 50%, #0A0B0E 100%)' }}
+                                style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(248,244,234,0.72) 50%, #F8F4EA 100%)' }}
                             />
                         </div>
                     </div>
@@ -409,7 +413,6 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 {!hasAccess && (
                     <HonestPaywall
                         creatorUsername={creatorProfile.username}
-                        creatorName={creatorProfile.full_name || creatorProfile.username}
                         subPrice={subPrice}
                         creatorIdForSub={creatorIdForSub}
                         episodeId={episode.id}
@@ -440,7 +443,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                             storyHref={episode.season_id ? `/${creatorProfile.username}/stories/${seasonSlug || episode.season_id}` : null}
                         />
 
-                        <div className="mt-16 py-2 border-y border-gray-800 flex items-center justify-between">
+                        <div className="mt-16 flex items-center justify-between border-y border-[#171512]/10 py-2">
                             <EpisodeFeedActions
                                 episodeId={episode.id}
                                 episodeUrl={`/${creatorProfile.username}/${episode.id}`}
@@ -452,8 +455,9 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                                 hideGift={true}
                                 commentScrollTarget="#comments"
                                 creatorUsername={creatorProfile.username}
+                                variant="editorial"
                             />
-                            {!isOwnProfile && (
+                            {MONETIZATION_ENABLED && !isOwnProfile && (
                                 <a href="#gift-panel" className="flex items-center gap-2 bg-[#C9A84C]/10 text-[#D8BA63] border border-[#C9A84C]/20 px-4 py-2 rounded-xl font-bold text-sm hover:bg-[#C9A84C]/20 transition">
                                     <Gift size={16} />
                                     Enviar regalo
@@ -465,15 +469,15 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         <CommentSection episodeId={episode.id} creatorId={creatorProfile.id} />
 
                         {/* Gift section */}
-                        {!isOwnProfile && (
-                            <div id="gift-panel" className="mt-10 bg-gradient-to-br from-[#15171C] to-[#0F1114] p-6 rounded-2xl border border-gray-800">
+                        {MONETIZATION_ENABLED && !isOwnProfile && (
+                            <div id="gift-panel" className="mt-10 border border-[#171512]/10 bg-[#FFFCF5] p-6">
                                 <div className="flex items-center gap-3 mb-5">
                                     <div className="w-10 h-10 rounded-xl bg-[#C9A84C]/10 border border-[#C9A84C]/20 flex items-center justify-center">
                                         <Gift className="text-[#D8BA63]" size={18} />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-bold text-base">Apoya a {creatorProfile.full_name || creatorProfile.username}</h3>
-                                        <p className="text-xs text-gray-500">El escritor recibe el 88% de cada regalo</p>
+                                        <h3 className="text-base font-bold text-[#171512]">Apoya a {creatorProfile.full_name || creatorProfile.username}</h3>
+                                        <p className="text-xs text-[#746A5C]">El escritor recibe el 88% de cada regalo</p>
                                     </div>
                                 </div>
                                 <GiftPanel recipientId={creatorProfile.id} recipientUsername={creatorProfile.username} postId={episode.id} />
@@ -481,13 +485,13 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                         )}
 
                         {/* Author footer */}
-                        <div className="mt-10 p-6 rounded-2xl bg-[#15171C] border border-gray-800 flex items-center gap-4">
+                        <div className="mt-10 flex items-center gap-4 border border-[#171512]/10 bg-[#FFFCF5] p-6">
                             <Link href={`/${username}`} className="shrink-0">
-                                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-gray-700 hover:border-[#C9A84C] transition">
+                                <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-[#171512]/12 transition hover:border-[#A63D2D]/50">
                                     {creatorProfile.avatar_url ? (
                                         <img src={creatorProfile.avatar_url} alt="" className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center font-bold text-lg bg-[#2A2418]/40 text-[#D8BA63]">
+                                        <div className="flex h-full w-full items-center justify-center bg-[#274C43]/10 text-lg font-bold text-[#274C43]">
                                             {initial}
                                         </div>
                                     )}
@@ -495,17 +499,17 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                             </Link>
                             <div className="flex-1 min-w-0">
                                 <Link href={`/${username}`}>
-                                    <p className="font-bold text-white hover:text-[#D8BA63] transition">
+                                    <p className="font-bold text-[#171512] transition hover:text-[#A63D2D]">
                                         {creatorProfile.full_name || creatorProfile.username}
                                     </p>
                                 </Link>
-                                <p className="text-sm text-gray-500 truncate">
+                                <p className="truncate text-sm text-[#746A5C]">
                                     {creatorProfile.bio || 'Compartiendo su historia en Pergamo.'}
                                 </p>
                             </div>
                             {!isOwnProfile && (
                                 <Link href={`/${username}`}>
-                                    <Button variant="outline" className="border-gray-700 bg-[#15171C] text-white hover:bg-gray-800 font-bold h-10 rounded-xl shrink-0">
+                                    <Button variant="outline" className="h-10 shrink-0 border-[#171512]/15 bg-transparent font-bold text-[#171512] hover:bg-[#F0E8D9]">
                                         Ver perfil
                                     </Button>
                                 </Link>
@@ -518,25 +522,25 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
                 {hasAccess && (
                     <div className="my-12 flex flex-col sm:flex-row gap-4 justify-between items-stretch">
                         {prevEp ? (
-                            <Link href={`/${creatorProfile.username}/${prevEp.id}`} className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-[#C9A84C]/50 transition group flex flex-col justify-center">
-                                <div className="text-[10px] uppercase tracking-wider font-bold text-gray-500 mb-1 flex items-center gap-1">
+                            <Link href={`/${creatorProfile.username}/${prevEp.id}`} className="group flex flex-1 flex-col justify-center border border-[#171512]/10 bg-[#FFFCF5] p-4 transition hover:border-[#A63D2D]/35">
+                                <div className="mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#746A5C]">
                                     <ChevronLeft size={12} className="group-hover:-translate-x-1 transition" /> Anterior
                                 </div>
-                                <h3 className="font-bold text-white group-hover:text-[#D8BA63] transition" style={{ fontFamily: 'Georgia, serif' }}>{prevEp.title}</h3>
+                                <h3 className="font-serif font-bold text-[#171512] transition group-hover:text-[#A63D2D]">{prevEp.title}</h3>
                             </Link>
                         ) : <div className="flex-1 hidden sm:block"></div>}
                         
                         {nextEp ? (
-                            <Link href={`/${creatorProfile.username}/${nextEp.id}`} className="flex-1 p-4 rounded-2xl border border-[#2A2418]/40 bg-gradient-to-br from-[#0F1114] to-[#15171C] hover:border-[#C9A84C]/80 transition group flex flex-col justify-center text-right">
-                                <div className="text-[10px] uppercase tracking-wider font-bold text-[#D8BA63] mb-1 flex items-center gap-1 justify-end">
+                            <Link href={`/${creatorProfile.username}/${nextEp.id}`} className="group flex flex-1 flex-col justify-center border border-[#A63D2D]/20 bg-[#F3E9DB] p-4 text-right transition hover:border-[#A63D2D]/50">
+                                <div className="mb-1 flex items-center justify-end gap-1 text-[10px] font-bold uppercase tracking-wider text-[#A63D2D]">
                                     Siguiente <ArrowRight size={12} className="group-hover:translate-x-1 transition" />
                                 </div>
-                                <h3 className="font-bold text-white group-hover:text-[#D8BA63] transition" style={{ fontFamily: 'Georgia, serif' }}>{nextEp.title}</h3>
+                                <h3 className="font-serif font-bold text-[#171512] transition group-hover:text-[#A63D2D]">{nextEp.title}</h3>
                             </Link>
                         ) : (
-                            <div className="flex-1 p-4 rounded-2xl border border-gray-800 bg-gradient-to-br from-[#0F1114] to-[#15171C] text-center flex flex-col justify-center items-center">
-                                <Sparkles className="text-[#D8BA63] mb-1" size={16} />
-                                <h3 className="text-sm font-bold text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Estás al día</h3>
+                            <div className="flex flex-1 flex-col items-center justify-center border border-[#171512]/10 bg-[#FFFCF5] p-4 text-center">
+                                <Sparkles className="mb-1 text-[#C9A84C]" size={16} />
+                                <h3 className="font-serif text-sm font-bold text-[#746A5C]">Estás al día</h3>
                             </div>
                         )}
                     </div>
@@ -552,6 +556,3 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
         </ThemeProvider>
     )
 }
-
-
-
