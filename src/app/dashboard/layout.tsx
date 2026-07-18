@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
 import { Bell, Feather, PenLine, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
@@ -7,11 +8,15 @@ import { logout } from '@/app/auth/actions'
 import { DashboardNav } from '@/components/DashboardNav'
 import { UserMenu } from '@/components/UserMenu'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { DashboardThemeProvider, DashboardThemeToggle, type DashboardTheme } from '@/components/dashboard/DashboardTheme'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     const tCommon = await getTranslations('common')
+    const t = await getTranslations('dashboard')
+    const cookieStore = await cookies()
+    const initialTheme: DashboardTheme = cookieStore.get('PERGAMO_DASHBOARD_THEME')?.value === 'dark' ? 'dark' : 'light'
 
     if (!user) redirect('/login')
 
@@ -33,8 +38,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const initial = (profile.full_name || profile.username || 'P').charAt(0).toUpperCase()
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-[#F4EFE4] font-sans text-[#171512]">
-            <aside className="hidden w-64 shrink-0 flex-col border-r border-[#171512]/12 bg-[#F8F4EA] md:flex" data-purpose="main-sidebar">
+        <DashboardThemeProvider initialTheme={initialTheme}>
+        <div className="dashboard-shell flex h-screen w-full overflow-hidden font-sans">
+            <aside className="dashboard-sidebar hidden w-64 shrink-0 flex-col border-r md:flex" data-purpose="main-sidebar">
                 <Link href="/dashboard" className="flex h-20 items-center gap-3 border-b border-[#171512]/10 px-6">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#A63D2D] text-white">
                         <Feather size={17} />
@@ -51,7 +57,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     <span className="min-w-0">
                         <strong className="block truncate text-sm">{profile.full_name || profile.username}</strong>
                         <span className="block truncate text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A8174]">
-                            {isCreator ? 'Estudio de autor' : 'Biblioteca personal'}
+                            {isCreator ? t('creator_workspace') : t('reader_library')}
                         </span>
                     </span>
                 </Link>
@@ -70,23 +76,24 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </aside>
 
             <main className="relative flex min-w-0 flex-1 flex-col pt-14 md:pt-0">
-                <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[#171512]/10 bg-[#F8F4EA]/95 px-4 backdrop-blur md:static md:h-20 md:px-7">
+                <header className="dashboard-header fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b px-4 backdrop-blur md:static md:h-20 md:px-7">
                     <Link href="/dashboard" className="flex items-center gap-2 font-serif text-xl font-black md:hidden">
                         <Feather size={17} className="text-[#A63D2D]" /> Pergamo
                     </Link>
                     <Link href="/discover" className="hidden h-11 min-w-0 max-w-xl flex-1 items-center gap-3 border border-[#171512]/12 bg-white/55 px-4 text-sm text-[#8A8174] transition hover:border-[#A63D2D]/30 md:flex">
-                        <Search size={16} /> Buscar autores, entradas y novelas
+                        <Search size={16} /> {t('search_editorial')}
                     </Link>
-                    <div className="flex items-center gap-3 md:ml-5">
-                        <Link href="/dashboard/notifications" className="relative flex h-9 w-9 items-center justify-center rounded-full text-[#574F45] transition hover:bg-[#171512]/6" aria-label="Notificaciones">
+                    <div className="flex items-center gap-1 sm:gap-3 md:ml-5">
+                        <Link href="/dashboard/notifications" className="dashboard-icon-button relative flex h-9 w-9 items-center justify-center rounded-full transition" aria-label={t('notifications')}>
                             <Bell size={19} />
                             {(unreadCount || 0) > 0 && <span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#A63D2D] px-1 text-[9px] font-black text-white">{Math.min(unreadCount || 0, 9)}</span>}
                         </Link>
                         {isCreator && (
-                            <Link href="/dashboard/episodes/new" className="inline-flex h-9 items-center gap-2 rounded-full bg-[#171512] px-4 text-xs font-black text-white transition hover:bg-[#A63D2D]">
-                                <PenLine size={14} /> <span className="hidden sm:inline">Publicar</span>
+                            <Link href="/dashboard/episodes/new" className="dashboard-publish-button hidden h-9 items-center gap-2 rounded-full px-4 text-xs font-black transition sm:inline-flex">
+                                <PenLine size={14} /> <span>{t('publish')}</span>
                             </Link>
                         )}
+                        <DashboardThemeToggle />
                         <LanguageSwitcher compact />
                         <UserMenu email={user.email || ''} username={profile.username || ''} role={profile.role} avatarUrl={profile.avatar_url} />
                     </div>
@@ -96,10 +103,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     {children}
                 </div>
 
-                <div className="border-t border-[#171512]/10 bg-[#F8F4EA] px-4 py-2 md:hidden">
+                <div className="dashboard-mobile-nav border-t px-4 py-2 md:hidden">
                     <DashboardNav isCreator={isCreator} username={profile.username} compact />
                 </div>
             </main>
         </div>
+        </DashboardThemeProvider>
     )
 }

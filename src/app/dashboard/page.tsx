@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, CheckCircle2, Compass, FileText, Heart, TrendingU
 import { createClient } from '@/lib/supabase/server'
 import { EditorialEpisodeCard } from '@/components/content/EditorialEpisodeCard'
 import { ResumeReading } from '@/components/reader/ResumeReading'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 export default async function DashboardHome() {
     const supabase = await createClient()
@@ -24,6 +25,8 @@ export default async function DashboardHome() {
 
 async function WriterHome({ userId, username, name, avatarUrl }: { userId: string; username: string; name: string; avatarUrl?: string | null }) {
     const supabase = await createClient()
+    const t = await getTranslations('dashboard_home')
+    const locale = await getLocale()
     const [{ data: episodes }, { count: followers }] = await Promise.all([
         supabase
             .from('episodes')
@@ -35,7 +38,6 @@ async function WriterHome({ userId, username, name, avatarUrl }: { userId: strin
 
     const all = episodes || []
     const published = all.filter((episode: any) => episode.is_published)
-    const drafts = all.filter((episode: any) => !episode.is_published)
     const entries = published.filter((episode: any) => !episode.season_id)
     const chapters = published.filter((episode: any) => episode.season_id)
     const workIds = new Set(chapters.map((episode: any) => episode.season_id))
@@ -46,10 +48,10 @@ async function WriterHome({ userId, username, name, avatarUrl }: { userId: strin
     const reactionCount: Record<string, number> = {}
     reactions?.forEach((reaction: any) => { reactionCount[reaction.episode_id] = (reactionCount[reaction.episode_id] || 0) + 1 })
     const checklist = [
-        { label: 'Publica tu primera entrada', done: entries.length > 0, href: '/dashboard/episodes/new' },
-        { label: 'Crea una historia o novela', done: workIds.size > 0, href: '/dashboard/episodes/new' },
-        { label: 'Publica tres entregas', done: published.length >= 3, href: '/dashboard/episodes/new' },
-        { label: 'Personaliza tu perfil', done: Boolean(avatarUrl), href: '/dashboard/settings' },
+        { label: t('checklist_first_entry'), done: entries.length > 0, href: '/dashboard/episodes/new' },
+        { label: t('checklist_create_story'), done: workIds.size > 0, href: '/dashboard/episodes/new' },
+        { label: t('checklist_three_posts'), done: published.length >= 3, href: '/dashboard/episodes/new' },
+        { label: t('checklist_customize_profile'), done: Boolean(avatarUrl), href: '/dashboard/settings' },
     ]
     const progress = Math.round((checklist.filter((item) => item.done).length / checklist.length) * 100)
 
@@ -57,17 +59,17 @@ async function WriterHome({ userId, username, name, avatarUrl }: { userId: strin
         <div className="mx-auto max-w-6xl space-y-10 px-4 py-8 pb-24 sm:px-6 lg:px-8">
             <section className="grid overflow-hidden border border-[#171512]/12 bg-[#FFFCF5] lg:grid-cols-[1.2fr_0.8fr]">
                 <div className="p-7 sm:p-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#A63D2D]">Estudio de {name}</p>
-                    <h1 className="mt-4 max-w-2xl font-serif text-4xl font-black leading-[1.02] text-[#171512] sm:text-6xl">Cada formato tiene una función. Tu voz los une.</h1>
-                    <p className="mt-5 max-w-xl text-sm leading-7 text-[#655C4F]">Publica una entrada para conversar hoy. Construye una historia o novela cuando la idea necesite capítulos.</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#A63D2D]">{t('writer_kicker', { name })}</p>
+                    <h1 className="mt-4 max-w-2xl font-serif text-4xl font-black leading-[1.02] text-[#171512] sm:text-6xl">{t('writer_title')}</h1>
+                    <p className="mt-5 max-w-xl text-sm leading-7 text-[#655C4F]">{t('writer_description')}</p>
                     <div className="mt-7 flex flex-wrap gap-2">
-                        <Link href="/dashboard/episodes/new" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#A63D2D] px-5 text-xs font-black text-white"><FileText size={14} /> Nueva entrada</Link>
-                        <Link href="/dashboard/episodes/new" className="inline-flex h-11 items-center gap-2 rounded-full border border-[#171512]/15 px-5 text-xs font-black text-[#171512]"><BookOpen size={14} /> Nuevo capítulo</Link>
-                        <Link href={`/${username}`} className="inline-flex h-11 items-center gap-2 rounded-full px-4 text-xs font-black text-[#A63D2D]">Ver perfil <ArrowRight size={14} /></Link>
+                        <Link href="/dashboard/episodes/new" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#A63D2D] px-5 text-xs font-black text-white"><FileText size={14} /> {t('new_entry')}</Link>
+                        <Link href="/dashboard/episodes/new" className="inline-flex h-11 items-center gap-2 rounded-full border border-[#171512]/15 px-5 text-xs font-black text-[#171512]"><BookOpen size={14} /> {t('new_chapter')}</Link>
+                        <Link href={`/${username}`} className="inline-flex h-11 items-center gap-2 rounded-full px-4 text-xs font-black text-[#A63D2D]">{t('view_profile')} <ArrowRight size={14} /></Link>
                     </div>
                 </div>
                 <div className="border-t border-[#171512]/10 bg-[#171512] p-7 text-[#F8F4EA] lg:border-l lg:border-t-0 sm:p-9">
-                    <div className="flex items-center justify-between"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#D4B963]">Preparación editorial</p><strong className="font-serif text-3xl">{progress}%</strong></div>
+                    <div className="flex items-center justify-between"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#D4B963]">{t('preparation')}</p><strong className="font-serif text-3xl">{progress}%</strong></div>
                     <div className="mt-5 h-1.5 overflow-hidden bg-white/10"><div className="h-full bg-[#D4B963]" style={{ width: `${progress}%` }} /></div>
                     <div className="mt-6 space-y-3">
                         {checklist.map((item) => (
@@ -82,16 +84,16 @@ async function WriterHome({ userId, username, name, avatarUrl }: { userId: strin
             </section>
 
             <section className="grid grid-cols-2 gap-px border-y border-[#171512]/12 bg-[#171512]/12 md:grid-cols-4">
-                <Metric label="Entradas" value={entries.length} icon={FileText} />
-                <Metric label="Capítulos" value={chapters.length} icon={BookOpen} />
-                <Metric label="Seguidores" value={followers || 0} icon={Users} />
-                <Metric label="Palabras" value={words.toLocaleString('es-ES')} icon={TrendingUp} />
+                <Metric label={t('metric_entries')} value={entries.length} icon={FileText} />
+                <Metric label={t('metric_chapters')} value={chapters.length} icon={BookOpen} />
+                <Metric label={t('metric_followers')} value={followers || 0} icon={Users} />
+                <Metric label={t('metric_words')} value={words.toLocaleString(locale)} icon={TrendingUp} />
             </section>
 
             <section>
                 <div className="flex items-end justify-between gap-4 border-b border-[#171512]/12 pb-4">
-                    <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#A63D2D]">Biblioteca</p><h2 className="mt-1 font-serif text-3xl font-black text-[#171512]">Tus publicaciones recientes</h2></div>
-                    <Link href="/dashboard/episodes" className="text-xs font-black text-[#A63D2D]">Gestionar todo</Link>
+                    <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#A63D2D]">{t('library_kicker')}</p><h2 className="mt-1 font-serif text-3xl font-black text-[#171512]">{t('recent_publications')}</h2></div>
+                    <Link href="/dashboard/episodes" className="text-xs font-black text-[#A63D2D]">{t('manage_all')}</Link>
                 </div>
                 <div className="mt-6 space-y-5">
                     {all.slice(0, 6).map((episode: any, index: number) => {
@@ -99,11 +101,11 @@ async function WriterHome({ userId, username, name, avatarUrl }: { userId: strin
                         return (
                             <div key={episode.id} className={!episode.is_published ? 'opacity-65' : ''}>
                                 <EditorialEpisodeCard episode={episode} username={username} authorName={name} avatarUrl={avatarUrl} workTitle={season?.title || null} chapterNumber={episode.season_id ? Number(episode.chapter_number || index + 1) : null} isOwner isAuthenticated initialLikeCount={reactionCount[episode.id] || 0} />
-                                {!episode.is_published && <p className="mt-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#8A8174]">Borrador privado</p>}
+                                {!episode.is_published && <p className="mt-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#8A8174]">{t('private_draft')}</p>}
                             </div>
                         )
                     })}
-                    {!all.length && <EmptyFeed title="Tu primera publicación empieza aquí" text="Una entrada puede ser breve. Una historia o novela crece por capítulos." href="/dashboard/episodes/new" label="Empezar a escribir" />}
+                    {!all.length && <EmptyFeed title={t('empty_writer_title')} text={t('empty_writer_text')} href="/dashboard/episodes/new" label={t('start_writing')} />}
                 </div>
             </section>
         </div>
@@ -112,6 +114,7 @@ async function WriterHome({ userId, username, name, avatarUrl }: { userId: strin
 
 async function ReaderHome({ userId }: { userId: string }) {
     const supabase = await createClient()
+    const t = await getTranslations('dashboard_home')
     const { data: episodesRaw } = await supabase
         .from('episodes')
         .select('id, title, preview_text, cover_image_url, created_at, season_id, chapter_number, creator_id, seasons(id, title)')
@@ -135,8 +138,8 @@ async function ReaderHome({ userId }: { userId: string }) {
     return (
         <div className="mx-auto max-w-5xl px-4 py-8 pb-24 sm:px-6">
             <section className="mb-8 flex flex-col gap-4 border-b border-[#171512]/12 pb-6 sm:flex-row sm:items-end sm:justify-between">
-                <div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">Tu lectura</p><h1 className="mt-2 font-serif text-4xl font-black text-[#171512]">Historias nuevas, sin perder tu lugar.</h1></div>
-                <Link href="/discover" className="inline-flex h-10 items-center gap-2 rounded-full bg-[#171512] px-4 text-xs font-black text-white"><Compass size={14} /> Descubrir</Link>
+                <div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">{t('reader_kicker')}</p><h1 className="mt-2 font-serif text-4xl font-black text-[#171512]">{t('reader_title')}</h1></div>
+                <Link href="/discover" className="inline-flex h-10 items-center gap-2 rounded-full bg-[#171512] px-4 text-xs font-black text-white"><Compass size={14} /> {t('discover')}</Link>
             </section>
 
             <ResumeReading />
@@ -149,7 +152,7 @@ async function ReaderHome({ userId }: { userId: string }) {
                     const chapterNumber = episode.season_id ? Number(episode.chapter_number || 1) : null
                     return <EditorialEpisodeCard key={episode.id} episode={episode} username={author.username} authorName={author.full_name || author.username} avatarUrl={author.avatar_url} workTitle={season?.title || null} chapterNumber={chapterNumber} isOwner={false} isAuthenticated initialLiked={!!likedByMe[episode.id]} initialLikeCount={likeCount[episode.id] || 0} />
                 })}
-                {!episodesRaw?.length && <EmptyFeed title="El feed está esperando sus primeras voces" text="Explora escritores y síguelos para construir tu lectura diaria." href="/discover" label="Explorar escritores" />}
+                {!episodesRaw?.length && <EmptyFeed title={t('empty_reader_title')} text={t('empty_reader_text')} href="/discover" label={t('explore_writers')} />}
             </div>
         </div>
     )

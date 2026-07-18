@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { logout } from '@/app/auth/actions'
 import { LogOut, User, LayoutDashboard, ChevronDown } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface UserMenuProps {
     email: string
@@ -13,6 +14,7 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ email, username, role, avatarUrl }: UserMenuProps) {
+    const t = useTranslations('dashboard')
     const [open, setOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
 
@@ -31,19 +33,20 @@ export function UserMenu({ email, username, role, avatarUrl }: UserMenuProps) {
         <div ref={ref} className="relative">
             <button
                 onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-white/5 transition"
+                className="dashboard-user-button flex items-center gap-2 rounded-xl px-1 py-1.5 transition sm:px-2"
+                aria-label={t('open_user_menu')}
             >
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C9A84C] to-[#8A6A1C] flex items-center justify-center text-white text-sm font-bold overflow-hidden">
                     {avatarUrl ? (
                         <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
                     ) : initial}
                 </div>
-                <ChevronDown size={14} className={`text-gray-500 transition ${open ? 'rotate-180' : ''}`} />
+                <ChevronDown size={14} className={`dashboard-muted hidden transition sm:block ${open ? 'rotate-180' : ''}`} />
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#15171C] border border-gray-800 shadow-2xl overflow-hidden z-50">
-                    <div className="p-4 border-b border-gray-800">
+                <div className="dashboard-menu absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border shadow-2xl">
+                    <div className="dashboard-menu-border border-b p-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C9A84C] to-[#8A6A1C] flex items-center justify-center text-white font-bold overflow-hidden">
                                 {avatarUrl ? (
@@ -51,12 +54,12 @@ export function UserMenu({ email, username, role, avatarUrl }: UserMenuProps) {
                                 ) : initial}
                             </div>
                             <div className="min-w-0">
-                                <p className="font-bold text-white truncate text-sm">@{username}</p>
-                                <p className="text-[11px] text-gray-500 truncate">{email}</p>
+                                <p className="dashboard-strong truncate text-sm font-bold">@{username}</p>
+                                <p className="dashboard-muted truncate text-[11px]">{email}</p>
                             </div>
                         </div>
                         <span className="inline-block mt-3 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#C9A84C]/10 text-[#D8BA63] border border-[#C9A84C]/20">
-                            {isCreator ? 'Escritor' : 'Lector'}
+                            {isCreator ? t('writer_role') : t('reader_role')}
                         </span>
                     </div>
 
@@ -64,29 +67,29 @@ export function UserMenu({ email, username, role, avatarUrl }: UserMenuProps) {
                         <Link
                             href="/dashboard"
                             onClick={() => setOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition text-gray-300 hover:text-white text-sm font-medium"
+                            className="dashboard-menu-item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition"
                         >
                             <LayoutDashboard size={15} />
-                            Dashboard
+                            {t('menu_dashboard')}
                         </Link>
                         <Link
                             href={`/${username}`}
                             onClick={() => setOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition text-gray-300 hover:text-white text-sm font-medium"
+                            className="dashboard-menu-item flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition"
                         >
                             <User size={15} />
-                            Ver mi perfil público
+                            {t('menu_public_profile')}
                         </Link>
                     </div>
 
-                    <div className="border-t border-gray-800 p-2">
+                    <div className="dashboard-menu-border border-t p-2">
                         <form action={logout}>
                             <button
                                 type="submit"
                                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-500/10 hover:text-red-400 transition text-gray-400 text-sm font-medium"
                             >
                                 <LogOut size={15} />
-                                Cerrar sesión
+                                {t('menu_logout')}
                             </button>
                         </form>
                     </div>

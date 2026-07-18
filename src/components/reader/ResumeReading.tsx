@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { ArrowRight, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { getTranslations } from 'next-intl/server'
 
 export async function ResumeReading() {
     const supabase = await createClient()
+    const t = await getTranslations('dashboard_home')
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return null
 
@@ -64,9 +66,9 @@ export async function ResumeReading() {
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <BookOpen size={16} className="text-[#A63D2D]" />
-                    <h3 className="font-serif text-xl font-black text-[#171512]">Continúa donde lo dejaste</h3>
+                    <h3 className="font-serif text-xl font-black text-[#171512]">{t('continue_reading')}</h3>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8A8174]">{resumable.length} {resumable.length === 1 ? 'lectura' : 'lecturas'}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8A8174]">{t('reading_count', { count: resumable.length })}</span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
                 {resumable.map((bookmark: any) => {
@@ -84,7 +86,7 @@ export async function ResumeReading() {
                             <div className="min-w-0 flex-1">
                                 <p className="line-clamp-2 font-serif text-sm font-black text-[#171512] transition group-hover:text-[#A63D2D]">{episode.title}</p>
                                 <p className="mt-0.5 text-[11px] text-[#746A5C]">{author}</p>
-                                {bookmark.continuingNext && <p className="mt-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#A63D2D]">{'Siguiente cap\u00edtulo'}</p>}
+                                {bookmark.continuingNext && <p className="mt-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#A63D2D]">{t('next_chapter')}</p>}
                                 <div className="mt-2 flex items-center gap-2">
                                     <div className="h-1 flex-1 overflow-hidden bg-[#171512]/10">
                                         <div className="h-full bg-[#A63D2D]" style={{ width: `${bookmark.reached_percent}%` }} />

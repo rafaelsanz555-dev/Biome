@@ -226,3 +226,158 @@
   }
 }
 
+/* Dashboard themes. Public profile themes remain independent from this setting. */
+.dashboard-theme {
+  --dashboard-bg: #f4efe4;
+  --dashboard-surface: #f8f4ea;
+  --dashboard-card: #fffcf5;
+  --dashboard-popover: #fffaf0;
+  --dashboard-ink: #171512;
+  --dashboard-muted: #746a5c;
+  --dashboard-faint: #9a9082;
+  --dashboard-border: rgba(23, 21, 18, 0.12);
+  color-scheme: light;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] {
+  --dashboard-bg: #11100e;
+  --dashboard-surface: #181612;
+  --dashboard-card: #211e19;
+  --dashboard-popover: #29251f;
+  --dashboard-ink: #f7f0e4;
+  --dashboard-muted: #bdb3a3;
+  --dashboard-faint: #918779;
+  --dashboard-border: rgba(247, 240, 228, 0.14);
+  color-scheme: dark;
+}
+
+.dashboard-shell {
+  background: var(--dashboard-bg);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-sidebar,
+.dashboard-header,
+.dashboard-mobile-nav {
+  border-color: var(--dashboard-border);
+  background: color-mix(in srgb, var(--dashboard-surface) 95%, transparent);
+}
+
+.dashboard-icon-button,
+.dashboard-language-button,
+.dashboard-user-button {
+  color: var(--dashboard-muted);
+}
+
+.dashboard-icon-button:hover,
+.dashboard-language-button:hover,
+.dashboard-user-button:hover {
+  background: color-mix(in srgb, var(--dashboard-ink) 7%, transparent);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-publish-button {
+  background: var(--dashboard-ink);
+  color: var(--dashboard-bg);
+}
+
+.dashboard-publish-button:hover {
+  background: #a63d2d;
+  color: #fff;
+}
+
+.dashboard-menu {
+  border-color: var(--dashboard-border);
+  background: var(--dashboard-popover);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-menu-border {
+  border-color: var(--dashboard-border);
+}
+
+.dashboard-menu-item {
+  color: var(--dashboard-muted);
+}
+
+.dashboard-menu-item:hover {
+  background: color-mix(in srgb, var(--dashboard-ink) 7%, transparent);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-strong {
+  color: var(--dashboard-ink);
+}
+
+.dashboard-muted {
+  color: var(--dashboard-muted);
+}
+
+.dashboard-nav-link {
+  color: var(--dashboard-muted);
+}
+
+.dashboard-nav-link:hover {
+  background: color-mix(in srgb, var(--dashboard-ink) 6%, transparent);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-nav-link-active,
+.dashboard-nav-link-active:hover {
+  background: var(--dashboard-ink);
+  color: var(--dashboard-bg);
+}
+
+/* Existing dashboard views use editorial utility colors. These scoped rules make
+ * every current view honor the dashboard theme while the components migrate to
+ * semantic tokens over time. */
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-[#F4EFE4]"] {
+  background-color: var(--dashboard-bg) !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-[#F8F4EA]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-white/"] {
+  background-color: var(--dashboard-surface) !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-[#FFFCF5]"] {
+  background-color: var(--dashboard-card) !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-[#DED6C7]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-[#E8DECB]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="bg-[#D8C8A4]"] {
+  background-color: #39342d !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#171512]"] {
+  color: var(--dashboard-ink) !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#574F45]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#5F574B]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#655C4F]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#746A5C]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#776E61]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#8A8174]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#9A9081]"],
+.dashboard-theme[data-dashboard-theme="dark"] [class*="text-[#9A9082]"] {
+  color: var(--dashboard-muted) !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] [class*="border-[#171512]"] {
+  border-color: var(--dashboard-border) !important;
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] input,
+.dashboard-theme[data-dashboard-theme="dark"] textarea,
+.dashboard-theme[data-dashboard-theme="dark"] select {
+  border-color: var(--dashboard-border);
+  background-color: var(--dashboard-card);
+  color: var(--dashboard-ink);
+}
+
+.dashboard-theme[data-dashboard-theme="dark"] input::placeholder,
+.dashboard-theme[data-dashboard-theme="dark"] textarea::placeholder {
+  color: var(--dashboard-faint);
+}

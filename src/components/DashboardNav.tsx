@@ -27,19 +27,19 @@ export function DashboardNav({ isCreator, username, compact = false }: Dashboard
 
     const mainLinks: NavItem[] = isCreator
         ? [
-            { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
-            { href: '/dashboard/episodes/new', label: 'Publicar', icon: FileText },
-            { href: '/dashboard/episodes', label: 'Mis publicaciones', icon: BookOpen },
-            { href: '/discover', label: 'Descubrir', icon: Compass },
-            { href: '/dashboard/analytics', label: 'Estadísticas', icon: BarChart3 },
-            { href: '/dashboard/audience', label: 'Audiencia', icon: Users },
+            { href: '/dashboard', label: t('nav_home'), icon: Home, exact: true },
+            { href: '/dashboard/episodes/new', label: t('nav_publish'), icon: FileText },
+            { href: '/dashboard/episodes', label: t('nav_publications'), icon: BookOpen },
+            { href: '/discover', label: t('nav_discovery'), icon: Compass },
+            { href: '/dashboard/analytics', label: t('nav_analytics'), icon: BarChart3 },
+            { href: '/dashboard/audience', label: t('nav_audience'), icon: Users },
             ...(MONETIZATION_ENABLED ? [{ href: '/dashboard/billing', label: t('nav_monetization'), icon: TrendingUp }] : []),
         ]
         : [
-            { href: '/dashboard', label: 'Inicio', icon: Home, exact: true },
-            { href: '/discover', label: 'Descubrir', icon: Compass },
-            { href: '/dashboard/subscriptions', label: 'Siguiendo', icon: Star },
-            { href: '/dashboard/history', label: 'Guardados', icon: Bookmark },
+            { href: '/dashboard', label: t('nav_home'), icon: Home, exact: true },
+            { href: '/discover', label: t('nav_discovery'), icon: Compass },
+            { href: '/dashboard/subscriptions', label: t('nav_following'), icon: Star },
+            { href: '/dashboard/history', label: t('nav_saved'), icon: Bookmark },
         ]
 
     if (compact) {
@@ -55,15 +55,15 @@ export function DashboardNav({ isCreator, username, compact = false }: Dashboard
     }
 
     const secondary: NavItem[] = [
-        { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
-        ...(username ? [{ href: `/${username}`, label: 'Perfil público', icon: UserCircle }] : []),
+        { href: '/dashboard/settings', label: t('nav_settings'), icon: Settings },
+        ...(username ? [{ href: `/${username}`, label: t('nav_public_profile'), icon: UserCircle }] : []),
     ]
 
     const render = (link: NavItem) => {
         const Icon = link.icon
         const active = link.exact ? pathname === link.href : pathname === link.href || pathname.startsWith(`${link.href}/`)
         return (
-            <Link key={link.href} href={link.href} className={`relative flex items-center gap-3 px-4 py-3 text-sm font-bold transition ${active ? 'bg-[#171512] text-white' : 'text-[#746A5C] hover:bg-[#171512]/5 hover:text-[#171512]'}`}>
+            <Link key={link.href} href={link.href} className={`dashboard-nav-link relative flex items-center gap-3 px-4 py-3 text-sm font-bold transition ${active ? 'dashboard-nav-link-active' : ''}`}>
                 {active && <span className="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 bg-[#A63D2D]" />}
                 <Icon size={18} /> {link.label}
             </Link>
@@ -73,7 +73,7 @@ export function DashboardNav({ isCreator, username, compact = false }: Dashboard
     return (
         <nav className="mt-4 px-3">
             <div className="space-y-1">{mainLinks.map(render)}</div>
-            <p className="mb-2 mt-7 px-4 text-[9px] font-black uppercase tracking-[0.18em] text-[#9A9082]">Cuenta</p>
+            <p className="mb-2 mt-7 px-4 text-[9px] font-black uppercase tracking-[0.18em] text-[#9A9082]">{t('nav_account')}</p>
             <div className="space-y-1">{secondary.map(render)}</div>
         </nav>
     )
