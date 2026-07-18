@@ -18,14 +18,19 @@ import {
     Feather,
     Heart,
     Home,
+    Layers3,
+    ListChecks,
     MessageCircle,
+    Presentation,
     PenLine,
     Plus,
     Search,
     Share2,
+    ShieldCheck,
     Sparkles,
     TrendingUp,
     Users,
+    X,
 } from 'lucide-react'
 
 type ViewId = 'home' | 'discover' | 'story' | 'studio'
@@ -203,6 +208,50 @@ const navItems: Array<{ id: ViewId; label: string; icon: typeof Home }> = [
     { id: 'studio', label: 'Estudio', icon: PenLine },
 ]
 
+const partnerSteps: Record<ViewId, {
+    audience: string
+    title: string
+    thesis: string
+    reason: string
+    capabilities: string[]
+    proof: string
+}> = {
+    home: {
+        audience: 'Experiencia compartida',
+        title: 'Un inicio para leer y crear hábito',
+        thesis: 'El feed mezcla entradas diarias y capítulos sin confundirlos, mientras devuelve al lector exactamente al lugar donde quedó.',
+        reason: 'La monetización no puede ser el primer mensaje. Primero necesitamos conexión, continuidad y una razón clara para volver cada día.',
+        capabilities: ['Continuar lectura con progreso', 'Distinguir entrada y capítulo', 'Seguir, reaccionar, comentar y guardar', 'Escribir una entrada o capítulo desde el mismo lugar'],
+        proof: 'Resuelve el principal feedback del socio: el homepage crea valor y hábito antes de hablar de pagos.',
+    },
+    discover: {
+        audience: 'Adquisición y descubrimiento',
+        title: 'Una librería viva, no un catálogo genérico',
+        thesis: 'Las portadas propias, filtros y colecciones editoriales permiten descubrir vida real, ficción y formatos breves con identidad clara.',
+        reason: 'El descubrimiento es el motor de crecimiento: ayuda al lector a encontrar su próxima obsesión y al escritor a llegar más allá de sus seguidores.',
+        capabilities: ['Buscar por título, autor o tema', 'Filtrar vida real, ficción y breves', 'Explorar colecciones curadas', 'Abrir cualquier historia sin perder contexto'],
+        proof: 'La data demo fue reemplazada por voces, portadas y temas intencionales alineados con Pergamo.',
+    },
+    story: {
+        audience: 'Retención del lector',
+        title: 'La historia como destino principal',
+        thesis: 'Cada serie tiene identidad, autor, capítulos, progreso, resumen anterior y acciones para seguir, guardar o compartir.',
+        reason: 'Una historia serial necesita memoria. El lector debe saber qué está leyendo, dónde quedó y por qué vale la pena regresar.',
+        capabilities: ['Retomar desde el capítulo pendiente', 'Ver progreso y capítulos leídos', 'Consultar el resumen anterior', 'Seguir al autor y recibir novedades', 'Guardar y compartir la historia'],
+        proof: 'Cierra el loop de lectura solicitado: progreso, recap, seguimiento, notificaciones y primer capítulo gratis.',
+    },
+    studio: {
+        audience: 'Experiencia del escritor',
+        title: 'Un estudio editorial, no un panel financiero',
+        thesis: 'El escritor administra historias, borradores, ritmo de publicación, audiencia y señales de lectura desde una sola superficie.',
+        reason: 'Los ingresos llegan como consecuencia de publicar mejor y construir una audiencia. Por eso el estudio prioriza oficio, constancia y relación con lectores.',
+        capabilities: ['Crear entradas, capítulos y series', 'Gestionar borradores y publicaciones', 'Medir lectores, seguidores y finalización', 'Leer comentarios y detectar el mejor horario', 'Personalizar su identidad pública'],
+        proof: 'Separa con claridad la experiencia del escritor sin aislarla del mismo ecosistema que usa el lector.',
+    },
+}
+
+const partnerViewOrder: ViewId[] = ['home', 'discover', 'story', 'studio']
+
 function DesktopRail({ active, onChange }: { active: ViewId; onChange: (view: ViewId) => void }) {
     return (
         <aside className="fixed inset-y-0 left-0 z-40 hidden w-[84px] flex-col items-center border-r border-[#171512]/10 bg-[#F8F4EA] py-5 md:flex">
@@ -218,6 +267,7 @@ function DesktopRail({ active, onChange }: { active: ViewId; onChange: (view: Vi
                             key={item.id}
                             type="button"
                             title={item.label}
+                            data-testid={`desktop-nav-${item.id}`}
                             onClick={() => onChange(item.id)}
                             className={`relative flex h-12 w-12 items-center justify-center rounded-full transition ${isActive ? 'bg-[#171512] text-[#F8F4EA]' : 'text-[#736A5C] hover:bg-[#171512]/6 hover:text-[#171512]'}`}
                         >
@@ -234,7 +284,7 @@ function DesktopRail({ active, onChange }: { active: ViewId; onChange: (view: Vi
     )
 }
 
-function TopBar({ onNotice }: { onNotice: (message: string) => void }) {
+function TopBar({ onNotice, partnerMode, onTogglePartner }: { onNotice: (message: string) => void; partnerMode: boolean; onTogglePartner: () => void }) {
     return (
         <header className="sticky top-0 z-30 border-b border-[#171512]/10 bg-[#F8F4EA]/95 backdrop-blur-xl md:ml-[84px]">
             <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-9">
@@ -244,6 +294,16 @@ function TopBar({ onNotice }: { onNotice: (message: string) => void }) {
                     Historias nuevas cada día
                 </div>
                 <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        data-testid="partner-mode-toggle"
+                        title={partnerMode ? 'Ocultar modo socio' : 'Abrir modo socio'}
+                        aria-label={partnerMode ? 'Ocultar modo socio' : 'Abrir modo socio'}
+                        onClick={onTogglePartner}
+                        className={`inline-flex h-10 items-center gap-2 rounded-full border px-3 text-[10px] font-black uppercase tracking-[0.12em] transition sm:px-4 ${partnerMode ? 'border-[#A63D2D] bg-[#A63D2D] text-white' : 'border-[#171512]/15 text-[#5F574B] hover:border-[#A63D2D] hover:text-[#A63D2D]'}`}
+                    >
+                        <Presentation size={15} /> <span className="hidden sm:inline">Modo socio</span>
+                    </button>
                     <button type="button" title="Notificaciones" onClick={() => onNotice('No tienes notificaciones nuevas.')} className="relative flex h-10 w-10 items-center justify-center rounded-full text-[#4D463B] hover:bg-[#171512]/6">
                         <Bell size={19} />
                         <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-[#F8F4EA] bg-[#A63D2D]" />
@@ -262,7 +322,7 @@ function MobileNav({ active, onChange }: { active: ViewId; onChange: (view: View
                 const Icon = item.icon
                 const isActive = active === item.id
                 return (
-                    <button key={item.id} type="button" onClick={() => onChange(item.id)} className={`flex min-h-12 flex-col items-center justify-center gap-1 text-[10px] font-bold ${isActive ? 'text-[#A63D2D]' : 'text-[#7B7264]'}`}>
+                    <button key={item.id} type="button" data-testid={`mobile-nav-${item.id}`} onClick={() => onChange(item.id)} className={`flex min-h-12 flex-col items-center justify-center gap-1 text-[10px] font-bold ${isActive ? 'text-[#A63D2D]' : 'text-[#7B7264]'}`}>
                         <Icon size={19} strokeWidth={isActive ? 2.5 : 1.8} />
                         {item.label}
                     </button>
@@ -362,7 +422,7 @@ function HomeScreen({ onOpenStory, onNotice }: { onOpenStory: () => void; onNoti
         <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-6 lg:px-9 lg:py-10">
             <div className="mb-8 flex items-end justify-between">
                 <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#7C715F]">Viernes, 17 de julio</p>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#7C715F]">Hoy en Pergamo</p>
                     <h1 className="mt-2 font-serif text-4xl font-black leading-none text-[#171512] sm:text-5xl">Buenas noches, Rafael.</h1>
                 </div>
                 <button type="button" onClick={() => onNotice('El compositor de Pergamo se abriria aqui.')} className="hidden h-11 items-center gap-2 rounded-full bg-[#171512] px-5 text-sm font-black text-[#F8F4EA] hover:bg-[#A63D2D] sm:inline-flex">
@@ -667,9 +727,144 @@ function StudioScreen({ onNotice }: { onNotice: (message: string) => void }) {
     )
 }
 
+function PartnerGuide({
+    view,
+    onChange,
+    onClose,
+    onOpenSummary,
+}: {
+    view: ViewId
+    onChange: (view: ViewId) => void
+    onClose: () => void
+    onOpenSummary: () => void
+}) {
+    const index = partnerViewOrder.indexOf(view)
+    const step = partnerSteps[view]
+    const previous = partnerViewOrder[Math.max(0, index - 1)]
+    const next = partnerViewOrder[Math.min(partnerViewOrder.length - 1, index + 1)]
+
+    return (
+        <aside data-testid="partner-guide" className="fixed bottom-[76px] left-3 right-3 z-[70] max-h-[62vh] overflow-y-auto border border-[#171512]/15 bg-[#FFFCF5] shadow-[0_24px_80px_rgba(24,20,15,0.26)] md:bottom-4 md:left-auto md:right-4 md:top-20 md:max-h-none md:w-[368px]">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#171512]/10 bg-[#171512] px-5 py-4 text-[#F8F4EA]">
+                <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#D4B963]">Presentación para socio</p>
+                    <p className="mt-1 font-serif text-xl font-black">Pergamo MVP</p>
+                </div>
+                <button type="button" title="Ocultar presentación" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"><X size={17} /></button>
+            </div>
+
+            <div className="p-5">
+                <div className="mb-5 flex gap-1.5" aria-label={`Pantalla ${index + 1} de ${partnerViewOrder.length}`}>
+                    {partnerViewOrder.map((item, itemIndex) => (
+                        <button key={item} type="button" title={navItems.find((nav) => nav.id === item)?.label} onClick={() => onChange(item)} className={`h-1.5 flex-1 ${itemIndex <= index ? 'bg-[#A63D2D]' : 'bg-[#DED6C7]'}`} />
+                    ))}
+                </div>
+
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#A63D2D]">{index + 1}/4 · {step.audience}</p>
+                <h2 className="mt-2 font-serif text-3xl font-black leading-[1.05] text-[#171512]">{step.title}</h2>
+                <p className="mt-4 text-sm font-semibold leading-6 text-[#514A40]">{step.thesis}</p>
+
+                <div className="mt-6 border-y border-[#171512]/10 py-5">
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#7B7162]"><Layers3 size={14} className="text-[#A63D2D]" /> Por qué lo hicimos</p>
+                    <p className="mt-3 text-sm leading-6 text-[#665E52]">{step.reason}</p>
+                </div>
+
+                <div className="py-5">
+                    <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#7B7162]"><ListChecks size={14} className="text-[#A63D2D]" /> Lo que puedes probar</p>
+                    <ul className="mt-3 space-y-2.5">
+                        {step.capabilities.map((capability) => (
+                            <li key={capability} className="flex gap-2 text-xs font-bold leading-5 text-[#514A40]"><Check size={14} className="mt-0.5 shrink-0 text-[#4E715A]" /> {capability}</li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="border-l-2 border-[#B7913E] bg-[#F1EBDD] px-4 py-3">
+                    <p className="text-[9px] font-black uppercase tracking-[0.15em] text-[#826A2C]">Qué demuestra</p>
+                    <p className="mt-1.5 text-xs font-semibold leading-5 text-[#5E5547]">{step.proof}</p>
+                </div>
+
+                <button type="button" data-testid="open-partner-summary" onClick={onOpenSummary} className="mt-5 inline-flex h-10 w-full items-center justify-center gap-2 border border-[#171512]/15 text-xs font-black text-[#171512] hover:border-[#A63D2D] hover:text-[#A63D2D]"><ShieldCheck size={15} /> Ver resumen ejecutivo</button>
+
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                    <button type="button" disabled={index === 0} onClick={() => onChange(previous)} className="inline-flex h-10 items-center justify-center gap-2 border border-[#171512]/12 text-xs font-black text-[#655C4F] disabled:cursor-not-allowed disabled:opacity-35"><ArrowLeft size={14} /> Anterior</button>
+                    <button type="button" data-testid="partner-next" disabled={index === partnerViewOrder.length - 1} onClick={() => onChange(next)} className="inline-flex h-10 items-center justify-center gap-2 bg-[#A63D2D] text-xs font-black text-white disabled:cursor-not-allowed disabled:bg-[#B8AEA0]">Siguiente <ArrowRight size={14} /></button>
+                </div>
+
+                <p className="mt-4 text-center text-[9px] font-bold uppercase tracking-[0.12em] text-[#8A8174]">MVP listo para demo · Pagos todavía desactivados</p>
+            </div>
+        </aside>
+    )
+}
+
+function PartnerSummary({ onClose, onChange }: { onClose: () => void; onChange: (view: ViewId) => void }) {
+    const workstreams = [
+        ['Posicionamiento', 'Pergamo habla primero de historias, conexión y hábito. La monetización pasa al estudio del escritor y deja de dominar la experiencia pública.'],
+        ['Arquitectura editorial', 'Entrada, historia real y novela comparten un sistema, pero conservan etiquetas, cards y recorridos inequívocos.'],
+        ['Retención del lector', 'Progreso, continuar leyendo, resúmenes, guardados, follows, notificaciones y CTA de fin de capítulo forman el loop de regreso.'],
+        ['Operación del escritor', 'Compositor, series, borradores, analítica, audiencia y perfil personalizable convierten publicar en un flujo repetible.'],
+        ['Confianza y seguridad', 'RLS de roles, validación Zod, sanitización TipTap, reportes, clasificación por edad, copyright y consentimiento legal versionado.'],
+        ['Identidad y entrega', 'Sistema visual editorial consistente, portadas propias, responsive móvil, Next actualizado, Supabase migrado y despliegue validado en Vercel.'],
+    ]
+
+    return (
+        <div className="fixed inset-0 z-[90] overflow-y-auto bg-[#171512]/72 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-labelledby="partner-summary-title">
+            <div data-testid="partner-summary" className="mx-auto max-w-5xl border border-white/15 bg-[#F8F4EA] shadow-[0_30px_100px_rgba(0,0,0,0.35)]">
+                <header className="flex items-start justify-between gap-5 border-b border-[#171512]/12 bg-[#171512] px-6 py-6 text-[#F8F4EA] sm:px-9 sm:py-8">
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#D4B963]">Resumen ejecutivo · MVP</p>
+                        <h2 id="partner-summary-title" className="mt-2 max-w-3xl font-serif text-3xl font-black leading-tight sm:text-5xl">De una idea de monetización a un ecosistema editorial.</h2>
+                        <p className="mt-4 max-w-3xl text-sm leading-7 text-white/70">Pergamo permite publicar desde una entrada diaria hasta una novela serializada, crear una relación recurrente con lectores y preparar monetización sin sacrificar la magia de leer.</p>
+                    </div>
+                    <button type="button" title="Cerrar resumen" onClick={onClose} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"><X size={19} /></button>
+                </header>
+
+                <div className="px-6 py-7 sm:px-9 sm:py-9">
+                    <section>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#A63D2D]">El trabajo nuevo y su razón</p>
+                        <div className="mt-5 grid border-l border-t border-[#171512]/12 md:grid-cols-2">
+                            {workstreams.map(([title, description], index) => (
+                                <div key={title} className="border-b border-r border-[#171512]/12 p-5 sm:p-6">
+                                    <p className="font-serif text-xl font-black text-[#171512]"><span className="mr-2 text-[#A63D2D]">0{index + 1}</span>{title}</p>
+                                    <p className="mt-3 text-sm leading-6 text-[#665E52]">{description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="mt-9 grid gap-6 border-y border-[#171512]/12 py-7 lg:grid-cols-[1.1fr_0.9fr]">
+                        <div>
+                            <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#355846]"><ShieldCheck size={15} /> Estado comprobado</p>
+                            <h3 className="mt-2 font-serif text-3xl font-black text-[#171512]">Listo para enseñar y probar.</h3>
+                            <ul className="mt-4 space-y-2.5 text-sm font-semibold text-[#5F574B]">
+                                {['4 experiencias navegables y responsive', '3 historias y 21 publicaciones migradas', '12 entradas y 9 capítulos clasificados', 'Rutas públicas, legales y autenticación verificadas', 'GitHub, Supabase y Vercel alineados'].map((item) => <li key={item} className="flex gap-2"><Check size={15} className="mt-0.5 shrink-0 text-[#4E715A]" /> {item}</li>)}
+                            </ul>
+                        </div>
+                        <div className="border-l-2 border-[#A63D2D] bg-[#EFE6D5] p-5">
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#A63D2D]">Antes del lanzamiento comercial</p>
+                            <p className="mt-3 text-sm leading-6 text-[#5D5549]">Faltan tres cierres deliberados: revisión final de documentos con abogado, correo transaccional/confirmación de cuenta en producción y Stripe Connect. Los cobros siguen desactivados para no prometer una economía que aún no está conectada.</p>
+                        </div>
+                    </section>
+
+                    <section className="mt-8">
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7B7162]">Abrir una pantalla</p>
+                        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                            {navItems.map((item) => {
+                                const Icon = item.icon
+                                return <button key={item.id} type="button" onClick={() => { onChange(item.id); onClose() }} className="inline-flex h-12 items-center justify-center gap-2 border border-[#171512]/12 text-xs font-black text-[#171512] hover:border-[#A63D2D] hover:text-[#A63D2D]"><Icon size={15} /> {item.label}</button>
+                            })}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export default function PergamoConceptPage() {
     const [view, setView] = useState<ViewId>('home')
     const [notice, setNotice] = useState('')
+    const [partnerMode, setPartnerMode] = useState(true)
+    const [summaryOpen, setSummaryOpen] = useState(false)
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'auto' })
@@ -681,16 +876,18 @@ export default function PergamoConceptPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#F8F4EA] text-[#171512] selection:bg-[#B7913E]/30">
+        <main className="min-h-screen overflow-x-hidden bg-[#F8F4EA] text-[#171512] selection:bg-[#B7913E]/30">
             <DesktopRail active={view} onChange={setView} />
-            <TopBar onNotice={showNotice} />
-            <div className="pb-24 md:ml-[84px] md:pb-0">
+            <TopBar onNotice={showNotice} partnerMode={partnerMode} onTogglePartner={() => setPartnerMode((current) => !current)} />
+            <div className={`pb-24 transition-[padding] duration-300 md:ml-[84px] md:pb-0 ${partnerMode ? 'xl:pr-[392px]' : ''}`}>
                 {view === 'home' && <HomeScreen onOpenStory={() => setView('story')} onNotice={showNotice} />}
                 {view === 'discover' && <DiscoverScreen onOpenStory={() => setView('story')} onNotice={showNotice} />}
                 {view === 'story' && <StoryScreen onBack={() => setView('home')} onNotice={showNotice} />}
                 {view === 'studio' && <StudioScreen onNotice={showNotice} />}
             </div>
             <MobileNav active={view} onChange={setView} />
+            {partnerMode && <PartnerGuide view={view} onChange={setView} onClose={() => setPartnerMode(false)} onOpenSummary={() => setSummaryOpen(true)} />}
+            {summaryOpen && <PartnerSummary onClose={() => setSummaryOpen(false)} onChange={setView} />}
             {notice && <div className="fixed bottom-20 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-[#171512] px-5 py-3 text-center text-xs font-black text-[#F8F4EA] shadow-xl md:bottom-6">{notice}</div>}
         </main>
     )
