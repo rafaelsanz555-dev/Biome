@@ -14,6 +14,26 @@ alter table public.seasons
 alter table public.seasons drop constraint if exists seasons_story_type_check;
 alter table public.seasons
     add constraint seasons_story_type_check check (story_type in ('life_story', 'fiction'));
+
+-- Normalize statuses used by the previous publishing workflow before tightening
+-- the public contract. Existing published work remains visible as ongoing.
+update public.seasons
+set status = case lower(trim(status))
+    when 'publishing' then 'ongoing'
+    when 'published' then 'ongoing'
+    when 'active' then 'ongoing'
+    when 'complete' then 'completed'
+    when 'finished' then 'completed'
+    when 'hiatus' then 'paused'
+    when 'on_hold' then 'paused'
+    when 'ongoing' then 'ongoing'
+    when 'completed' then 'completed'
+    when 'paused' then 'paused'
+    else 'draft'
+end
+where status is null
+   or status not in ('draft', 'ongoing', 'completed', 'paused');
+
 alter table public.seasons drop constraint if exists seasons_status_check;
 alter table public.seasons
     add constraint seasons_status_check check (status in ('draft', 'ongoing', 'completed', 'paused'));
